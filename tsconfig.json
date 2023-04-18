@@ -1,0 +1,12 @@
+{
+  "extends": "@tsconfig/docusaurus/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "ESNext",
+    "resolveJsonModule": true, 
+    "esModuleInterop": true,
+    "paths": {
+      "@site/*": ["./*"]
+    }
+  }
+}
