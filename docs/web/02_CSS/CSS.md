@@ -1,6 +1,6 @@
 ---
 id: CSS
-title: CSS知识
+title: CSS
 ---
 # CSS
 

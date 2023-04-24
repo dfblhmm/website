@@ -1,6 +1,6 @@
 ---
 id: Vue
-title: Vue 知识
+title: Vue
 ---
 # Vue
 
@@ -80,7 +80,7 @@ title: Vue 知识
         }
       }
     };
-    
+  
     Vue.createApp(App).mount('#root');
   </script>
   ```
@@ -280,15 +280,112 @@ title: Vue 知识
 
 ### v-model 双向绑定
 
+#### v-model 作用
+
+- 在前端处理表单时，常常需要将表单输入框的内容同步给 JavaScript 中相应的变量
+
+  ```vue
+  <!-- v-model实现原理 -->
+  <input
+    :value="text"
+    @input="event => text = event.target.value">
+  ```
+
+- `v-model` 指令简化了这一步骤
+
+  ```vue
+  <input v-model="text">
+  ```
 
 
 
+#### v-model 绑定表单
+
+>
+
+- 文本 `input`
+
+  ```vue
+  <p>Message is: {{ message }}</p>
+  <input v-model="message" placeholder="edit me" />
+  ```
+
+- 多行文本 `textarea`
+
+  ```vue
+  <span>Multiline message is:</span>
+  <p style="white-space: pre-line;">{{ message }}</p>
+  <textarea v-model="message" placeholder="add multiple lines"></textarea>
+  ```
+
+- 复选框 `checkbox`
+
+  - 单一复选框
+
+    ```vue
+    <input type="checkbox" id="checkbox" v-model="checked" />
+    <label for="checkbox">{{ checked }}</label>
+    ```
+
+  - 多选复选框
+
+    ```vue
+    <template>
+      <div>Checked names: {{ checkedNames }}</div>
+    
+      <input type="checkbox" id="jack" value="Jack" v-model="checkedNames">
+      <label for="jack">Jack</label>
+    
+      <input type="checkbox" id="john" value="John" v-model="checkedNames">
+      <label for="john">John</label>
+    
+      <input type="checkbox" id="mike" value="Mike" v-model="checkedNames">
+      <label for="mike">Mike</label>
+    </template>
+    
+    <script>
+      export default {
+        data() {
+          return {
+            checkedNames: []
+          }
+        }
+      }
+    </script>
+    ```
+
+- 单选按钮 `radio`
+
+  ```vue
+  <div>Picked: {{ picked }}</div>
+  
+  <input type="radio" id="one" value="One" v-model="picked" />
+  <label for="one">One</label>
+  
+  <input type="radio" id="two" value="Two" v-model="picked" />
+  <label for="two">Two</label>
+  ```
+
+- 选择器 `select`
+
+  ```vue
+  <div>Selected: {{ selected }}</div>
+  
+  <select v-model="selected">
+    <option disabled value="">Please select one</option>
+    <option>A</option>
+    <option>B</option>
+    <option>C</option>
+  </select>
+  ```
 
 
 
+#### 修饰符
 
-
-
+- `.lazy`：将触发事件修改为 **change** 事件，默认为 **input** 事件
+- `.number`：让用户输入自动转换为数字
+- `.trim`：默认自动去除用户输入内容中两端的空格
 
 
 
@@ -522,10 +619,10 @@ title: Vue 知识
   </script>
   ```
 
-- 在大多数情况下，计算属性只需要一个 getter 方法 即可
+- 在大多数情况下，计算属性只需要一个 **getter** 方法 即可
 
   - 所以通常将计算属性直接写成一个函数
-  - 实际上计算属性也可以进行 getter 和 setter 的同时控制
+  - 实际上计算属性也可以进行 **getter** 和 **setter** 的同时控制
 
   ```vue
   <script>
@@ -580,6 +677,10 @@ title: Vue 知识
         // 每当 search 改变时，这个函数就会执行
         search(newValue, oldValue) {
           console.log(newValue, oldValue);
+        },
+        // watch 选项也支持把键设置成用 . 分隔的路径
+        'info.name'(newValue) {
+          // ...
         }
       }
     }
@@ -596,7 +697,36 @@ title: Vue 知识
     - 这意味着在侦听器回调中访问的 DOM 将是被 Vue 更新之前的状态
     - 设置 `flush: 'post'`  可以在侦听器回调中能访问被 Vue ==更新之后==的 DOM
 
+- 可以使用组件实例的 `$watch()` 方法来命令式地创建一个侦听器
 
+  ```vue
+  <script>
+    export default {
+      created() {
+        // 创建一个侦听器
+        const unwatch = this.$watch('question', (newQuestion) => {
+          // ...
+        }, { immediate: true });
+      }
+    }
+  </script>
+  ```
+
+- 添加的侦听器，会在宿主组件卸载时自动停止。也可以手动取消
+
+  ```vue
+  <script>
+    export default {
+      created() {
+        const unwatch = this.$watch('foo', callback);
+        // ...当该侦听器不再需要时
+        unwatch();
+      }
+    }
+  </script>
+  ```
+
+  
 
 
 
