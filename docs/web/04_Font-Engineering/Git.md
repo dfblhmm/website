@@ -1,6 +1,6 @@
 ---
 id: Git
-title: Git知识
+title: Git
 ---
 # Git
 

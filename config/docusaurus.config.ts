@@ -40,6 +40,12 @@ const themeConfig: ThemeConfig = {
         position: 'left',
         label: 'Web 前端',
       },
+      {
+        type: 'docSidebar',
+        sidebarId: 'rust',
+        position: 'left',
+        label: 'Rust'
+      }
       // { to: '/blog', label: 'Blog', position: 'left' },
       // {
       //   href: 'https://github.com/facebook/docusaurus',
@@ -112,11 +118,13 @@ const config: Config = {
 
   staticDirectories: [
     'public',
+    'docs/web/images',
     'docs/web/01_HTML/images',
     'docs/web/02_CSS/images',
     'docs/web/03_JavaScript/images',
     'docs/web/04_Font-Engineering/images',
-    'docs/web/05_Font-Framework/images'
+    'docs/web/05_Font-Framework/images',
+    'docs/rust/images'
   ],
 
   // Set the production url of your site here

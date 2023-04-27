@@ -1,6 +1,6 @@
 ---
 id: HTML
-title: HTML知识
+title: HTML
 ---
 # HTML
 

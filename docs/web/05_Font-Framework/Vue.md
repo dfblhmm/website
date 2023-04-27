@@ -301,8 +301,6 @@ title: Vue
 
 #### v-model 绑定表单
 
->
-
 - 文本 `input`
 
   ```vue

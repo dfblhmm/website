@@ -67,6 +67,18 @@ const sidebars: SidebarsConfig = {
         'web/Font-Framework/Vue'
       ]
     }
+  ],
+
+  rust: [
+    {
+      type: 'doc',
+      id: 'rust/index',
+      label: '前言'
+    },
+    {
+      type: 'doc',
+      id: 'rust/rust-basic'
+    }
   ]
 };
 
