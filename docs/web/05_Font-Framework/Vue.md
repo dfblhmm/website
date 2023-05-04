@@ -710,7 +710,7 @@ title: Vue
   </script>
   ```
 
-- 添加的侦听器，会在宿主组件卸载时自动停止。也可以手动取消
+- 添加的侦听器，会在宿主组件==卸载==时自动停止，也可以手动取消
 
   ```vue
   <script>
@@ -729,3 +729,76 @@ title: Vue
 
 
 ## 组件化
+
+### 认识组件化
+
+- 组件允许将 UI 划分为==独立==的、==可重用==的部分，并且可以对每个部分进行单独的思考
+
+- 组件化提供了一种抽象，让我们可以开发出一个个独立可复用的小组件，来构造我们的应用
+
+- 在 Vue 中，任何的应用都会被抽象成一颗组件树
+
+  <img src="./images/components.7fbb3771.png" alt="组件树" style="zoom: 50%;" />
+
+
+
+### 注册组件
+
+- 注册组件分为两种
+
+  - 全局组件：在任何其他的组件中都可以使用的组件
+
+    ```js
+    import { createApp } from 'vue';
+    
+    const app = createApp({});
+    
+    app.component(
+      // 注册的名字
+      'MyComponent',
+      // 组件的实现
+      {
+        /* ... */
+      }
+    );
+    ```
+
+  - 局部组件：只有在组件中注册后才能使用的组件
+
+    ```vue
+    <template>
+      <ComponentA />
+    </template>
+    
+    <script>
+    import ComponentA from './ComponentA.vue'
+    
+    export default {
+      components: {
+        ComponentA
+      }
+    }
+    </script>
+    ```
+
+- 注册组件的命名（推荐使用驼峰标识）
+
+  - 方式一：使用 **kebab-case** （短横线分割符）
+
+    ```js
+    app.component('my-component-name', {
+      /* ... */
+    });
+    ```
+
+  - 方式二：使用 **PascalCase** （驼峰标识符）
+
+    ```js
+    app.component('MyComponentName', {
+      /* ... */
+    });
+    ```
+
+  - 为了方便，Vue 支持将模板中使用 kebab-case 的标签解析为使用 PascalCase 注册的组件
+
+    - 这意味着一个以 `MyComponent` 为名注册的组件，在模板中可以通过 `<MyComponent>` 或 `<my-component>` 引用
