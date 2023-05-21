@@ -111,7 +111,7 @@ title: Vue
   <h2 :[key]="222">2222</h2>
   ```
 
-- 绑定指定对象的所有属性：`v-bind = "obj"`
+- 动态绑定指定对象的所有属性：`v-bind = "obj"`
 
   ```vue
   <div v-bind="{ id: 'aa', title: 'div' }">3333</div>
@@ -502,7 +502,7 @@ title: Vue
 
 - 该函数应当返回一个普通 JavaScript 对象，Vue 会将它转换为==响应式==对象
 - 组件实例代理了该数据对象上所有的属性
-- 当数据发生变化时，引用的模板片段会自动刷新
+- 当数据发生变化时，引用的模板片段会==自动刷新==
 
 ```vue
 <template>
@@ -529,7 +529,7 @@ title: Vue
 
 - 声明的方法可以直接通过组件实例访问，或者在模板语法表达式中使用
 - 所有的方法都会将它们的 `this` 上下文自动绑定为==组件实例==
-- 在声明方法时避免使用箭头函数，因为它们不能通过 `this` 访问组件实例
+- 在声明方法时==避免使用箭头函数==，因为它们不能通过 `this` 访问组件实例
 
 ```vue
 <template>
@@ -802,3 +802,308 @@ title: Vue
   - 为了方便，Vue 支持将模板中使用 kebab-case 的标签解析为使用 PascalCase 注册的组件
 
     - 这意味着一个以 `MyComponent` 为名注册的组件，在模板中可以通过 `<MyComponent>` 或 `<my-component>` 引用
+
+
+
+
+
+### 组件间通信
+
+#### 父传子
+
+<img src="./images/image-20230520190019471.png" alt="image-20230520190019471" style="zoom:67%;" />
+
+- 父组件传递给子组件：通过 `props` 属性，在子组件中需要定义需要接收的 props
+
+##### props 的常见用法
+- 字符串数组：数组中的字符串就是 attribute 的名称
+
+  ```vue
+  <script>
+  export default {
+    props: ['name', 'singer']
+  }
+  </script>
+  ```
+
+- 对象类型：在指定 attribute 名称的同时，可以指定它需要传递的类型、是否是必须的、默认值等
+
+  - `type`：指定 prop 的类型，可选类型（**String**、**Number**、**Boolean**、**Array**、**Object**、**Date**、**Function**、**Symbol**）
+  - `required`：指定 prop 属性是否必传
+  - `default`：设置默认值，没传时使用默认值
+    - 如果 prop 类型为对象类型，必须指定为一个函数返回默认值的形式
+
+  ```vue
+  <script>
+  export default {
+    props: {
+      propA: {
+        type: String,
+        // 指定 propA 必传
+        required: true
+      },
+      
+      propB: {
+        type: Object,
+        // 必须从一个工厂函数返回默认值，防止被其他使用地方篡改
+        default: () => ({ name: 'Avril', age: 18 })
+      },
+      
+      propC: {
+        type: Array,
+        default() {
+          return []
+        }
+      },
+      
+      propD: {
+        // 可以指定多个类型
+        type: [Number, String]
+      },
+      
+      propE: {
+        // 自定义校验
+        validator(value) {
+          return ['success', 'waning'].includes(value);
+        }
+      },
+      
+      propF: {
+        type: Function,
+        // 函数类型 prop 的默认值，直接定义成一个函数
+        default() {
+          // ...
+        }
+      }
+    }
+  }
+  </script>
+  ```
+
+
+
+##### 非 Props 的 Attribute
+
+- 非 Props 的 Attribute 定义
+
+  - 传递给一个组件某个属性，但是该属性并没有定义对应的 props 或 emits 时，就称之为 非 Prop 的 Attribute
+  - 常见的包括 class、style、id 属性等
+
+- Attribute 继承
+
+  - 当组件有单个根节点 时，非 Prop 的 Attribute 将自动添加到==根节点==的 Attribute 中；如果根节点是一个组件，则会继续往下进行==透传==
+
+    ```vue
+    <template>
+      <div>Test</div>
+    </template>
+    
+    <script>
+    export default {}
+    </script>
+    ```
+
+    <img src="./images/image-20230521224330461.png" alt="image-20230521224330461" style="zoom:80%;" />
+
+  - 多个根节点的 attribute 如果没有显示的绑定，会报警告，必须手动的指定要绑定到哪一个属性上
+
+- 通过 `$attrs` 可以访问所有的 非 props 的 attribute
+
+  ```vue
+  <template>
+    <div :id="$attrs.id">Test1</div>
+    <div :class="$attrs.class">Test2</div>
+  </template>
+  
+  <script>
+  export default {}
+  </script>
+  ```
+
+- 如果不希望继承非 props 的 attribute，可以对组件设置 `inheritAttrs: false`
+
+  ```vue
+  <script>
+  export default {
+    inheritAttrs: false
+  }
+  </script>
+  ```
+
+  
+
+#### 子传父
+
+- 子组件传递给父组件：通过 `$emit` 触发事件
+
+- 传递流程
+
+  - 在子组件中定义好在某些情况下触发的事件名称（`emits` 数组定义）
+
+  - 在子组件中发生某个事件的时候，根据事件名称触发对应的事件（`this.$emit('事件名称', params)`）
+
+    ```vue
+    <template>
+      <button @click="click">按钮</button>
+    </template>
+    
+    <script>
+    export default {
+      inheritAttrs: false,
+      emits: ['add'],
+      methods: {
+        click() {
+          this.$emit('add', 11);
+        }
+      }
+    }
+    </script>
+    ```
+
+  - 在父组件中以 `v-on` 监听子组件发出的事件
+
+    ```vue
+    <template>
+      <Test @add="add" />
+    </template>
+    
+    <script>
+    import Test from './components/Test.vue';
+    
+    export default {
+      components: {
+        Test
+      },
+      methods: {
+        add(count) {
+          console.log('count', count);
+        }
+      }
+    };
+    </script>
+    ```
+
+
+
+### 插槽
+
+- 插槽的作用：为子组件传递一些==模板片段==，让子组件在它们的组件中渲染这些片段
+
+#### 插槽的使用
+
+- 使用方式
+
+  - Vue 中将 `slot` 元素作为承载分发内容的出口
+
+  - 在封装组件中，使用特殊的元素 `slot` 就可以为封装组件开启一个插槽
+
+    ```vue
+    <template>
+      <button>
+        <slot></slot>
+      </button>
+    </template>
+    ```
+
+  - 该插槽插入什么内容取决于==父组件==如何使用，在组件的 ==children== 内自定义渲染内容
+
+    ```vue
+    <template>
+    	<Button>反馈</Button>
+    </template>
+    
+    <script>
+    export default {
+      components: {
+        Button
+      }
+    };
+    </script>
+    ```
+
+- 如果一个组件中含有多个插槽，插入多个内容时
+
+  - 默认情况下每个插槽都会获取到父组件中插入的内容来显示
+
+- 在使用插槽时，如果定义一个默认的内容
+
+  - 这个默认的内容只会在没有提供插入的内容时，才会显示
+
+  ```vue
+  <template>
+  	<slot>默认内容</slot>
+  </template>
+  ```
+
+  
+
+#### 具名插槽
+
+- 作用：给插槽进行命名，父组件可以进行精准的替换
+
+  - `slot` 元素有一个 特殊的属性 `name`
+  - 一个不带 name 的 slot ，会带有隐含的名字 `default`
+
+- 使用方式
+
+  - 子组件模板中给 `slot` 元素添加 `name` 属性进行命名
+
+    ```vue
+    <template>
+      <slot name="left"></slot>
+      <slot name="center"></slot>
+      <slot name="right"></slot>
+    </template>
+    ```
+
+  - 父组件使用时通过 `v-slot:[插槽名]` 替换对应的内容，`v-slot` 指令只能用在 ==template== 元素上
+
+    ```vue
+    <template>
+    	<Button>
+        <template v-slot:left>left</template>
+        <template v-slot:center>center</template>
+        <template v-slot:right>right</template>
+      </Button>
+    </template>
+    ```
+
+- 可以通过 `v-slot:[dynamicSlotName]` 方式动态绑定一个插槽名称
+
+  ```vue
+  <template>
+  	<Button>
+      <template v-slot:[name]>111</template>
+    </Button>
+  </template>
+  
+  <script>
+  import Button from './components/Button.vue';
+  
+  export default {
+    components: {
+      Button
+    },
+    data() {
+      return {
+        name: 'right'
+      }
+    }
+  };
+  </script>
+  ```
+
+- 具名插槽的简写：把参数之前的内容 (`v-slot:`) 替换为字符 `#`
+
+  ```vue
+  <template>
+  	<Button>
+      <template #left>left</template>
+      <template #[name]>动态插槽名</template>
+    </Button>
+  </template>
+  ```
+
+
+
+#### 作用域插槽
