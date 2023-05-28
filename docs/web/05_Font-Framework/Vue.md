@@ -985,6 +985,154 @@ title: Vue
 
 
 
+#### 非父子组件间通信
+
+##### 依赖注入
+
+- 作用：解决 ==prop 逐级透传== 问题
+
+  <img src="./images/image-20230528152137501.png" alt="image-20230528152137501" style="zoom: 67%;" />
+
+  - 一个父组件相对于其所有的后代组件，会作为==依赖提供者==（`provide`）
+
+    ```vue
+    <script>
+    export default {
+      provide: {
+        count: 100
+      }
+    };
+    </script>
+    ```
+
+  - 任何后代的组件树，无论层级有多深，都可以==注入==（`inject`）由父组件提供给整条链路的依赖
+
+    ```vue
+    <template>
+      <h2>{{ count }}</h2>
+    </template>
+    
+    <script>
+    export default {
+      inject: ['count']
+    }
+    </script>
+    ```
+
+- 如果提供依赖来自当前组件实例的状态 (比如那些由 `data()` 定义的数据属性)，那么可以以函数形式使用 `provide`
+
+  ```vue
+  <script>
+  export default {
+    provide() {
+      return {
+        count: this.count
+      }
+    },
+    data() {
+      return {
+        count: 101
+      }
+    }
+  };
+  </script>
+
+- 为保证注入方和供给方之间的响应性链接，我们需要使用 `computed` 函数提供一个计算属性
+
+  ```vue
+  <script>
+  export default {
+    provide() {
+      return {
+        count: computed(() => this.count)
+      }
+    },
+    data() {
+      return {
+        count: 101
+      }
+    }
+  };
+  </script>
+  ```
+
+  
+
+##### 事件总线
+
+- 通过全局事件总线，在一个地方发出事件并携带参数，在其他任意地方监听这个事件并作出响应
+
+- 流程实例
+
+  - 声明一个事件对象
+
+    ```js
+    import mitt from 'mitt';
+    
+    export default mitt();
+    ```
+
+  - 发出事件
+
+    ```vue
+    <template>
+      <h2>{{ count }}</h2>
+      <button @click="count ++">+1</button>
+    </template>
+    
+    <script>
+    import emitter from './emitter';
+    
+    export default {
+      data() {
+        return {
+          count: 0
+        }
+      },
+      watch: {
+        count(newValue) {
+          emitter.emit('add', newValue);
+        }
+      }
+    }
+    </script>
+    ```
+
+  - 另一个地方监听并处理事件
+
+    ```vue
+    <template>
+      <h3>{{ count }}</h3>
+    </template>
+    
+    <script>
+    import emitter from './emitter';
+    
+    export default {
+      data() {
+        return {
+          count: 0
+        }
+      },
+      methods: {
+        add(count) {
+          this.count = count;
+        }
+      },
+      created() {
+        emitter.on('add', this.add);
+      },
+      unmounted() {
+        emitter.off('add', this.add);
+      }
+    }
+    </script>
+    ```
+
+
+
+
+
 ### 插槽
 
 - 插槽的作用：为子组件传递一些==模板片段==，让子组件在它们的组件中渲染这些片段
@@ -1107,3 +1255,331 @@ title: Vue
 
 
 #### 作用域插槽
+
+- 作用：让子组件在渲染时将一部分数据提供给插槽，供父组件使用
+
+- 流程示例
+
+  - 子组件接收一个数字区间 `range`，随机生成这个区间的一个整数，再将数据通过作用域插槽传递给使用者
+
+    ```vue
+    <template>
+      <slot :randomNumber="randomNumber"></slot>
+    </template>
+    
+    <script>
+    export default {
+      props: {
+        range: {
+          type: Array,
+          required: true
+        }
+      },
+      computed: {
+        randomNumber() {
+          const [min, max] = this.range;
+          const minInt = Math.ceil(min);
+          const maxInt = Math.floor(max);
+          return Math.floor(Math.random() * (maxInt - minInt + 1)) + minInt;
+        }
+      }
+    }
+    </script>
+    ```
+
+  - 父组件通过 `v-slot:[插槽名] = "props"` 获取到子组件传递过来的数据，进行自定义渲染
+
+    ```vue
+    <template>
+      <Test :range="[3, 7]">
+        <!-- 子组件作用域插槽传递的数据，收集成一个对象，可以通过对象解构直接提取 -->
+        <template v-slot:default="{ randomNumber }">
+          <h2>{{ randomNumber }}</h2>
+        </template>
+      </Test>
+    </template>
+    
+    <script>
+    import Test from './components/Test.vue';
+    
+    export default {
+      components: {
+        Test
+      }
+    };
+    </script>
+    ```
+
+- 独占默认插槽的缩写
+
+  - 如果插槽是默认插槽，使用的时候可以省略 `default`
+
+    ```vue
+    <template>
+      <Test :range="[3, 7]">
+        <!-- 子组件作用域插槽传递的数据，收集成一个对象，可以通过对象解构直接提取 -->
+        <template v-slot="{ randomNumber }">
+          <h2>{{ randomNumber }}</h2>
+        </template>
+      </Test>
+    </template>
+    ```
+
+  - 只有默认插槽时，可以将 `v-slot` 直接用在组件上
+
+    ```vue
+    <template>
+      <Test :range="[3, 7]" v-slot:default="{ randomNumber }">
+        <h2>{{ randomNumber }}</h2>
+      </Test>
+    </template>
+    ```
+
+  - 如果同时使用了具名插槽与默认插槽，则需要为默认插槽使用显式的 `<template>` 标签
+
+- 具名作用域插槽的简写
+
+  ```vue
+  <template>
+    <Test>
+      <!-- 使用 #[插槽名]="slotProps" 形式 -->
+      <template #left="{ randomNumber }">
+        <h2>{{ randomNumber }}</h2>
+      </template>
+    </Test>
+  </template>
+  ```
+
+
+
+
+
+
+### 组件生命周期
+
+#### 认识生命周期
+
+- 每一个组件所经历的 ==创建==、==挂载==、==更新==、==卸载== 的过程，称作组件的==生命周期==
+- 在组件的整个生命周期历程中，每达到一个阶段，被回调的函数称作==生命周期函数==
+
+- 所有生命周期钩子函数的 `this` 上下文都会自动指向当前调用它的==组件实例==，不能使用箭头函数来声明
+
+
+
+#### 生命周期函数
+
+- 当组件运行到指定的阶段时，会自动回调在组件中声明的生命周期函数
+
+<img src="./images/lifecycle.16e4c08e.png" alt="组件生命周期图示" style="zoom: 56%;" />
+
+
+
+### 其他补充
+
+#### 模板引用
+
+- 在某些情况下，需要直接访问底层 DOM 元素或组件实例
+  - 可以使用特殊的属性 `ref`
+  - 它允许在一个特定的 DOM 元素或子组件实例被挂载后，获得对它的直接引用
+
+- 访问模板引用：挂载结束后引用都会被暴露在 `this.$refs` 之上
+
+  ```vue
+  <template>
+    <Test ref="test" />
+    <h2 ref="title">Test</h2>
+  </template>
+  
+  <script>
+  import Test from './components/Test.vue';
+  
+  export default {
+    components: {
+      Test
+    },
+    mounted() {
+      console.log(this.$refs.test);
+      console.log(this.$refs.title);
+    }
+  };
+  </script>
+  ```
+
+- 可以使用 `$parent` 访问父组件实例；使用 `$root` 访问当前组件树的根组件实例
+
+
+
+#### 动态组件
+
+- 动态组件：通过内置组件 `<component>`，通过一个 特殊的属性 `is` 来实现
+
+  - 要渲染的实际组件由 `is` 决定
+  - 当 `is` 是字符串，它既可以是 HTML 标签名也可以是组件的注册名
+
+  ```vue
+  <template>
+    <component :is="flag ? 'Test' : 'Demo'" />
+    <button @click="flag = !flag">切换组件</button>
+  </template>
+  
+  <script>
+  import Test from './components/Test.vue';
+  import Demo from './components/Demo.vue';
+  
+  export default {
+    components: {
+      Test,
+      Demo
+    },
+    data() {
+      return {
+        flag: true
+      }
+    }
+  };
+  </script>
+  ```
+
+
+
+#### KeepAlive
+
+- `<KeepAlive>` 是一个内置组件
+
+  - 它的功能是在多个组件间动态切换时==缓存==被移除的组件实例
+  - 被缓存的组件，切换回来后其状态仍然可以进行==保留==
+
+- 配置属性
+
+  - `include` (string | RegExp | Array)：包含。根据组件的 `name` 选项进行匹配
+  - `exclude`：排除
+  - `max` (number)：最大缓存实例数。优先销毁==最久没有被访问==的实例
+
+  ```vue
+  <KeepAlive :include="['a', 'b']">
+    <component :is="view" />
+  </KeepAlive>
+  ```
+
+- 缓存实例的生命周期（`activated`、`deactivated`）
+
+  ```vue
+  <script>
+  export default {
+    activated() {
+      // 在首次挂载、
+      // 以及每次从缓存中被重新插入的时候调用
+    },
+    deactivated() {
+      // 在从 DOM 上移除、进入缓存
+      // 以及组件卸载时调用
+    }
+  }
+  </script>
+  ```
+
+
+
+#### 异步组件
+
+- 异步组件：运行时是懒加载的，打包时会被==独立分包==
+
+  - 使用 `defineAsyncComponent` 定义
+
+  ```vue
+  <script>
+  import { defineAsyncComponent } from 'vue';
+  const Demo = defineAsyncComponent(() => import('./components/Demo.vue'));
+  
+  export default {
+    components: {
+      Demo
+    }
+  };
+  </script>
+  ```
+
+
+
+#### 组件的 v-model
+
+- 当使用在一个组件上时，`v-model` 会被展开为如下的形式
+
+  - 父组件引用定义
+
+    ```vue
+    <CustomInput
+      :modelValue="searchText"
+      @update:modelValue="newValue => searchText = newValue"
+    />
+    ```
+
+  - 子组件对应定义示例
+
+    ```vue
+    <template>
+      <input
+        :value="modelValue"
+        @input="$emit('update:modelValue', $event.target.value)"
+      />
+    </template>
+    
+    <!-- CustomInput.vue -->
+    <script>
+    export default {
+      props: ['modelValue'],
+      emits: ['update:modelValue']
+    }
+    </script>
+    ```
+
+- 默认情况下，`v-model` 在组件上都是使用 `modelValue` 作为 prop，并以 `update:modelValue` 作为对应的事件
+
+  - 可以通过给 `v-model` 指定一个参数来更改这些名字
+
+    ```vue
+    <MyComponent v-model:title="bookTitle" />
+    ```
+
+  - 相对应的，子组件应声明一个 `title` prop，并通过触发 `update:title` 事件更新父组件值
+
+    ```vue
+    <!-- MyComponent.vue -->
+    <script>
+    export default {
+      props: ['title'],
+      emits: ['update:title']
+    }
+    </script>
+    ```
+
+
+
+#### mixins 混入
+
+- 定义：一个包含组件选项对象的数组，这些选项都将被混入到当前组件的实例中
+
+  - 通过这种方式，可以将一些可复用的逻辑进行抽取
+  - Vue 3 之后，Composition API 是更推荐的方式
+
+  ```js
+  const mixin = {
+    created() {
+      console.log(1)();
+    },
+    mounted() {}
+  }
+  
+  createApp({
+    created() {
+      console.log(2)
+    },
+    mixins: [mixin]
+  });
+  ```
+
+  
+
+
+
+## Composition API
