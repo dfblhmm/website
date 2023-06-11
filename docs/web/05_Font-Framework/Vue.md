@@ -1405,6 +1405,16 @@ title: Vue
   </script>
   ```
 
+- 除了使用字符串值作名字，`ref` attribute 还可以绑定为一个函数
+
+  - 该传入的函数在每次==组件更新==、==组件卸载==时都被调用
+
+    ```vue
+    <input :ref="(el) => { /* 将 el 赋值给一个数据属性或 ref 变量 */ }">
+    ```
+
+  - 当绑定的元素被卸载时，此时的 `el` 参数会是 `null`
+
 - 可以使用 `$parent` 访问父组件实例；使用 `$root` 访问当前组件树的根组件实例
 
 
@@ -1583,3 +1593,541 @@ title: Vue
 
 
 ## Composition API
+
+### 认识组合 API
+- Options API 的主要弊端：代码逻辑过于分散，维护困难
+- 组合式 API：将同一个逻辑关注点相关的代码收集在一起
+
+
+
+### setup() 函数
+
+#### 认识 setup 函数
+
+- `setup()` 钩子是在组件中使用组合式 API 的==入口==
+- `setup()` 函数中返回的对象会暴露给模板和组件实例
+- `setup` 函数中不可以使用 `this`，因为 Vue 底层在调用该函数中没有为其绑定 `this`
+
+
+
+#### 访问 props
+
+- `setup` 函数的第一个参数是组件的 `props`
+- 如果对 `props` 对象进行了解构，解构出的变量将会丢失响应性，可以使用 `toRefs` 和 `toRef` 保持其响应性
+
+```vue
+<script>
+export default {
+  props: {
+    title: String
+  },
+  setup(props) {
+    console.log(props.title)
+  }
+}
+</script>
+```
+
+
+
+#### Setup 上下文
+
+- 传入 `setup` 函数的第二个参数是一个 ==Setup 上下文==对象，该上下文对象是==非响应式==的
+
+- 上下文对象暴露了其他一些在 `setup` 中可能会用到的值
+
+  - `attrs`：透传 Attributes（非响应式的对象，等价于 $attrs）
+  - `slots`：插槽（非响应式的对象，等价于 $slots）
+  - `emit`：触发事件（函数，等价于 $emit）
+  - `expose`：暴露公共属性（函数），当父组件通过模板引用访问该组件的实例时，仅能访问 `expose` 函数暴露出的内容
+
+  ```vue
+  <script>
+  export default {
+    setup(props, { attrs, slots, emit, expose }) {}
+  }
+  </script>
+  ```
+
+
+
+
+
+### 响应式：核心
+
+#### reactive()
+- 作用：返回一个对象的==响应式代理==
+- 返回的对象以及其中嵌套的对象都会通过 `Proxy`包裹，因此==不等于==源对象
+
+- 响应式转换默认是==“深层”==的：它会影响到所有嵌套的属性
+
+```vue
+<template>
+  <h2>{{ counter.count }}</h2>
+  <button @click="add">+1</button>
+</template>
+
+<script>
+import { reactive } from 'vue';
+
+export default {
+  setup() {
+    const counter = reactive({ count: 0 });
+    const add = () => counter.count++;
+    
+    return { counter, add };
+  }
+}
+</script>
+```
+
+
+
+#### ref()
+
+- 作用：接受一个内部值，返回一个==响应式==的、==可更改==的 `ref` 对象
+
+  - 此对象只有一个指向其内部值的属性 `.value`
+  - 它是响应式的，即所有对 `.value` 的操作都将被追踪，并且写操作会触发与之相关的副作用
+
+  ```js
+  const count = ref(0);
+  console.log(count.value); // 0
+  ```
+
+- `ref` 的解包
+
+  - 在==模板==中引入 ref 的值时，会自动进行==解包==操作，所以在模板中无需通过 ref.value 的方式来使用
+  - 在 `setup` 函数内部 ，它依然是一个 ref 引用，对其进行操作时，依然需要使用 **ref.value** 的方式
+
+  ```vue
+  <template>
+    <h2>{{ count }}</h2>
+    <button @click="add">+1</button>
+  </template>
+  
+  <script>
+  import { reactive, ref } from 'vue';
+  
+  export default {
+    setup() {
+      const count = ref(0);
+      const add = () => count.value++;
+  
+      return { count, add };
+    }
+  }
+  </script>
+  ```
+
+- 如果将一个==对象==赋值给 `ref`，那么这个对象将通过 `reactive` 转为具有==深层次响应式==的对象
+
+  - 如果对象中包含了嵌套的 ref，它们将被深层地==解包==
+
+  ```js
+  const count = ref(0);
+  const obj = reactive({ count });
+  
+  // ref 会被解包
+  console.log(obj.count === count.value); // true
+  
+  // 会更新 obj.count
+  count.value++;
+  console.log(count.value); // 2
+  console.log(obj.count); // 2
+  
+  // 也会更新 count ref
+  obj.count++;
+  console.log(obj.count); // 3
+  console.log(count.value); // 3
+  ```
+
+- `ref` 也可用于模板引用和组件引用
+
+  ```vue
+  <template>
+    <input type="text" ref="input">
+  </template>
+  
+  <script>
+  import { onMounted, reactive, readonly, ref } from 'vue';
+  
+  export default {
+    setup() {
+      const input = ref(null);
+      onMounted(() => {
+        console.log('input', input.value);
+      });
+      return { input };
+    }
+  }
+  </script>
+  ```
+
+  
+
+#### readonly()
+
+- 作用：接受一个对象 (不论是响应式还是普通的) 或是一个 ref，返回一个原值的==只读代理==
+
+  - `readonly` 返回的对象的 ==setter== 方法被劫持
+  - 可以防止子组件修改父组件传入的 **props**
+
+  ```js
+  const original = ref(0);
+  const copy = readonly(original);
+  
+  // 更改源属性会触发其依赖的侦听器
+  original.count++;
+  // 更改该只读副本将会失败，并会得到一个警告
+  copy.count++; // warning!
+  ```
+
+  
+
+#### computed()
+
+- 作用：接受一个 getter 函数，默认返回一个==只读==的响应式 `ref` 对象
+
+  - 创建一个只读的计算属性 ref
+
+    ```js
+    const count = ref(1);
+    const plusOne = computed(() => count.value + 1);
+    
+    console.log(plusOne.value); // 2
+    
+    plusOne.value++; // 错误
+    ```
+
+  - 创建一个可写的计算属性 ref
+
+    ```js
+    const count = ref(1);
+    const plusOne = computed({
+      get: () => count.value + 1,
+      set: (val) => {
+        count.value = val - 1
+      }
+    });
+    
+    plusOne.value = 1;
+    console.log(count.value); // 0
+    ```
+
+
+
+#### watchEffect()
+
+- 作用：==立即执行==一个函数，同时响应式地==追踪其依赖==，并在依赖更改时重新执行
+
+  - 第一个参数就是要运行的副作用函数
+
+    ```js
+    const count = ref(0);
+    watchEffect(() => console.log(count.value));
+    // -> 输出 0
+    count.value++;
+    // -> 输出 1
+    ```
+
+  - 第二个参数是一个可选的选项，可以用来调整副作用的刷新时机或调试副作用的依赖
+
+  - 返回值是一个用来==停止==该副作用的函数（==停止监听==）
+
+    ```js
+    const stop = watchEffect(() => {})
+    
+    // 当不再需要此侦听器时:
+    stop();
+    ```
+
+- 默认情况下，侦听器将在组件渲染之前执行
+  - 设置 `flush: 'post'` 将会使侦听器延迟到组件渲染之后再执行
+
+
+
+#### watch()
+
+- 作用：侦听一个或多个响应式数据源，并在数据源变化时调用所给的回调函数
+
+  - `watch` 需要指定侦听的数据源，并且执行其回调函数
+  - 默认情况下是==惰性==的，只有当被侦听的源发生变化时才会执行回调
+  - 返回一个可以==停止侦听==的函数
+
+- 当直接侦听一个响应式对象时，侦听器会自动启用深层模式
+
+  ```js
+  const state = reactive({ count: 0 });
+  watch(state, () => {
+    /* 深层级变更状态所触发的回调 */
+  });
+  ```
+
+- 当使用 getter 函数作为源时，回调只在此函数的返回值变化时才会触发
+
+  ```js
+  const state = reactive({ count: 0 });
+  watch(
+    () => state,
+    (newValue, oldValue) => {
+      // newValue === oldValue
+    },
+    { deep: true }
+  );
+  ```
+
+- 与 `watchEffect` 相比，`watch` 的区别
+
+  - 懒执行副作用
+  - 更加明确是应该由哪个状态触发侦听器重新执行
+  - 可以访问所侦听状态的前一个值和当前值
+
+
+
+
+
+### 响应式：工具
+
+#### toRef / toRefs
+
+- `toRef()`：基于响应式对象上的一个属性，创建一个对应的 ref
+
+- `toRefs()`：将一个响应式对象转换为一个普通对象，这个普通对象的每个属性都是指向源对象相应属性的 ref
+
+  - 每个单独的 ref 都是使用 `toRef()` 创建的
+
+- 用途：消费者组件可以==解构/展开==返回的对象而==不会失去响应性==
+
+  ```vue
+  <template>
+    <h2>{{ count1 }}</h2>
+    <h2>{{ count2 }}</h2>
+    <button @click="add">+1</button>
+  </template>
+  
+  <script>
+  import { reactive, toRef, toRefs } from 'vue';
+  
+  export default {
+    setup() {
+      const counter = reactive({ count: 0 });
+      const add = () => counter.count++;
+  
+      const { count: count1 } = toRefs(counter);
+      const count2 = toRef(counter, 'count');
+  
+      return { count1, count2, add };
+    }
+  }
+  </script>
+  ```
+
+
+
+#### triggerRef()
+
+- 强制触发依赖于一个==浅层 ref== 的副作用，这通常在对浅引用的内部值进行深度变更后使用
+
+  ```js
+  const shallow = shallowRef({
+    greet: 'Hello, world'
+  })
+  
+  // 触发该副作用第一次应该会打印 "Hello, world"
+  watchEffect(() => {
+    console.log(shallow.value.greet)
+  })
+  
+  // 这次变更不应触发副作用，因为这个 ref 是浅层的
+  shallow.value.greet = 'Hello, universe'
+  
+  // 强制触发响应式，打印 "Hello, universe"
+  triggerRef(shallow)
+  ```
+
+
+
+### 生命周期钩子
+
+- `setup` 中使用[生命周期](https://cn.vuejs.org/api/composition-api-lifecycle.html#onunmounted)函数：使用直接导入的 **onX** 函数注册生命周期钩子
+
+  | 选项式 API    | 组合式 API      |
+  | ------------- | --------------- |
+  | beforeCreate  | setup           |
+  | created       | setup           |
+  | beforeMount   | onBeforeMount   |
+  | mounted       | onMounted       |
+  | beforeUpdate  | onBeforeUpdate  |
+  | updated       | onUpdated       |
+  | beforeUnmount | onBeforeUnmount |
+  | unmounted     | onUnmounted     |
+  | activated     | onActivated     |
+  | deactivated   | onDeactivated   |
+
+
+
+
+
+### 依赖注入
+
+#### provide()
+
+- 作用：提供一个值，可以被后代组件注入
+
+  ```vue
+  <script>
+  import { ref, provide } from 'vue';
+    
+  export default {
+    setup() {
+      // 提供静态值
+      provide('message', 'Hello World');
+  
+      // 提供响应式的值
+      const count = ref(0);
+      provide('count', count);
+    }
+  }
+  </script>
+  ```
+
+
+
+#### inject()
+
+- 注入一个由祖先组件或整个应用 (通过 `app.provide()`) 提供的值
+
+  ```vue
+  <script>
+  import { inject } from 'vue';
+  
+  export default {
+    setup() {
+      // 注入响应式的值
+      const count = inject('count')
+      // 注入一个值，若为空则使用提供的默认值
+      const bar = inject('foo', 'default value')
+      // 注入一个值，若为空则使用提供的工厂函数
+      const baz = inject('foo', () => new Map());
+    }
+  }
+  </script>
+  ```
+
+
+
+
+
+### script setup 语法
+
+#### 认识 setup 语法糖
+
+- `<script setup> `是在单文件组件 (SFC) 中使用组合式 API 的编译时语法糖，优势
+
+  - 更少的样板内容，更简洁的代码。
+
+  - 能够使用纯 TypeScript 声明 props 和自定义事件。
+
+  - 更好的运行时性能 (其模板会被编译成同一作用域内的渲染函数，避免了渲染上下文代理对象)
+
+  - 更好的 IDE 类型推导性能
+
+- 要启用该语法，需要在 `<script>` 代码块上添加 `setup` 属性
+
+  - `<script setup>` 中的代码会在==每次组件实例被创建==的时候执行
+  - 任何在 `<script setup>` 声明的顶层的绑定 (包括变量，函数声明，以及 import 导入的内容) 都能==在模板中直接使用==
+
+  ```vue
+  <template>
+    <button @click="log">{{ msg }}</button>
+  </template>
+  
+  <script setup>
+  // 变量
+  const msg = 'Hello!'
+  
+  // 函数
+  function log() {
+    console.log(msg)
+  }
+  </script>
+  ```
+
+  
+
+#### 响应式
+
+- 响应式状态需要明确使用==响应式 API== 创建
+
+  - 和 `setup()` 函数的返回值一样，ref 在模板中使用的时候会自动解包
+
+  ```vue
+  <script setup>
+  import { ref } from 'vue';
+  
+  const count = ref(0);
+  </script>
+  
+  <template>
+    <button @click="count++">{{ count }}</button>
+  </template>
+  ```
+
+
+
+#### 使用组件
+
+- `<script setup>` 范围里的值也能被==直接作为==自定义组件的标签名使用
+
+  ```vue
+  <script setup>
+  import MyComponent from './MyComponent.vue';
+  </script>
+  
+  <template>
+    <MyComponent />
+  </template>
+  ```
+
+  
+
+#### props 和 emits
+
+- 为了在声明 `props` 和 `emits` 选项时获得完整的类型推导支持
+
+  - 可以使用 `defineProps` 和 `defineEmits` API
+  - 它们直接可用
+
+  ```vue
+  <script setup>
+  const props = defineProps({
+    foo: String
+  });
+  
+  const emit = defineEmits(['change', 'delete']);
+  // setup 代码
+  </script>
+  ```
+
+
+
+#### defineExpose()
+
+- 使用 `<script setup>`组件是**默认关闭**的
+
+  - 即通过模板引用或者 `$parent` 链获取到的组件的公开实例，**不会**暴露任何声明的绑定
+  - 可以通过 `defineExpose` 编译器宏来显式指定需要暴露出去的属性
+
+  ```vue
+  <script setup>
+  import { ref } from 'vue';
+  
+  const a = 1;
+  const b = ref(2);
+  
+  defineExpose({ a, b });
+  </script>
+  ```
+
+- 当父组件通过模板引用的方式获取到当前组件的实例，就可以获取到子组件中暴露出来的属性
