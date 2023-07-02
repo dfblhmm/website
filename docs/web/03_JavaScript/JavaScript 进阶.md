@@ -1563,9 +1563,6 @@ bar();
 
 #### 属性描述符
 
->
->
-
 - 属性描述符分为==数据属性描述符==和==存取属性描述符==
 
   | 属性描述符分类 | configurable | enumerable | value | writable | get  | set  |
@@ -1767,8 +1764,6 @@ bar();
 ### 原型
 
 #### 对象的原型
-
->对象的原型
 
 - JavaScript 中==每个对象==都有一个特殊的内置属性 `[[prototype]]`，这个属性可以称之为对象的==原型（隐式原型）==
 
@@ -3038,8 +3033,6 @@ obj = null; // // info对{ name: 'obj' }是弱引用，obj对象会被回收
 
 #### 类的新成员
 
->
-
 - **public instance fields**：公共实例属性
 
 - **public static fields**：公共静态属性
@@ -3150,9 +3143,6 @@ obj = null; // // info对{ name: 'obj' }是弱引用，obj对象会被回收
 
 #### Proxy 的捕获器
 
->
->
-
 - `Proxy` 有 13 种 [捕获器](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy#handler_%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%96%B9%E6%B3%95)，可以监听对象的操作
 
   |       捕获器       |          说明           |
@@ -3212,9 +3202,6 @@ obj = null; // // info对{ name: 'obj' }是弱引用，obj对象会被回收
 
 #### 认识 Reflect
 
->
->
-
 - `Reflect`（反射）是ES6新增的一个API，它是一个==对象==
 - 作用：主要提供了许多==操作对象的方法==，类似于 ==Object 中操作对象的方法==
 - `Object` 对象上含有操作对象的一系列方法，为什么还需要新增Reflect对象？
@@ -3226,9 +3213,6 @@ obj = null; // // info对{ name: 'obj' }是弱引用，obj对象会被回收
 
 
 #### Reflect 常见方法
-
->
->
 
 - `Reflect` 中的常见 API 与 `Proxy` 一一对应
 
@@ -3268,11 +3252,6 @@ obj = null; // // info对{ name: 'obj' }是弱引用，obj对象会被回收
 
 
 #### receiver 参数作用
-
->
-
->
->
 
 - 先来看一段代码
 
@@ -3335,9 +3314,6 @@ obj = null; // // info对{ name: 'obj' }是弱引用，obj对象会被回收
 
 
 #### Reflect.construct
-
->
->
 
 - 作用：可以执行 A 类的构造函数，但创建出来的对象类型可以指向 B 类。该方法在 babel 转换 ES6 类继承时有用到
 
@@ -3594,9 +3570,6 @@ info.age = 20;
   })
   ```
 
->
->
-
 - 一个 Promise 的 `then` 方法可以被多次调用
 
   - 每次调用都可以传入对应的 fulfilled 回调
@@ -3672,9 +3645,6 @@ info.age = 20;
 
 #### catch
 
->
->
-
 - `catch` 方法是 `then` 方法的语法糖，用于捕获拒绝或异常
 
 - 一个 Promise 的 catch 方法也是可以被多次调用的
@@ -3729,9 +3699,6 @@ info.age = 20;
 
 #### finally
 
->
->
-
 - `finally` 是在 ES9 中新增的一个特性：表示 无论 Promise 对象无论变成 fulfilled 还是 rejected 状态，最终都会被执行
   的代码
 
@@ -3777,9 +3744,6 @@ info.age = 20;
 
 
 #### all
-
->
->
 
 - `Promise.all(promises)`
 - 所有的 Promise 都变成 ==fulfilled== 时再调用 `then` 的回调
@@ -3864,9 +3828,6 @@ info.age = 20;
 
 
 #### race / any
-
->
->
 
 - `Promise.race(promises)`
 
@@ -4209,11 +4170,6 @@ class CustomPromise {
 
 #### 认识迭代器
 
->
-
->
->
-
 - 维基百科定义：==迭代器（iterator）==是确使用户可在容器对象（例如链表或数组）上遍访的对象，使用该接口无需关心对象的内部实现细节
 
   - 其行为像数据库中的光标，迭代器最早出现在1974年设计的 CLU 编程语言中
@@ -4254,9 +4210,6 @@ class CustomPromise {
 
 
 #### 可迭代对象
-
->
->
 
 - 当一个==对象==实现了==可迭代协议（iterable protocol）==时，它就是一个==可迭代对象==
 
@@ -4378,9 +4331,6 @@ class CustomPromise {
 ### 生成器
 
 #### 认识生成器
-
->
->
 
 - 生成器是 ES6 中新增的一种==函数控制、使用==的方案，它可以控制函数什么时候==继续执行==、==暂停执行==等
 
@@ -4573,10 +4523,6 @@ class CustomPromise {
 
 
 #### 生成器替代迭代器
-
-
->
->
 
 - 在大多数情况下，可以使用生成器替代迭代器，使编码的代码更简洁
 

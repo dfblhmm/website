@@ -480,7 +480,7 @@ title: Vue
 
 #### v-memo 指令
 
-`v-memo` 用于缓存一个模板的子树，直到其依赖的数据发生更新
+`v-memo` 用于==缓存==一个模板的子树，直到其依赖的数据发生更新
 
 - 该指令一定程度上可以减少计算次数，提高渲染性能
 
@@ -1374,6 +1374,48 @@ title: Vue
 
 
 
+### 内置组件
+
+#### KeepAlive
+
+- `<KeepAlive>` 是一个内置组件
+
+  - 它的功能是在多个组件间动态切换时==缓存==被移除的组件实例
+  - 被缓存的组件，切换回来后其状态仍然可以进行==保留==
+
+- 配置属性
+
+  - `include` (string | RegExp | Array)：包含。根据组件的 `name` 选项进行匹配
+  - `exclude`：排除
+  - `max` (number)：最大缓存实例数。优先销毁==最久没有被访问==的实例
+
+  ```vue
+  <KeepAlive :include="['a', 'b']">
+    <component :is="view" />
+  </KeepAlive>
+  ```
+
+- 缓存实例的生命周期（`activated`、`deactivated`）
+
+  ```vue
+  <script>
+  export default {
+    activated() {
+      // 在首次挂载、
+      // 以及每次从缓存中被重新插入的时候调用
+    },
+    deactivated() {
+      // 在从 DOM 上移除、进入缓存
+      // 以及组件卸载时调用
+    }
+  }
+  </script>
+  ```
+
+
+
+
+
 ### 其他补充
 
 #### 模板引用
@@ -1452,47 +1494,9 @@ title: Vue
 
 
 
-#### KeepAlive
-
-- `<KeepAlive>` 是一个内置组件
-
-  - 它的功能是在多个组件间动态切换时==缓存==被移除的组件实例
-  - 被缓存的组件，切换回来后其状态仍然可以进行==保留==
-
-- 配置属性
-
-  - `include` (string | RegExp | Array)：包含。根据组件的 `name` 选项进行匹配
-  - `exclude`：排除
-  - `max` (number)：最大缓存实例数。优先销毁==最久没有被访问==的实例
-
-  ```vue
-  <KeepAlive :include="['a', 'b']">
-    <component :is="view" />
-  </KeepAlive>
-  ```
-
-- 缓存实例的生命周期（`activated`、`deactivated`）
-
-  ```vue
-  <script>
-  export default {
-    activated() {
-      // 在首次挂载、
-      // 以及每次从缓存中被重新插入的时候调用
-    },
-    deactivated() {
-      // 在从 DOM 上移除、进入缓存
-      // 以及组件卸载时调用
-    }
-  }
-  </script>
-  ```
-
-
-
 #### 异步组件
 
-- 异步组件：运行时是懒加载的，打包时会被==独立分包==
+- 异步组件：运行时是==懒加载==的，打包时会被==独立分包==
 
   - 使用 `defineAsyncComponent` 定义
 
@@ -2131,3 +2135,230 @@ export default {
   ```
 
 - 当父组件通过模板引用的方式获取到当前组件的实例，就可以获取到子组件中暴露出来的属性
+
+
+
+### 组合式函数
+
+- ==组合式函数==是一个利用 Vue 的组合式 API 来封装和复用==有状态逻辑==的函数，类似于 React 中的自定义 hooks
+
+- 鼠标跟踪器示例
+
+  - 将状态逻辑抽离为一个单独的函数
+
+    ```js
+    import { ref, onMounted, onUnmounted } from 'vue';
+    
+    // 按照惯例，组合式函数名以“use”开头
+    export function useMouse() {
+      // 被组合式函数封装和管理的状态
+      const x = ref(0);
+      const y = ref(0);
+    
+      // 组合式函数可以随时更改其状态。
+      function update(event) {
+        x.value = event.pageX;
+        y.value = event.pageY;
+      }
+    
+      // 一个组合式函数也可以挂靠在所属组件的生命周期上
+      // 来启动和卸载副作用
+      onMounted(() => window.addEventListener('mousemove', update));
+      onUnmounted(() => window.removeEventListener('mousemove', update));
+    
+      // 通过返回值暴露所管理的状态
+      return { x, y };
+    }
+    ```
+
+  - 在其他组件中可以直接进行调用
+
+    ```vue
+    <script setup>
+    import { useMouse } from './mouse.js';
+    
+    const { x, y } = useMouse();
+    </script>
+    
+    <template>
+    	Mouse position is at: {{ x }}, {{ y }}
+    </template>
+    ```
+
+
+
+
+
+## 进阶知识
+
+### 自定义指令
+
+#### 认识自定义指令
+
+- 除了 Vue 内置的一系列指令，Vue 允许注册自定义的指令
+  - 自定义指令主要是为了重用涉及普通元素的底层 DOM 访问的逻辑
+  - 一个自定义指令由一个包含类似组件生命周期钩子的对象来定义
+
+- 自定义指令分为两种，一般指令都注册为==全局指令==
+  - 自定义局部指令：组件中通过 `directives` 选项，只能在当前组件中使用
+  - 自定义全局指令：app 的 `directive` 方法，可以在任意组件中被使用
+
+
+
+#### 定义自定义指令
+
+- 自定义局部指令
+
+  - 局部指令通过 `directives` 选项进行定义
+
+    ```vue
+    <template>
+      <input type="text" v-focus>
+    </template>
+    
+    <script>
+    export default {
+      directives: {
+        // 在模板中启用 v-focus
+        focus: {
+          mounted(el) {
+            el.focus();
+          }
+        }
+      }
+    }
+    </script>
+    ```
+
+  - 在 `<script setup>` 中，任何以 `v` 开头的==驼峰式命名==的变量都可以被用作一个自定义指令
+
+    ```vue
+    <script setup>
+    // 定义 v-focus 指令，需要使用 vFocus 进行命名
+    const vFocus = {
+      mounted(el) {
+        el.focus();
+      }
+    }
+    </script>
+    ```
+
+- 自定义全局指令
+
+  ```js
+  import { createApp } from 'vue';
+  import App from './App.vue';
+  
+  const app = createApp(App);
+  
+  // 在模板中启用 v-focus
+  app.directive('focus', {
+    mounted(el) {
+      el.focus();
+    }
+  });
+  
+  app.mount('#app');
+  ```
+
+  
+
+#### 指令钩子
+
+- 一个指令的定义对象可以提供几种钩子函数，类似于组件的生命周期钩子
+
+  ```js
+  const myDirective = {
+    // 在绑定元素的 attribute 前
+    // 或事件监听器应用前调用
+    created(el, binding, vnode, prevVnode) {
+  		/* ... */
+    },
+    // 在元素被插入到 DOM 前调用
+    beforeMount(el, binding, vnode, prevVnode) {},
+    // 在绑定元素的父组件
+    // 及他自己的所有子节点都挂载完成后调用
+    mounted(el, binding, vnode, prevVnode) {},
+    // 绑定元素的父组件更新前调用
+    beforeUpdate(el, binding, vnode, prevVnode) {},
+    // 在绑定元素的父组件
+    // 及他自己的所有子节点都更新后调用
+    updated(el, binding, vnode, prevVnode) {},
+    // 绑定元素的父组件卸载前调用
+    beforeUnmount(el, binding, vnode, prevVnode) {},
+    // 绑定元素的父组件卸载后调用
+    unmounted(el, binding, vnode, prevVnode) {}
+  }
+  ```
+
+- 对于自定义指令来说
+
+  - 一个很常见的情况是仅仅需要在 `mounted` 和 `updated` 上实现相同的行为，除此之外并不需要其他钩子
+  - 这种情况可以直接用一个函数来定义指令
+
+  ```js
+  app.directive('color', (el, binding) => {
+    // 这会在 mounted 和 updated 时都调用
+    el.style.color = binding.value;
+  })
+  ```
+
+
+
+#### 指令参数和修饰符
+
+指令的钩子会传递以下几种参数：
+
+- `el`：指令绑定到的元素。这可以用于直接操作 DOM
+
+- `binding`：一个对象，包含以下属性
+
+  ```vue
+  <template>
+  	<div v-demo:foo.abc.cba="2">11</div>
+  </template>
+  
+  <script>
+  export default {
+    directives: {
+      demo(el, { value, arg, modifiers, instance, dir }) {
+        /* value: 传递给指令的值，此示例中为 2 */
+        /* oldValue: 之前的值，仅在 beforeUpdate 和 updated 中可用 */
+        /* arg：传递给指令的参数，此示例中参数是 "foo" */
+        /*
+        	modifiers: 一个包含修饰符的对象
+        	此实际中修饰符对象为：{ abc: true, cba: true }
+        */
+        /* instance：使用该指令的组件实例 */
+      }
+    }
+  }
+  </script>
+  ```
+
+- `vnode`：代表绑定元素的底层 VNode
+- `prevNode`：之前的渲染中代表指令所绑定元素的 VNode。仅在 `beforeUpdate` 和 `updated` 钩子中可用
+
+
+
+
+
+### Vue 插件
+
+
+
+
+
+### 渲染函数
+
+
+
+
+
+### 使用 JSX
+
+
+
+
+
+### 响应式核心
