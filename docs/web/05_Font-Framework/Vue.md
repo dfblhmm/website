@@ -1414,6 +1414,36 @@ title: Vue
 
 
 
+#### Teleport
+
+- `<Teleport>` 是一个内置组件
+  - 它可以将默认插槽（`children`）内的模板或组件==传送==到该组件的 DOM 结构外层的位置去
+  - 类似于 React 中的 `Portals`
+
+- 该组件拥有两个属性
+
+  - `to`：指定将其中的内容移动到的==目标元素==，可以使用 CSS 选择器字符串或 DOM 元素对象
+  - `disabled`：是否禁用传送功能
+
+  ```vue
+  <template>
+  	<Teleport to="body">
+      传送内容
+    </Teleport>
+  </template>
+  ```
+
+
+
+#### Suspense (实验性)
+
+- `<Suspense>` 是一个内置组件，用来在组件树中协调对异步依赖的处理，类似于 React 中的 `<Suspense>`
+- 该组件有两个插槽
+  - `default`：如果默认插槽可以显示，那么显示默认插槽的内容
+  - `fallback`：如果 default 插槽无法显示，那么会显示 fallback 插槽的内容
+
+
+
 
 
 ### 其他补充
@@ -2345,20 +2375,184 @@ export default {
 
 ### Vue 插件
 
+- ==插件==是一种能为 Vue 添加全局功能的工具代码
+- 插件有两种实现形式
+  - 一个拥有 `install()` 方法的对象，插件安装时会自动执行该方法
+  - 一个函数，插件安装时会自动执行该函数
 
+- 使用示例（添加全局方法）
 
+  - 设计一个方法，自动格式化为 24 小时制
 
+    ```js
+    export default {
+      format(number) {
+        return number < 9 ? `0${number}` : number;
+      },
+      install(app, options) {
+        // 注入一个全局可用的 $formatTime() 方法
+        app.provide('$formatTime', (time) => {
+          const hour = this.format(time.getHours());
+          const minute = this.format(time.getMinutes());
+          const second = this.format(time.getSeconds());
+          
+          return `${hour}:${minute}:${second}`;
+        });
+      }
+    }
+    ```
+
+  - 在组件中进行使用
+
+    ```vue
+    <template>
+      <h2>{{ nowTime }}</h2>
+    </template>
+    
+    <script setup>
+    import { inject } from 'vue';
+    
+    const formatTime = inject('$formatTime');
+    const nowTime = formatTime(new Date());
+    </script>
+    ```
+
+  
 
 ### 渲染函数
 
+- 在某些使用场景下，需要用到 JavaScript 完全的编程能力，这时可以使用**渲染函数** `h()`
 
+- `h` 函数用于创建 **VNode**
 
+  - 一个更准确的名称应该是 `createVnode()`
+  - 该函数类似于 React 中的 `createElement()` 函数 
 
+  ```js
+  import { h } from 'vue'
+  
+  const vnode = h(
+    'div', // type
+    { id: 'foo', class: 'bar' }, // props
+    [
+      /* children */
+    ]
+  )
+  ```
+
+- `h` 函数可以在两个地方使用
+
+  - `render` 函数选项中
+
+    ```vue
+    <script>
+    export default {
+      data() {
+        return {
+          count: 0
+        }
+      },
+      render() {
+        return h(
+          'div',
+          null,
+          h('h2', null, this.count),
+          h('button', { 
+            onClick: () => this.count++
+          }, '+1'),
+          h('button', { 
+            onClick: () => this.count--
+          }, '-1')
+        )
+      }
+    }
+    </script>
+    ```
+
+  - `setup` 函数选项中（直接把渲染函数返回）
+
+    ```vue
+    <script>
+    import { h, ref } from 'vue';
+    
+    export default {
+      setup() {
+        const count = ref(0);
+    
+        return () => h(
+          'div',
+          null,
+          [
+            h('h2', null, count.value),
+            h('button', { 
+              onClick: () => count.value++
+            }, '+1'),
+            h('button', { 
+              onClick: () => count.value--
+            }, '-1')
+          ]
+        )
+      }
+    }
+    </script>
+    ```
+
+    
 
 ### 使用 JSX
 
+- 在 Vue 中也可以使用 jsx 语法编写组件
 
+  - **webpack** 环境，配置 babel
 
+    ```js
+    module.exports = {
+      plugins: ["@vue/babel-plugin-jsx"]
+    }
+    ```
 
+  - **vite** 环境
+
+    ```js
+    import { defineConfig } from 'vite';
+    import vue from '@vitejs/plugin-vue';
+    import jsx from '@vitejs/plugin-vue-jsx';
+    
+    // https://vitejs.dev/config/
+    export default defineConfig({
+    	plugins: [vue(), jsx()]
+    });
+    ```
+
+- 要支持 jsx 语法，需要给 `script` 标签加上 `lang = 'jsx'` 配置
+
+  ```vue
+  <script lang="jsx">
+  import { ref } from 'vue';
+  
+  export default {
+    setup() {
+      const count = ref(0);
+      const sub = () => count.value--;
+      const add = () => count.value++;
+  
+      return { count, sub, add }
+    },
+    render() {
+      const { count, sub, add } = this;
+      
+      return (
+        <div>
+          <h2>{count}</h2>
+          <button onClick={sub}>-1</button>
+          <button onClick={add}>+1</button>
+        </div>
+      )
+    }
+  }
+  </script>
+  ```
+
+  
 
 ### 响应式核心
