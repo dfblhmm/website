@@ -2556,3 +2556,251 @@ export default {
   
 
 ### 响应式核心
+
+- 定义一个函数 `track`，该函数接收一个副作用函数
+
+  - 传入副作用函数内部的依赖发生变化后，自动重新执行该副作用函数
+  - 即所谓的 **“响应式”**
+
+  ```typescript
+  /**
+   * 记录当前执行的函数，用于依赖的收集
+   */
+  let activeEffect: Function | null = null;
+  
+  /**
+   * 
+   * @param fn 需要响应式的函数，Vue中模板也会编译成渲染函数
+   */
+  function track(fn: Function) {
+    activeEffect = fn;
+    // 默认先执行一次，进行当前函数依赖的收集
+    fn();
+    activeEffect = null;
+  }
+  ```
+
+- 响应式函数：派生一个代理对象，可以监听其属性的变化
+
+  ```typescript
+  interface IObject {
+    [key: string | symbol]: any;
+  }
+  
+  /**
+   * 是否为对象类型
+   */
+  const isObject = (val: unknown): val is Record<any, any> => val !== null && typeof val === 'object';
+  
+  /**
+   * 转换对象为响应式对象（深度监听）
+   * @param obj 目标代理对象
+   */
+  function reactive<T extends object>(obj: T): T {
+    return new Proxy(obj, {
+      get(target, key, receiver) {
+        const value = Reflect.get(target, key, receiver);
+  
+        // 如果获取到的属性值为对象类型，也需要进行深度监听
+        if (isObject(value)) return reactive(value);
+  
+        return value;
+      },
+      set(target, key, newValue, receiver) {
+        // 给当前对象属性设置值
+        const success = Reflect.set(target, key, newValue, receiver);
+        
+        return success;
+      }
+    });
+  }
+  ```
+
+- 响应式对象和对应依赖的管理方式
+
+  - 对应数据结构
+
+    ![image-20230706104021173](./images/image-20230706104021173.png)
+
+  - 具体实现
+
+    ```typescript
+    type ObjectKey = string | symbol;
+    
+    interface IObject {
+      [key: ObjectKey]: any;
+    }
+    
+    /**
+     * 封装一个Effect类，用于管理副作用
+     */
+    class Effect {
+      /**
+       * 副作用函数集合，使用Set避免重复收集
+       */
+      effects: Set<Function>;
+    
+      constructor() {
+        this.effects = new Set();
+      }
+    
+      /**
+       * 追加副作用函数
+       */
+      add() {
+        activeEffect && this.effects.add(activeEffect);
+      }
+    
+      /**
+       * 通知所有的副作用函数重新执行
+       */
+      notify() {
+        this.effects.forEach(effect => effect());
+      }
+    }
+    
+    const weakMap = new WeakMap<IObject, Map<ObjectKey, Effect>>();
+    
+    /**
+     * 获取指定对象-属性的副作用对象
+     * @param obj 对象
+     * @param key 属性
+     */
+    function getEffect(obj: IObject, key: ObjectKey): Effect {
+      // 获取当前对象的属性依赖映射
+      let objEffectMap = weakMap.get(obj);
+      // 如果当前属性映射还没有生成依赖，创建一个空 Map 进行后续的存储
+      if (!objEffectMap) {
+        objEffectMap = new Map();
+        weakMap.set(obj, objEffectMap);
+      }
+    
+      // 获取当前对象属性的副作用
+      let propEffect = objEffectMap.get(key);
+      // 如果当前对象属性还没有生成依赖，创建一个空的 Effect 对象进行后续的依赖收集
+      if (!propEffect) {
+        propEffect = new Effect();
+        objEffectMap.set(key, propEffect);
+      }
+    
+      return propEffect;
+    }
+    ```
+
+- 响应式核心完整实现
+
+  ```typescript
+  type ObjectKey = string | symbol;
+  
+  interface IObject {
+    [key: ObjectKey]: any;
+  }
+  
+  /**
+   * 是否为对象类型
+   */
+  const isObject = (val: unknown): val is Record<any, any> => val !== null && typeof val === 'object';
+  
+  /**
+   * 封装一个Effect类，用于管理副作用
+   */
+  class Effect {
+    /**
+     * 副作用函数集合，使用Set避免重复收集
+     */
+    effects: Set<Function>;
+  
+    constructor() {
+      this.effects = new Set();
+    }
+  
+    /**
+     * 追加副作用函数
+     */
+    add() {
+      activeEffect && this.effects.add(activeEffect);
+    }
+  
+    /**
+     * 通知所有的副作用函数重新执行
+     */
+    notify() {
+      this.effects.forEach(effect => effect());
+    }
+  }
+  
+  const weakMap = new WeakMap<IObject, Map<ObjectKey, Effect>>();
+  
+  /**
+   * 获取指定对象-属性的副作用对象
+   * @param obj 对象
+   * @param key 属性
+   */
+  function getEffect(obj: IObject, key: ObjectKey): Effect {
+    // 获取当前对象的属性依赖映射
+    let objEffectMap = weakMap.get(obj);
+    // 如果当前属性映射还没有生成依赖，创建一个空 Map 进行后续的存储
+    if (!objEffectMap) {
+      objEffectMap = new Map();
+      weakMap.set(obj, objEffectMap);
+    }
+  
+    // 获取当前对象属性的副作用
+    let propEffect = objEffectMap.get(key);
+    // 如果当前对象属性还没有生成依赖，创建一个空的 Effect 对象进行后续的依赖收集
+    if (!propEffect) {
+      propEffect = new Effect();
+      objEffectMap.set(key, propEffect);
+    }
+  
+    return propEffect;
+  }
+  
+  /**
+   * 转换对象为响应式对象（浅层响应式）
+   * @param obj 目标代理对象
+   */
+  function reactive<T extends object>(obj: T): T {
+    return new Proxy(obj, {
+      get(target, key, receiver) {
+        // 获取当前对象-属性的副作用对象
+        const effect = getEffect(target, key);
+        // 将当前正在执行的副作用函数添加到集合中
+        effect.add();
+  
+        const value = Reflect.get(target, key, receiver);
+  
+        // 如果获取到的属性值为对象类型，也需要进行深度监听
+        if (isObject(value)) return reactive(value);
+  
+        return value;
+      },
+      set(target, key, newValue, receiver) {
+        const effect = getEffect(target, key);
+  
+        const success = Reflect.set(target, key, newValue, receiver);
+  
+        // 设置成功后，通知当前对象-属性的副作用函数重新执行
+        success && effect.notify();
+        
+        return success;
+      }
+    });
+  }
+  
+  /**
+   * 记录当前执行的函数，用于依赖的收集
+   */
+  let activeEffect: Function | null = null;
+  
+  /**
+   * 
+   * @param fn 需要响应式的函数，Vue中模板也会编译成渲染函数
+   */
+  function track(fn: Function) {
+    activeEffect = fn;
+    // 默认先执行一次，进行当前函数依赖的收集
+    fn();
+    activeEffect = null;
+  }
+  ```
