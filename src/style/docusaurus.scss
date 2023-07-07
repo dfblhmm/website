@@ -1,0 +1,64 @@
+// 定义css变量
+:root {
+  --ifm-code-background: #2cc51e;
+  --ifm-hover-overlay: #f5f5f5;
+
+  --ifm-toc-padding-vertical: 0.6rem;
+
+  .markdown {
+    --ifm-h1-vertical-rhythm-bottom: 0;
+    --ifm-h2-vertical-rhythm-top: 1;
+    --ifm-h3-vertical-rhythm-top: 2;
+    --ifm-heading-vertical-rhythm-top: 2;
+
+    --ifm-blockquote-background: #63c6ee;
+  }
+}
+
+.markdown {
+  h2.anchor {
+    &:first-of-type {
+      & ~ h2.anchor {
+        margin-top: calc(var(--ifm-h2-font-size) * 2);
+      }
+    }
+
+    & + h3 {
+      margin-top: 0;
+    }
+  }
+
+  h3.anchor {
+    & + h4 {
+      margin-top: 0;
+    }
+  }
+
+  .anchor + blockquote {
+    margin-top: 0;
+  }
+}
+
+
+// 左侧导航栏
+.theme-doc-sidebar-container {
+  // 菜单折叠箭头
+  button.menu__caret {
+    &:hover {
+      background: unset;
+    }
+
+    &::before {
+      background: var(--ifm-menu-link-sublist-icon) 50% / 1.5rem 1.5rem;
+    }
+  }
+}
+
+// 右侧 markdown 文档导航菜单
+[class ^= tableOfContents] {
+  .table-of-contents {
+    & > li {
+      margin-bottom: 20px;
+    }
+  }
+}

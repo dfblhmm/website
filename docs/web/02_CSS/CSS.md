@@ -27,9 +27,9 @@ title: CSS
 
     <img src="./images/image-20220911181116470.png" alt="image-20220911181116470" style="zoom:80%;" />
 
-  - 直到 2011年6月7日， 第一个module——==CSS 3 Color Module== 终于发布
+  - 直到 2011年6月7日， 第一个 module —— ==CSS 3 Color Module== 终于发布
 
-- CSS 的出现是为了美化 HTML 的，并且让 结构（ HTML ）与样式（CSS ）分离
+- CSS 的出现是为了美化 HTML 的，并且让 结构（ HTML ）与样式（CSS）分离
 
   - 为 HTML 添加各种各样的样式 ，比如颜色、字体、大小、下划线等
   - 对 HTML 进行布局 ，按照某种结构显示
@@ -59,7 +59,7 @@ title: CSS
 
 ### 内联样式
 
-内联样式表存在于 HTML 元素的 ==style 属性==之中，CSS 样式之间用==分号==隔开
+内联样式表存在于 HTML 元素的 `style` 属性之中，CSS 样式之间用==分号==隔开
 
 ```html
 <div style="color: red; font-size: 20px">
@@ -432,7 +432,7 @@ input:disabled {
 
 - 常见取值
 
-  - `none`：无任何装饰线，可以去除 a 元素默认的下划线
+  - `none`：无任何装饰线，可以去除 `a` 元素默认的下划线
   - `underline`：下划线
   - `line-through`：删除线
   - `overline`：上划线
@@ -462,12 +462,12 @@ input:disabled {
 
 ### text-align
 
-- 定义==行内级元素==（文字、图片、input等）如何相对它的==块父元素==对齐（水平方向上）
+- 定义==行内级元素==（文字、图片、input 等）如何相对它的==块父元素==对齐（水平方向上）
 - 常见取值
   - `left` ( 默认 ) ：左对齐
   - `right`：右对齐
   - `center`：居中对齐
-  - `justify`：两端对齐，对最后一行无效（如果要强制生效可设置`text-align-last: justify`）
+  - `justify`：两端对齐，对最后一行无效（如果要强制生效可设置 `text-align-last: justify` ）
 
 
 
@@ -475,7 +475,7 @@ input:disabled {
 
 - `letter-spacing`：设置==字符==之间的间距
 - `word-spacing`：设置==单词==之间的间距
-- 默认都是0，可以设置px、em、百分比等，也可以设置负数
+- 默认都是 0，可以设置 `px`、`em`、百分比等，也可以设置负数
 
 
 
@@ -488,7 +488,7 @@ input:disabled {
 - 用于设置文字的字体==大小==
 - 常见的设置
   - ==具体数值 + 单位==：比如 100px，2em
-  - ==百分比==：基于==父元素==的 font-size 计算，比如 50% 表示等于父元素 font-size 的一半
+  - ==百分比==：基于==父元素==的 `font-size` 计算，比如 50% 表示等于父元素 font-size 的一半
 
 
 
@@ -653,7 +653,7 @@ input:disabled {
   - `inline-block` ：让元素同时具备行内、块级元素的特征
   - `none` ：隐藏元素
 
-- display值的特性
+- display 值的特性
   - ==block== 元素
     - 独占父元素的一行
     - 可以设置宽高，设置后依然独占一行
@@ -667,7 +667,7 @@ input:disabled {
     - 不可以设置宽高（行内级==可替换==元素可以设置，比如 img、input等）
     - 宽高都由内容决定
 
-- 编写HTML 时的规范
+- 编写 HTML 时的规范
   - 块级元素、 inline-block 元素
     - 一般情况下，可以包含其他任何元素 （比如块级元素、行内元素、inline-block 元素）
     - 特殊情况，p 元素不能包含其他块级元素（浏览器可能无法正常解析）
@@ -901,7 +901,7 @@ input:disabled {
 
 ### 行内级非替换元素的特殊性
 
-- `width`、`height`、`margin-top`、`margin-bottom`设置无效
+- `width`、`height`、`margin-top`、`margin-bottom` 设置无效
 
 - 以下属性对行内级非替换元素的效果比较特殊
 
@@ -924,8 +924,8 @@ input:disabled {
 - 行内级元素（包括 inline-block 元素）：父元素中设置 `text-align: center`
 - 块级元素：`margin: 0 auto`（非最好解决方法，flex布局代替），居中原理：
   - ==块级元素占用的宽度 = 元素的 `width` + `padding` + `border` + `margin`==
-  - 如果给块级元素一个固定的宽度，在 padding 、border 都没有设置时，由于块级元素占父元素的一整行，所以默认情况下浏览器会自动将剩余宽度分配给`margin-right`
-  - 当设置 `margin-left/right` 均为`auto` 时，浏览器会将将剩余宽度自动==平均分配==给`margin-left/right`，这样就实现了元素的==水平方向居中==
+  - 如果给块级元素一个固定的宽度，在 padding 、border 都没有设置时，由于块级元素占父元素的一整行，所以默认情况下浏览器会自动将剩余宽度分配给 `margin-right`
+  - 当设置 `margin-left/right` 均为 `auto` 时，浏览器会将将剩余宽度自动==平均分配==给 `margin-left/right`，这样就实现了元素的==水平方向居中==
 
 
 
@@ -1193,7 +1193,7 @@ body {
 
 - 定位允许从正常的文档流布局中取出元素，并使它们具有不同的行为
 
-- 利用 position 可以对元素进行定位，常用取值有 5 个
+- 利用 `position` 可以对元素进行定位，常用取值有 5 个
 
   - `static`：==静态==定位（默认值）
     - 元素按照标准流布局
@@ -1203,7 +1203,7 @@ body {
   - `fixed`：==固定==定位
   - `sticky`：==粘性==定位
   
-- ==定位元素==：position取值为 `relative`、`absolute`、`fixed`、`sticky` 的元素（除 static 外）
+- ==定位元素==：position 取值为 `relative`、`absolute`、`fixed`、`sticky` 的元素（除 static 外）
 
 
 
@@ -1215,7 +1215,7 @@ body {
 
   - 定位==参照对象==是元素==自己原来的位置==
 
-- left、right、top、bottom用来设置元素的具体位置
+- left、right、top、bottom 用来设置元素的具体位置
 
   <img src="./images/image-20220925224540148.png" alt="image-20220925224540148" style="zoom:67%;" />
 
@@ -1805,7 +1805,7 @@ flex items 默认都是沿着 main axis（主轴）从 main start 开始往 main
 
   - 一个无单位数：当作 flex-grow 的值
   - 一个有效的宽度值：当作 flex-basis 的值
-  - 关键字 `none ` (相当于 `flex: 0 0 auto`) 、`auto` (相当于`flex: 1 1 auto`)、`initial `(相当于 `flex: 0 1 auto`)
+  - 关键字 `none` (相当于 `flex: 0 0 auto`) 、`auto` (相当于`flex: 1 1 auto`)、`initial`(相当于 `flex: 0 1 auto`)
 
 - ==双值==语法：第一个值必须为一个无单位数，并且它会被当作 flex-grow 的值，第二个值必须为以下之一
 
@@ -2052,7 +2052,7 @@ flex items 默认都是沿着 main axis（主轴）从 main start 开始往 main
 
 
 #### @keyframes 规则
-- `@keyframes` 可以定义多个变化状态，并且使用 animation-name 来声明匹配
+- `@keyframes` 可以定义多个变化状态，并且使用 `animation-name` 来声明匹配
 
   - 关键帧使用==百分比==来指定动画发生的时间点
   - ==0%== 表示动画的开始时刻，==100%== 表示动画的最终时刻
@@ -2495,19 +2495,19 @@ CSS 移动端适配
 #### rem 适配
 
 
-- rem 单位是相对于 ==html== 元素的 ==font-size== 来设置的，可以动态的修改 html 的 font size 尺寸，在不同的屏幕下就会有不同的尺寸
+- rem 单位是相对于 `html` 元素的 `font-size` 来设置的，可以动态的修改 html 的 font-size 尺寸，在不同的屏幕下就会有不同的尺寸
 
-- 动态设置 html font-size
+- 动态设置 html 的 font-size
 
   - 媒体查询
 
     - 通过媒体查询来设置不同尺寸范围内的屏幕 html 的 font size 尺寸
     - 缺点：需要针对不同的屏幕编写大量的媒体查询
 
-  - 通过 js 代码动态设置（`lib flexible`库）
+  - 通过 js 代码动态设置（`lib-flexible`库）
 
     - 根据 html 的宽度计算出 font-size 的大小 ，并且设置到 html 上
-    - 监听页面的`resize`事件，并且重新设置 font-size 的大小到 html 上
+    - 监听页面的 `resize` 事件，并且重新设置 font-size 的大小到 html 上
 
     ```js
     const html = document.documentElement;
@@ -2701,7 +2701,7 @@ Line boxes are created as needed to hold inline-level content within an inline f
 
   <img src="./images/image-20221005145807770.png" alt="image-20221005145807770" style="zoom:67%;" />
 
-- 有图片、文字、inline block（比图片要大）而且设置了 margin-bottom
+- 有图片、文字、inline-block（比图片要大）而且设置了 margin-bottom
 
   - 行盒高度继续变大（margin-bottom 也属于当前行盒的空间），将父盒子的高度继续撑大
 
@@ -2733,7 +2733,7 @@ Line boxes are created as needed to hold inline-level content within an inline f
 
   <img src="./images/image-20221005145833200.png" alt="image-20221005145833200" style="zoom:67%;" />
 
-- 有图片、文字、 inline block （比图片要大）而且设置了 margin-bottom，并且有文字
+- 有图片、文字、 inline-block （比图片要大）而且设置了 margin-bottom，并且有文字
 
   - div.small 盒子的基线发生变化，对齐方式发生变化
 
@@ -3231,7 +3231,7 @@ CSS 函数通常可以帮助我们更加灵活的来编写样式的值
 
 - `<gradient>` 是一种 `<image>` CSS 数据类型的子类型，用于表现两种或多种颜色的过渡转变
 
-- < gradient > 数据类型由下列函数定义
+- `<gradient>` 数据类型由下列函数定义
 
   - `linear-gradient()`：创建一个表示两种或多种颜色==线性渐变==的==图片==
 
@@ -3264,10 +3264,10 @@ CSS 函数通常可以帮助我们更加灵活的来编写样式的值
 ### 浏览器前缀
 
 - 浏览器前缀的由来
-  - 每一个CSS 属性在正式推出之前，都需要经历 草案 -> 推荐 -> 成为标准 的阶段
-  - 浏览器会提供一个==带浏览器前缀==的CSS属性，供开发者使用
-    - 如果这个CSS属性在最后被==废弃==了，浏览器解析时会将这些带前缀的CSS属性置为==无效==属性
-    - 如果这个CSS属性最后成为了标准或者==更改了属性名==，浏览器解析时会将这些带前缀的属性==映射==为标准的属性
+  - 每一个 CSS 属性在正式推出之前，都需要经历 草案 -> 推荐 -> 成为标准 的阶段
+  - 浏览器会提供一个==带浏览器前缀==的 CSS 属性，供开发者使用
+    - 如果这个 CSS 属性在最后被==废弃==了，浏览器解析时会将这些带前缀的 CSS 属性置为==无效==属性
+    - 如果这个 CSS 属性最后成为了标准或者==更改了属性名==，浏览器解析时会将这些带前缀的属性==映射==为标准的属性
 - 上述前缀叫做浏览器私有前缀，只有对应的浏览器才能解析使用
   - `-o`、`-xv`：Opera 等
   - `-ms`、`-mso`：IE 等
@@ -3343,7 +3343,7 @@ CSS 函数通常可以帮助我们更加灵活的来编写样式的值
 
 #### 逻辑操作符
 
-- 媒体查询的表达式最终会获得一个 Boolean 值，结果为真就会生效
+- 媒体查询的表达式最终会获得一个==布尔值==，结果为真就会生效
 
 - 如果有多个条件，我们可以通过逻辑操作符联合复杂的媒体查询
 

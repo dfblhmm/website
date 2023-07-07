@@ -17,7 +17,10 @@ const classicPresetConfig: Options = {
     // editUrl: '',
   },
   theme: {
-    customCss: require.resolve('../src/style/custom.scss'),
+    customCss: [
+      require.resolve('../src/style/docusaurus.scss'),
+      require.resolve('../src/style/custom.scss')
+    ]
   }
 };
 

@@ -22,10 +22,6 @@
 //   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 // }
 
-:root {
-  --ifm-code-background: #2cc51e;
-}
-
 @keyframes rotate {
   from {
     transform: rotate(0);
@@ -67,6 +63,7 @@ body {
   }
 
   img {
+    margin-top: 5px;
     box-shadow: 0 0 3px 1px rgba(0,0,0,.1);
     border-radius: 6px;
     transition: all .3s;
@@ -87,25 +84,44 @@ body {
   // 引用
   blockquote {
     display: flex;
+    justify-content: space-between;
     align-items: center;
     font-weight: 600;
+    margin-top: 2rem;
 
-    &::before {
-      content: url(/images/windmill.svg);
-      display: block;
-      width: 25px;
-      height: 25px;
-      margin-right: 8px;
-      animation: rotate 4s linear infinite;
+    padding: 0;
+    padding-left: 0;
+    border-left: 0;
+    border-bottom: 1px solid var(--ifm-blockquote-background);
+
+    p {
+      position: relative;
+      padding: 5px 10px;
+      color: #fff;
+      background: var(--ifm-blockquote-background);
+      border-top-left-radius: 3px;
+      border-top-right-radius: 3px;
+
+      &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: -23px;
+        display: block;
+        border-bottom: 36px solid rgb(239, 235, 233);
+        border-right: 20px solid transparent;
+      }
     }
 
-    // &::after {
-    //   content: url(/images/windmill.svg);
-    //   display: block;
-    //   width: 30px;
-    //   height: 30px;
-    //   margin-left: 8px;
-    //   animation: rotate 5s linear infinite;
-    // }
+    &::after {
+      content: url(/images/windmill.svg);
+      display: block;
+      padding: 5px;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: rotate 4s linear infinite;
+    }
   }
 }
