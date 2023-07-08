@@ -51,6 +51,11 @@
       margin-top: -0.5rem;
     }
   }
+
+  // 卡片式导航
+  a.card[class *= cardContainer] {
+    margin-top: 1rem;
+  }
 }
 
 
@@ -69,7 +74,7 @@
 }
 
 // 右侧 markdown 文档导航菜单
-[class ^= tableOfContents] {
+[class *= tableOfContents] {
   .table-of-contents {
     & > li {
       margin-bottom: 20px;

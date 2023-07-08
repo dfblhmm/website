@@ -1,6 +1,6 @@
 ---
-id: Vue
-title: Vue
+id: vue-core
+title: Vue 核心
 ---
 # Vue
 

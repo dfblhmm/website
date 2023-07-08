@@ -64,7 +64,18 @@ const sidebars: SidebarsConfig = {
         id: 'web/Font-Framework/index'
       },
       items: [
-        'web/Font-Framework/Vue'
+        // Vue
+        {
+          type: 'category',
+          label: 'Vue',
+          link: {
+            type: 'doc',
+            id: 'web/Font-Framework/Vue/index'
+          },
+          items: [
+            'web/Font-Framework/Vue/vue-core'
+          ]
+        }
       ]
     }
   ],
