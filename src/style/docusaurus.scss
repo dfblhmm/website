@@ -34,8 +34,22 @@
     }
   }
 
+  h4.anchor {
+    & + h5 {
+      margin-top: 0;
+    }
+  }
+
   .anchor + blockquote {
     margin-top: 0;
+  }
+
+  h2.anchor,
+  h3.anchor,
+  h4.anchor {
+    & + ul {
+      margin-top: -0.5rem;
+    }
   }
 }
 

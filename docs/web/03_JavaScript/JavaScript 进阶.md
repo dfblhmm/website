@@ -3279,9 +3279,9 @@ obj = null; // // info对{ name: 'obj' }是弱引用，obj对象会被回收
 
 - `proxy.name` 访问 name 属性时，会执行的操作：
 
-  - 访问 `proxy.name` 时，会触发 proxy 的 **get** 拦截器，去访问 obj 的 `get name` 存取访问器，然后通过 `this._name` 访问到obj 对象的 `_name` 属性值
+  - 访问 `proxy.name` 时，会触发 proxy 的 **get** 拦截器，去访问 obj 的 `get name` 存取访问器，然后通过 `this._name` 访问到 obj 对象的 `_name` 属性值
   - 当通过 `this._name` 取值时，是直接通过 ==obj== 对象取值，此次取值已经==绕过==了 proxy 代理
-  - 要想在访问 `_name` 时不绕过 proxy 代理，则需要让 `this._name` 中的 ==this = proxy== ，即 obj 对象内部方法的 **this** 指向要指向==proxy==
+  - 要想在访问 `_name` 时不绕过 proxy 代理，则需要让 `this._name` 中的 ==this = proxy== ，即 obj 对象内部方法的 **this** 指向要指向 ==proxy==
   - `Reflect.get` 和 `Reflect.set` 方法可以传递最后一个参数 ==receiver==，该参数可以改变 obj 对象内部方法调用时的 ==this 指向==
 
   ```js
