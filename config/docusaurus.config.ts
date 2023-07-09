@@ -18,8 +18,9 @@ const classicPresetConfig: Options = {
   },
   theme: {
     customCss: [
+      require.resolve('../src/style/global.scss'),
       require.resolve('../src/style/docusaurus.scss'),
-      require.resolve('../src/style/custom.scss')
+      require.resolve('../src/style/markdown.scss')
     ]
   }
 };
@@ -126,7 +127,8 @@ const config: Config = {
     'docs/web/02_CSS/images',
     'docs/web/03_JavaScript/images',
     'docs/web/04_Font-Engineering/images',
-    'docs/web/05_Font-Framework/images',
+    'docs/web/05_Font-Framework/Vue/images',
+
     'docs/rust/images'
   ],
 

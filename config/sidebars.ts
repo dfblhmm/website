@@ -73,7 +73,8 @@ const sidebars: SidebarsConfig = {
             id: 'web/Font-Framework/Vue/index'
           },
           items: [
-            'web/Font-Framework/Vue/vue-core'
+            'web/Font-Framework/Vue/vue-core',
+            'web/Font-Framework/Vue/vue-router',
           ]
         }
       ]
