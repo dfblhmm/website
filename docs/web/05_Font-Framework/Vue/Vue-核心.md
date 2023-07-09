@@ -2,7 +2,7 @@
 id: vue-core
 title: 核心
 ---
-# Vue
+# Vue 核心
 
 ## 认识 Vue
 
