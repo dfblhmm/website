@@ -1701,6 +1701,9 @@ flex items 默认都是沿着 main axis（主轴）从 main start 开始往 main
     height: 150px;
     text-align: center;
   }
+  .box .item:first-child {
+    flex-grow: 1;
+  }
 </style>
 
 <div class="box">
