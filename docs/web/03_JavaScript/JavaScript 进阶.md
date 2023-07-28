@@ -133,6 +133,18 @@ title: JavaScript 进阶
   bar(3, 4); // String {'aaa'} 1 2 3 4
   ```
 
+
+- 需要注意的是，一个函数通过 `bind` 绑定 `this` 只能绑定一次，多次调用 `bind` 不能覆盖前面的绑定
+
+  ```js
+  function foo() {
+    console.log(this);
+  }
+  
+  const newFoo = foo.bind([1, 2]).bind({});
+  newFoo(); // [1, 2]
+  ```
+
   
 
 ### 绑定规则四：new 绑定 
