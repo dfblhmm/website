@@ -1446,6 +1446,69 @@ title: 核心
 
 
 
+### 组件 CSS 功能
+
+#### 组件作用域 CSS
+
+- 当 `<style>` 标签带有 `scoped` 属性时，Vue 会为当前样式开启==局部作用域==
+
+  - 在该标签内编写的 CSS 样式，不会影响到其他组件的样式
+  - 本质上时为对应的元素生成了一个 `data-v-` 属性，在编译时会拼接上唯一的 ==哈希值==
+
+  ```html
+  <style scoped>
+  .example {
+    color: red;
+  }
+  </style>
+  
+  <template>
+    <div class="example">hi</div>
+  </template>
+  ```
+
+- 使用 `scoped` 后，父组件的样式将不会渗透到子组件中
+  - 但是，子组件的==根节点==会同时被父组件的作用域样式和子组件的作用域样式影响
+
+- 深度选择器：如果子组件开启了 CSS 作用域，需要使用 `:deep()` 来修改子组件的样式
+
+  ```html
+  <style scoped>
+  .a :deep(.b) {
+    /* ... */
+  }
+  </style>
+  ```
+
+
+
+#### CSS 中的 v-bind
+
+- 如果需要在 CSS 中获取到 `script` 中定义的变量，可以使用 `v-bind()` 函数
+
+  ```html
+  <template>
+    <p>hello</p>
+  </template>
+  
+  <script setup>
+  const theme = {
+    color: 'red'
+  }
+  </script>
+  
+  <style scoped>
+  p {
+    /* 支持 JavaScript 表达式 (需要用引号包裹起来) */
+    color: v-bind('theme.color');
+  }
+  </style>
+  ```
+
+  
+
+
+
 ### 其他补充
 
 #### 模板引用
