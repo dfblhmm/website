@@ -128,6 +128,7 @@ const config: Config = {
     'docs/web/03_JavaScript/images',
     'docs/web/04_Font-Engineering/images',
     'docs/web/05_Font-Framework/Vue/images',
+    'docs/web/05_Font-Framework/React/images',
 
     'docs/rust/images'
   ],

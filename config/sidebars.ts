@@ -23,6 +23,7 @@ const sidebars: SidebarsConfig = {
         id: 'web/CSS/index'
       },
       items: [
+        // CSS 语法
         'web/CSS/CSS'
       ]
     },
@@ -36,7 +37,9 @@ const sidebars: SidebarsConfig = {
         id: 'web/JavaScript/index'
       },
       items: [
+        // JavaScript 基础
         'web/JavaScript/javaScript-basic',
+        // JavaScript 进阶
         'web/JavaScript/javaScript-advance'
       ]
     },
@@ -50,7 +53,9 @@ const sidebars: SidebarsConfig = {
         id: 'web/Font-Engineering/index'
       },
       items: [
+        // 包管理工具
         'web/Font-Engineering/package-management-tool',
+        // Git
         'web/Font-Engineering/Git'
       ]
     },
@@ -73,8 +78,23 @@ const sidebars: SidebarsConfig = {
             id: 'web/Font-Framework/Vue/index'
           },
           items: [
+            // Vue 核心
             'web/Font-Framework/Vue/vue-core',
+            // Vue 路由
             'web/Font-Framework/Vue/vue-router',
+          ]
+        },
+        // React
+        {
+          type: 'category',
+          label: 'React',
+          link: {
+            type: 'doc',
+            id: 'web/Font-Framework/React/index'
+          },
+          items: [
+            // React 核心
+            'web/Font-Framework/React/react-core'
           ]
         }
       ]

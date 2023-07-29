@@ -53,12 +53,12 @@
   // 图片
   img {
     margin-top: 5px;
-    box-shadow: 0 0 3px 1px rgba(0,0,0,.1);
+    // box-shadow: 0 0 3px 1px rgba(0,0,0,.1);
     border-radius: 6px;
     transition: all .3s;
 
     &:hover {
-      box-shadow: 0 0 5px 1px rgba(0,0,0,.2);
+      box-shadow: 0 0 5px 1px rgba(0,0,0,.1);
     } 
   }
 
