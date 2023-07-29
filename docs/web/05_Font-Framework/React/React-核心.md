@@ -44,6 +44,8 @@ title: 核心
 
 
 
+
+
 ## JSX 语法
 
 ### 认识 JSX 语法
@@ -70,7 +72,7 @@ title: 核心
 
 
 
-### JSX 规则
+### JSX 使用规则
 
 >
 >
@@ -152,13 +154,160 @@ title: 核心
   const element = <div className="info">Hello JSX</div>;
   ```
 
-- 对于内联样式，不能使用字符串语法
-
-  - 需要使用 `style = {{ key: value }}`
-  - 其中 `key` 使用==驼峰命名==
-
 - 由于历史原因，`aria-*` 和 `data-*` 属性是以带 `-` 符号的 HTML 格式书写的
 
 
 
-### JSX 语法
+### JSX 使用语法
+
+- 注释：`{/*标签*/}`
+
+  ```jsx
+  const element = (
+    <div className="app">
+      {/*<span style={{marginLeft: '50px'}}>haha</span>*/}
+    </div>
+  );
+  ```
+
+- 通过大括号 `{}` 可以插入 JavaScript ==表达式==，只能在以下两种场景中使用大括号
+
+  - 用作 JSX 标签内的==元素==
+
+    ```jsx
+    const element = <div>{ new Date().toString() }</div>;
+    ```
+
+  - 用作紧跟在 `=` 符号后的==属性==
+
+    ```jsx
+    const className = 'app';
+    const element = (
+      <div className={className}>
+        Hello JSX
+      </div>
+    );
+    ```
+
+- JSX 嵌入变量作为子元素
+
+  - 当变量是 `Number/String/Array` 类型时，会直接渲染出来（注意数字 `0` 也会被渲染）
+  - 当变量是 `null/undefined/Boolean` 类型时，不会进行渲染
+  - ==对象类型== 不能作为子元素
+
+- JSX 中的内联样式和对象，需要使用 “双大括号” `{{}}`
+
+  - JSX 中的对象表示
+
+    ```jsx
+    const element = <ul style={{ color: 'pink' }}>;
+    ```
+
+  - 内联 `style` 属性，需要使用==驼峰命名法==编写
+
+    ```jsx
+    const element = <ul style={{ backgroundColor: 'black' }}>;
+    ```
+
+
+
+### JSX 语法本质
+
+- JSX 仅仅只是 `React.createElement(component, props, ...children)` 函数的语法糖
+
+- 该函数可以传递三个参数
+
+  - `type`：当前 ReactElement 的类型
+    - 如果是标签元素，那么就使用字符串表示
+    - 如果是组件元素，那么就直接使用组件的名字
+
+  - `props`：传递的 props，以对象的属性和值的形式存储
+
+  - `children`：存放在 标签/组件 中的子元素
+
+
+- **JSX** 和 **createElement** 的对比
+
+  - 使用 JSX 编写
+
+    ```jsx
+    const element = (
+      <div className="div">
+        <h1 style={{ color: 'red' }}>11</h1>  
+        <span id="span">22</span>
+      </div>
+    );
+    ```
+
+  - 使用 `createElement` 编写
+
+    ```jsx
+    const element = React.createElement(
+      "div",
+      { className: "div" },
+      React.createElement("h1", { style: { color: 'red' }}, "11"), 
+      React.createElement("span", { id: "span" }, "22")
+    );
+    ```
+
+    
+
+
+
+## 描述 UI
+
+### 条件渲染
+
+条件渲染：根据不同的情况显示不同的内容
+
+- 条件判断语句 `if/else`
+
+  ```jsx
+  function Demo({ number }) {
+    if (number % 2 === 0) {
+      return <h1>偶数</h1>;
+    } else {
+      return <h1>奇数</h1>;
+    }
+  }
+  ```
+
+- 三元运算符 `? :`
+
+  ```jsx
+  function Demo({ number }) {
+    return (
+      <h1>{ number % 2 === 0 ? '偶数' : '奇数'  }</h1>
+    );
+  }
+  ```
+
+- 与运算符 `&&`
+
+  - 左侧（我们的条件）为 `true` 时，它则返回其右侧的值
+
+    ```jsx
+    function Demo({ completed }) {
+      return (
+        <div className={ completed ? 'completed' : '' }>
+          任务
+          { completed && <span>已完成</span> }
+        </div>
+      );
+    }
+    ```
+
+  - **切勿将数字放在 `&&` 左侧**，因为数字 `0` 也会被渲染出来，除法将数字类型转换为==布尔类型==（`!!`）
+
+    ```jsx
+    function Demo({ number }) {
+      return <h1>{ !!number && 'Hello' }</h1>;
+    }
+    ```
+
+- 在一些情况下，不想有任何东西进行渲染，可以直接返回 `null`
+
+
+
+### 列表渲染
+
