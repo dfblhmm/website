@@ -5653,8 +5653,7 @@ co(getData);
   - 将所有需要导出的标识符，放到 export 后面的 `{}` 中
 
   - 这里的 `{}` 是一种特殊的语法，并非是一个对象
-
-
+  
   ```js
   const num = 1;
   function sum(n1, n2) {

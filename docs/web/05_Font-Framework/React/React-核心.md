@@ -367,13 +367,24 @@ title: 核心
 
   - React 事件的命名采用==小驼峰式==（如 `onClick`）
   - 通过 `{}` 传入一个事件处理函数作为元素的 **prop**，这个函数会在事件发生时被自动执行
-  - 处理函数被执行时，默认会将==事件对象==作为参数传递过来
 
   ```jsx
   const element = <div onClick={e => console.log(e)}>Hello React</div>;
   ```
 
+- 处理函数被执行时，默认会将==事件对象==作为参数传递过来
 
+  ```jsx
+  const element = (
+    <div onClick={() => console.log('div click')}>
+      <span onClick={e => e.stopPropagation()}>
+        阻止事件向上传播
+      </span>
+    </div>
+  );
+  ```
+
+  
 
 >
 >
@@ -390,3 +401,114 @@ title: 核心
 
 
 ## 组件化开发
+
+### 定义组件
+
+- ==组件==是 React 的核心概念之一，它们是构建用户界面（UI）的基础
+  - 根据组件的定义方式，可以分为==函数组件==和==类组件==
+  - 组件必须要像一个==纯函数==那样进行编写
+- 不同于 Vue.js，使用组件不需要进行注册操作，引入后直接使用即可
+
+
+
+>
+
+#### 类组件
+
+- 组件的名称必须是==大写字母==开头
+- 类组件需要继承自 `Component/PureComponent`
+- 必须实现 `render` 函数，需要返回 React 元素
+
+```jsx
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+
+class App extends React.Component {
+  render() {
+    return <h2>Hello React</h2>;
+  }
+}
+
+ReactDOM
+  .createRoot(document.getElementById('root'))
+  .render(<App />);
+```
+
+
+
+#### 函数组件
+
+- 组件的名称同样必须以==大写字母==开头
+- 函数式组件没有==生命周期==和自己的==状态==，需要借助 **Hooks** 来实现对应的功能
+
+```jsx
+function App() {
+  return <h2>Hello React</h2>;
+}
+```
+
+
+
+### 组件的状态 state
+
+#### 定义和使用状态
+
+- `state` 的作用
+
+  - ==保留== 渲染之间的数据
+  - ==触发== React 使用新数据渲染组件（重新渲染）
+
+- 声明和使用状态：通过读取组件实例上的 `state` ==对象==
+
+  ```jsx
+  class App extends React.Component {
+    state = {
+      name: 'Taylor',
+      age: 42
+    };
+    
+    render() {
+      const { name, age } = this.state;
+      return (
+        <div>
+          <h2>{ name }</h2>
+          <h2>{ age }</h2>
+        </div>
+      );
+    }
+  }
+  ```
+
+
+
+#### 更新状态
+
+- 更新组件的状态，需要调用组件实例上的 `setState` 方法
+
+  - 调用后，组件上的 `render` 函数会自动重新执行
+  - 然后组件会重新渲染，UI 会使用最新的状态数据进行展示
+
+  ```jsx
+  class App extends React.Component {
+    state = {
+      count: 0
+    };
+  
+    increment = () => {
+      const { count } = this.state;
+      this.setState({ count: count + 1 });
+    }
+  
+    render() {
+      const { count } = this.state;
+      return (
+        <>
+          <h2>{ count }</h2>
+          <button onClick={this.increment}>+1</button>
+        </>
+      );
+    }
+  }
+  ```
+
+- 
