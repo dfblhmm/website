@@ -145,7 +145,7 @@ title: 核心
   - 所以==大多数==属性需要采用小驼峰命名法
 
   ```jsx
-  const element = <div >Hello JSX</div>;
+  const element = <div>Hello JSX</div>;
   ```
 
 - 由于 `class` 是一个保留字，所以在 React 中需要用 `className` 来代替
@@ -290,14 +290,14 @@ title: 核心
     function Demo({ completed }) {
       return (
         <div className={ completed ? 'completed' : '' }>
-          任务
+          代办任务
           { completed && <span>已完成</span> }
         </div>
       );
     }
     ```
 
-  - **切勿将数字放在 `&&` 左侧**，因为数字 `0` 也会被渲染出来，除法将数字类型转换为==布尔类型==（`!!`）
+  - **切勿将数字放在 `&&` 左侧**，因为数字 `0` 也会被渲染，除非强制转换为==布尔类型==（`!!`）
 
     ```jsx
     function Demo({ number }) {
@@ -311,3 +311,82 @@ title: 核心
 
 ### 列表渲染
 
+列表渲染：操作数组中的数据，从而将一个数据集渲染成多个相似的组件
+
+- 在 React 中，展示列表最多的方式就是使用数组的 `map` 高阶函数
+
+  ```jsx
+  const names = ['Amy', 'Jack', 'Mike'];
+  const element = (
+    <ul>
+     	{ names.map(name => <li key={name}>{name}</li>) }
+    </ul>
+  );
+  ```
+
+- 可以使用数组的 `filter` 函数对列表项进行过滤
+
+  ```jsx
+  const numbers = [1, 2, 3, 4];
+  const oldNumber = (
+    <ul>
+     	{ 
+        numbers.filter(n => n % 2 !== 0).map(n => <li key={n}>{n}</li>) 
+      }
+    </ul>
+  );
+  ```
+
+  
+
+>
+>
+>指定列表项的 key
+
+- 列表渲染时，使用 `key` 保持列表项的顺序
+- `key` 的作用
+  - 从众多的兄弟元素中==唯一标识==出某一项
+  - 即使元素的位置在渲染的过程中发生了改变，它提供的 `key` 值也能让 React 在整个生命周期中一直认得它
+- `key` 需要满足的条件
+  - key 值不要求全局唯一，但在==兄弟节点==之间必须是唯一的
+  - key 值不能改变，即不要在渲染时动态地生成 key，比如 `key={ Math.random() }` 的错误方式
+
+- React 默认会将列表项的==索引==作为 key
+  - 数组项的顺序在插入、删除或者重新排序等操作中，会产生一些问题
+  - 最佳的设定方式：**来自数据库的数据** 或 **本地产生唯一数据**
+
+- 组件不会把 `key` 当作 props 的一部分
+
+
+
+### 事件处理
+
+- 为了响应界面的操作，需要对元素添加事件处理函数
+
+- 在 React 中添加事件处理
+
+  - React 事件的命名采用==小驼峰式==（如 `onClick`）
+  - 通过 `{}` 传入一个事件处理函数作为元素的 **prop**，这个函数会在事件发生时被自动执行
+  - 处理函数被执行时，默认会将==事件对象==作为参数传递过来
+
+  ```jsx
+  const element = <div onClick={e => console.log(e)}>Hello React</div>;
+  ```
+
+
+
+>
+>
+>事件传播
+
+- 事件分三个阶段传播
+  - 它向下传播，调用所有的 `onClickCapture` 处理函数（捕获阶段）
+  - 它执行被点击元素的 `onClick` 处理函数（执行阶段）
+  - 它向上传播，调用所有的 `onClick` 处理函数（冒泡阶段）
+- 在 React 中所有事件都会传播，除了 `onScroll`，它仅适用于附加到的 JSX 标签
+
+
+
+
+
+## 组件化开发
