@@ -346,7 +346,7 @@ title: 核心
 - 列表渲染时，使用 `key` 保持列表项的顺序
 - `key` 的作用
   - 从众多的兄弟元素中==唯一标识==出某一项
-  - 即使元素的位置在渲染的过程中发生了改变，它提供的 `key` 值也能让 React 在整个生命周期中一直认得它
+  - 即使元素的位置在渲染的过程中发生了改变，它提供的 `key` 值也能让 React 在整个生命周期中追踪到它，以便进行==复用==
 - `key` 需要满足的条件
   - key 值不要求全局唯一，但在==兄弟节点==之间必须是唯一的
   - key 值不能改变，即不要在渲染时动态地生成 key，比如 `key={ Math.random() }` 的错误方式
@@ -367,6 +367,7 @@ title: 核心
 
   - React 事件的命名采用==小驼峰式==（如 `onClick`）
   - 通过 `{}` 传入一个事件处理函数作为元素的 **prop**，这个函数会在事件发生时被自动执行
+  - React 中的事件是==合成事件==，生成的事件对象为 `SyntheticEvent` 的实例
 
   ```jsx
   const element = <div onClick={e => console.log(e)}>Hello React</div>;
@@ -411,8 +412,6 @@ title: 核心
 
 
 
->
-
 #### 类组件
 
 - 组件的名称必须是==大写字母==开头
@@ -451,12 +450,14 @@ function App() {
 
 ### 组件的状态 state
 
-#### 定义和使用状态
+#### 定义和读取状态
 
 - `state` 的作用
 
   - ==保留== 渲染之间的数据
   - ==触发== React 使用新数据渲染组件（重新渲染）
+
+- *state* 是==隔离且私有==的，如果渲染同一个组件两次，每个副本都会有完全隔离的状态
 
 - 声明和使用状态：通过读取组件实例上的 `state` ==对象==
 
@@ -483,12 +484,17 @@ function App() {
 
 #### 更新状态
 
+- React 不推荐直接修改 *state*，这可能会导致一系列的问题
+
 - 更新组件的状态，需要调用组件实例上的 `setState` 方法
 
   - 调用后，组件上的 `render` 函数会自动重新执行
   - 然后组件会重新渲染，UI 会使用最新的状态数据进行展示
 
   ```jsx
+  /**
+   * 计数器
+   */
   class App extends React.Component {
     state = {
       count: 0
@@ -511,4 +517,138 @@ function App() {
   }
   ```
 
-- 
+- 想要更新一个对象时，不能直接修改原有的对象（数组也是如此）
+
+  - 需要创建一个==新对象==
+  - 或者生成一个原对象的==拷贝==副本
+
+  ```jsx
+  class App extends React.Component {
+    state = {
+      info: { name: '', age: 10 }
+    };
+  
+    changeInfo = () => {
+      const { info } = this.state;
+      // 需要创建一个新对象，或者拷贝一份原对象
+      this.setState({ info: { ...info, name: 'React' } });
+    }
+  
+    render() {
+      const { name, age } = this.state.info;
+      return (
+        <>
+          <h2>姓名：{ count }</h2>
+        	<h2>年龄：{ age }</h2>
+          <button onClick={this.changeInfo}>+1</button>
+        </>
+      );
+    }
+  }
+  ```
+
+
+
+
+### 组件的参数 props
+
+#### 认识 props
+
+- React 组件使用 `props` 来互相通信
+  - 每个父组件都可以提供 *props* 给它的子组件，从而将一些信息传递给它
+  - 相较于 HTML 属性，可以通过 *props* 传递任何 JavaScript 值，包括对象、数组和函数，==甚至是 React 元素==
+
+- `props` 是==只读==的，禁止子组件通过引用直接修改父组件传递的数据
+
+
+
+#### 传递 props
+
+- 要传递 props，需要将它们添加到 JSX，就像使用 HTML 属性一样
+
+  ```jsx
+  const Img = () => <img alt="一张图片" />;
+  ```
+
+- 使用 JSX 展开语法传递 props（避免重复的传递操作）
+
+  ```jsx
+  const Img = (props) => <img {...props} />
+  ```
+
+- 还可以只保留当前组件需要接收的 *props*，并使用展开运算符将==其他 props== 传递下去
+
+  ```jsx
+  const Button = (props) => {
+    const { kind, ...other } = props;
+    const className = kind === "primary" ? "primary-button" : "secondary-button";
+    return <button className={className} {...other} />;
+  };
+  ```
+
+- 当内容嵌套在 JSX 标签中时，组件可以在名为 `children` 的 *prop* 中接收到该内容
+
+  ```jsx
+  const Button = ({ children }) => <button>{ children }</button>;
+  const Demo = () => <Button>按钮</Button>
+  ```
+
+- 在传递 *props* 时，可以直接将 ==React 元素==传递给子组件，子组件可以直接进行渲染
+
+  ```jsx
+  const Demo = ({ leftSlot, rightSlot }) => {
+    <div>
+      { leftSlot }
+      使用 props 实现插槽
+      { rightSlot }
+    </div>
+  };
+  
+  const Warpper = () => {
+    return (
+      <Demo
+        leftSlot={<button>按钮</button>}
+        rightSlot={<span>文本</span>}
+      />
+    );
+  };
+  ```
+
+
+
+#### 读取 props
+
+- 对于类组件，可以从 `this.props` 中获取到父组件传递的数据
+
+  ```jsx
+  class Header extends React.Component {
+    render() {
+      const { title, fontSize } = this.props;
+      return <h1 style={{ fontSize }}>{ title }</h1>;
+    }
+  }
+  ```
+
+- 对于函数式组件，函数的==第一个参数== 就是接收到的 *props* 对象
+
+  ```jsx
+  const Header = ({ title, fontSize }) => <h1 style={{ fontSize }}>{ title }</h1>;
+  ```
+
+
+
+### 组件之间通信
+
+#### 父传子
+
+父组件想要给子组件传递数据，直接使用 `props` 传递即可
+
+```jsx
+const Button = ({ title }) => <button>{ title }</button>;
+const Demo = () => <Button title="播放" />
+```
+
+
+
+#### 子传父
+
