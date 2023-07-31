@@ -692,3 +692,110 @@ const App = ({ play }) => {
 
 
 #### 数据共享：Context
+
+`Context` 上下文的作用
+
+- 组件能够==无需==通过显式传递参数的方式将信息==逐层传递==
+- 在多个子组件中进行==数据共享==
+
+
+
+>
+>
+>创建 Context
+
+- 通过 `React.createContext(defaultValue)` 创建一个上下文对象
+  - 该函数接收一个参数：==默认值==
+  - 如果不传递默认值，则默认状态为 `null`
+
+- 该 *context* 对象本身不包含任何信息， 它只表示其他组件读取或提供的 那个 *context*
+  - `Context.Provider` 可以为被它包裹的组件提供上下文的值
+  - `Context.Consumer` 是一个很少会用到的备选方案，它用于读取上下文的值
+
+
+
+>
+>
+>提供上下文数据
+
+- 要想为后代子组件提供数据，需要使用 `<Context.Provider>` 组件
+
+  - 可以使用该组件的 `value` 属性提供数据
+
+  ```jsx
+  function App() {
+    const [theme, setTheme] = useState('light');
+    
+    return (
+      <ThemeContext.Provider value={theme}>
+        <OtherComponent />
+      </ThemeContext.Provider>
+    );
+  }
+  ```
+
+- 如果 `value` 的值来自 *state* 和 *props*，当 *value* 的值发生变化时，后代组件会自动==重新渲染==
+
+
+
+>
+>
+>使用上下文数据
+
+- 使用 `<Context.Consumer>` 组件获取数据
+
+  - 该组件的 `children` 为一个函数
+  - 函数的第一个参数即为被共享的 `value` 值
+
+  ```jsx
+  function Button() {
+    return (
+      <ThemeContext.Consumer>
+        { theme => <button className={theme} /> }
+      </ThemeContext.Consumer>
+    );
+  }
+  ```
+
+- 对于类组件，可以使用==静态属性== `contextType`
+
+  - 使用该属性绑定上下文后，组件实例中 `this.context` 即为被共享的 `value` 值
+
+  ```jsx
+  class Button extends React.Component {
+    static contextType = ThemeContext;
+  
+    render() {
+      const theme = this.context;
+      const className = 'button-' + theme;
+      return (
+        <button className={className}>
+          {this.props.children}
+        </button>
+      );
+    }
+  }
+  ```
+
+- 对于函数式组件，直接使用 `useContext` Hooks 即可
+
+  ```jsx
+  function Button() {
+    const theme = useContext(ThemeContext);
+    
+    return <button className={theme} />;
+  }
+  ```
+
+
+
+#### 事件监听：事件总线
+
+- 通过全局事件总线，在一个地方发出事件并携带参数，在其他任意地方监听这个事件并作出响应
+- 一些第三方库如 `mitt` 就可以实现类似的功能
+
+
+
+
+
+### 组件的生命周期
