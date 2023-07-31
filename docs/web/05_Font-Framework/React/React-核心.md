@@ -593,7 +593,7 @@ function App() {
   const Demo = () => <Button>按钮</Button>
   ```
 
-- 在传递 *props* 时，可以直接将 ==React 元素==传递给子组件，子组件可以直接进行渲染
+- 在传递 *props* 时，可以直接将 ==React 元素==传递给子组件，子组件可以直接进行渲染（实现类似==插槽==的功能）
 
   ```jsx
   const Demo = ({ leftSlot, rightSlot }) => {
@@ -639,16 +639,56 @@ function App() {
 
 ### 组件之间通信
 
-#### 父传子
+#### 父传子：props
 
-父组件想要给子组件传递数据，直接使用 `props` 传递即可
+- 父组件想要给子组件传递数据，直接使用 `props` 传递即可
+
+  ```jsx
+  const Button = ({ title }) => <button>{ title }</button>;
+  const Demo = () => <Button title="播放" />;
+  ```
+
+- 在子组件中，可以对接收的 `props` 进行校验和指定默认值
+
+  - 使用组件的 `propTypes` 属性进行校验
+
+    ```jsx
+    import PropTypes from 'prop-types';
+    
+    const App = () => {};
+    App.propTypes = {
+      optionalArray: PropTypes.array.isRequired, // 数组类型且必传
+      optionalBool: PropTypes.bool,
+      optionalFunc: PropTypes.func
+    }
+    ```
+
+  - 使用组件的 `defaultProps` 属性指定默认值
+
+    ```jsx
+    const App = () => {};
+    App.defaultProps = {
+      dataSource: []
+    };
+    ```
+
+    
+
+#### 子传父：回调函数
+
+子组件想要给父组件传递数据通过==回调函数==
+
+- 父组件传递一个==回调函数==给子组件
+- 在合适的时候，子组件执行这个函数，执行时可以携带一些==数据==传递给父组件
 
 ```jsx
-const Button = ({ title }) => <button>{ title }</button>;
-const Demo = () => <Button title="播放" />
+const App = ({ play }) => {
+  return (
+    <button onClick={() => play('播放')}>播放</button>
+  );
+}
 ```
 
 
 
-#### 子传父
-
+#### 数据共享：Context
