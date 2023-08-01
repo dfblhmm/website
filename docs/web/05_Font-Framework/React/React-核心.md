@@ -814,3 +814,90 @@ const App = ({ play }) => {
   - `render`：返回组成该组件内容的元素
   - `componentDidMount`：可以进行网络请求、获取 DOM、绑定事件监听等
   - `componentWillUnmount`：取消事件监听、定时器等
+
+
+
+### React 内置组件
+
+#### Fragment
+
+- 作用：允许在不添加额外节点的情况下将子元素组合，通常使用 `<>...</>` 代替
+
+  ```jsx
+  const element = (
+    <>
+    	<h2>Hello React</h2>
+    	<p>用于构建 Web 和原生交互界面的 JavaScript 库</p>
+    </>
+  )
+  ```
+
+- 该组件只接收一个唯一的 *prop* —— `key` 
+
+
+
+#### StrictMode
+
+- 作用：一个用来突出显示应用程序中潜在问题的工具
+
+  - 与 *Fragment* 一样，`StrictMode` 不会渲染任何可见的 UI
+  - 它为其后代元素触发额外的检查和警告
+  - 严格模式检查仅在开发模式下运行，不会影响生产构建
+
+  ```jsx
+  import React, { StrictMode } from 'react';
+  import ReactDOM from 'react-dom/client';
+  import App from './App';
+  
+  ReactDOM
+    .createRoot(document.getElementById('root'))
+    .render((
+      <StrictMode>
+        <App />
+      </StrictMode>
+    ));
+  ```
+
+- 严格模式检查的内容
+
+  - 识别不安全的生命周期
+  - 过时的 API
+  - 检查意外的副作用 —— 后代组件会被==渲染两次==
+
+
+
+#### Suspense
+
+- 作用：允许显示一个退路方案（`fallback`）直到它的子组件完成加载，参数：
+
+  - `children`：实际的 UI 渲染内容
+  - `fallback`：一个在实际的 UI 未渲染完成时代替其渲染的备用 UI
+
+  ```jsx
+  <Suspense fallback={<Loading />}>
+    <SomeComponent />
+  </Suspense>
+  ```
+
+- 该组件常常用于包裹使用了 ==懒加载== `lazy` 的组件
+
+  - 使用了懒加载的组件，在打包时会被==独立分包==，加快首屏渲染速度
+
+  ```jsx
+  const SomeComponent = React.lazy('./someComponent');
+  
+  function App() {
+    return (
+      <React.Suspense fallback={<Loading />}>
+        <SomeComponent />
+      </React.Suspense>
+    );
+  }
+  ```
+
+  
+
+### 其他补充
+
+#### Ref
+
