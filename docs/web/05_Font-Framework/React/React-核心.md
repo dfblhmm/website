@@ -1057,8 +1057,6 @@ const App = ({ play }) => {
 
 - ==注意点==：*portal* 中的事件传播==遵循 React 树==，而不是 DOM 树
 
-  - 在此模式下，事件的传播无法被正常的阻止
-
   ```jsx
   import { createPortal } from 'react-dom';
   
