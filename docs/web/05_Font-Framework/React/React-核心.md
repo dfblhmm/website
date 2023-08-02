@@ -899,5 +899,281 @@ const App = ({ play }) => {
 
 ### 其他补充
 
-#### Ref
+#### (非) 受控组件
 
+
+
+#### 记忆值：Ref
+
+- 作用：希望组件“记住”某些信息，但又不想让这些信息触发新的渲染
+
+>
+>
+>获取原生 DOM
+
+- 在 React 的开发模式中，通常情况下不需要、也不建议直接操作 DOM 元素，需要给 DOM 绑定 `ref` 属性来获取
+
+- 对于类组件，绑定 DOM 元素主要有两种方式
+
+  - 传入一个 `Ref` 对象
+
+    - 该对象通过 `React.createRef` 创建出来
+    - 通过该对象的 `current` 属性即可访问绑定的 DOM 元素
+
+    ```jsx
+    class Demo extends React.Component {
+      constructor(props) {
+        super(props);
+        this.inputRef = React.createRef();
+      }
+    
+      componentDidMount() {
+        // 输入框自动聚焦
+        this.inputRef.current.focus();
+      }
+    
+      render() {
+        return <input type="text" ref={this.inputRef} />;
+      }
+    }
+    ```
+
+  - 传入一个==回调函数==
+
+    - 该函数会在 DOM 被挂载时进行回调，这个回调函数会传入一个元素对象
+    - ==陷阱==：如果 `ref` 回调函数是以内联函数的方式定义的（相当于每次更新都创建了一个==新==的函数对象），在==更新==过程中它会被执行==两次==，第一次传入参数 `null`，然后第二次会传入参数 DOM 元素
+    - ==解决办法==：将该获取 *ref* 的函数挂载在组件实例上，不要每次都创建一个新的函数对象
+
+    ```jsx
+    export default class Demo extends React.Component {
+      componentDidMount() {
+        // 输入框自动聚焦
+        this.inputRef.focus();
+      }
+    
+      getRef = (ref) => {
+        this.inputRef = ref;
+      }
+    
+      render() {
+        return <input type="text" ref={this.getRef} />;
+      }
+    }
+    ```
+
+- 对于函数式组件，如果要获取函数组件内部的 DOM，需要借助 `React.forwardRef` 高阶函数
+
+  ```jsx
+  const Input = React.forwardRef((props, ref) => {
+    return <input type="text" ref={ref} />;
+  });
+  
+  export default class Demo extends React.Component {
+    componentDidMount() {
+      // 输入框自动聚焦
+      this.inputRef.focus();
+    }
+  
+    getRef = (ref) => {
+      this.inputRef = ref;
+    }
+  
+    render() {
+      return <Input ref={this.getRef} />;
+    }
+  }
+  ```
+
+
+
+>
+>
+>获取组件实例
+
+- 对于类组件，直接给组件绑定 `ref` 属性，即可获取到组件实例
+
+  ```jsx
+  class Counter extends React.Component {
+    state = {
+      count: 0
+    }
+  
+    increment = () => {
+      this.setState({ count: this.state.count + 1 });
+    }
+  
+    render() {
+      return <h2>{this.state.count}</h2>;
+    }
+  }
+  
+  export default class Demo extends React.Component {
+    getRef = (ref) => {
+      this.counterRef = ref;
+    }
+  
+    add = () => {
+      // 让子组件中的计数器 +1
+      this.counterRef.increment();
+    }
+  
+    render() {
+      return (
+        <>
+          <Counter ref={this.getRef} />
+          <button onClick={this.add}>+1</button>
+        </>
+      )
+    }
+  }
+  ```
+
+- 对于函数式组件，不存在组件实例，需要借助 `React.forwardRef` 和 `useImperativeHandle` 结合
+
+
+
+#### 改变节点位置：Portals
+
+- `createPortal` 允许将 JSX 作为 `children` 渲染至 DOM 的不同部分，参数：
+
+  - `children`：需要渲染的 React 元素
+  - `domNode`：目标 DOM 节点，会作为子元素转移到目标 DOM 节点的内部
+
+  ```jsx
+  import { createPortal } from 'react-dom';
+  
+  export default function MyComponent() {
+    return (
+      <div style={{ border: '2px solid black' }}>
+        <p>这个子节点被放置在父节点 div 中。</p>
+        {createPortal(
+          <p>这个子节点被放置在 document body 中。</p>,
+          document.body
+        )}
+      </div>
+    );
+  }
+  ```
+
+- ==注意点==：*portal* 中的事件传播==遵循 React 树==，而不是 DOM 树
+
+  - 在此模式下，事件的传播无法被正常的阻止
+
+  ```jsx
+  import { createPortal } from 'react-dom';
+  
+  export default function MyComponent() {
+    useEffect(() => {
+      const bodyClick = () => console.log('body 事件监听');
+  
+      document.body.addEventListener('click', bodyClick);
+  
+      return () => {
+        document.body.removeEventListener('click', bodyClick);
+      }
+    }, []);
+  
+    const handleClick = (e) => {
+      e.stopPropagation();
+      console.log('这个事件监听会被触发，并且阻止冒泡是无法生效的');
+    }
+  
+    return (
+      <div onClick={handleClick}>
+        <p>这个子节点被放置在父节点 div 中。</p>
+        { createPortal(<div>事件监听</div>, document.body) }
+        {/**
+         * 要想 handleClick 不触发，需要手动阻止 portal 元素的冒泡
+         * 但是无法阻止冒泡到 body 上
+         * 如果需要阻止，需要在 body 事件监听中通过event.target 对该元素的点击进行过滤判断
+         **/}
+        {/* { createPortal(<div onClick={e => e.stopPropagation()}>事件监听</div>, document.body) } */}
+      </div>
+    );
+  }
+  ```
+
+  
+
+#### 高阶组件
+
+- 高阶组件（Higher-Order Components，简称为 HOC）是==参数为组件，返回值为新组件的**函数**==
+  - 高阶组件本身不是一个组件，而是一个函数
+  - 主要作用：对组件进行==劫持==和==增强==
+  - 主要用于类组件，**Hooks** 出现后，通过==自定义 Hook== 基本可以实现类似高阶组件的功能
+
+- 实际应用
+
+  - `props` 增强（比如 React-Router V6 后，类组件无法使用 `navigate` 方法）
+
+    ```jsx
+    import React, { PureComponent, ReactElement } from 'react';
+    import { useNavigate } from 'react-router-dom';
+    
+    // 高阶组件
+    function withRouter(WrapperComponent) {
+      return (props) => {
+        const navigate = useNavigate();
+    
+        return <WrapperComponent {...props} navigate={navigate} />;
+      };
+    }
+    
+    class App extends PureComponent {
+      handleClick = () => {
+        // 经过高阶组件增强后，类组件实现了跳转路由的功能
+        this.props.navigate('/demo');
+      }
+    
+      render() {
+        return <button onClick={this.handleClick}>跳转</button>;
+      }
+    }
+    
+    export default withRouter(App);
+    ```
+
+  - 自定义 *react-redux* 的 `connect` 函数
+
+    ```jsx
+    import React, { PureComponent } from 'react';
+    import store from './redux-store';
+    
+    export default function connect(mapStateToProps, mapDispatchToProps) {
+      return function handleMapCpn(WrapperComponent) {
+        return class extends PureComponent {
+        	super(props, context) {
+           	this.state = {
+              storeState: mapStateToProps(store.getState())
+            } 
+          }
+    
+          componentDidMount() {
+            this.unSubscribe = store.subscribe(() => {
+              this.setState({
+                storeState: mapDispatchToProps(store.getState())
+              })
+            })
+          }
+          
+          componentWillUnmount() {
+            this.unSubscribe();
+          }
+          
+          render() {
+            return (
+              <WrapperComponent
+                {...this.props}
+                {...mapStateToProps(store.getState())}
+                {...mapDispatchToProps(store.dispatch)}
+              />
+            )
+          }
+        }
+      }
+    }
+    ```
+
+    
+
+#### 性能优化
