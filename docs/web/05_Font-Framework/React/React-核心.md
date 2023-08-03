@@ -1306,8 +1306,6 @@ export default class Test extends React.Component {
 
 
 >
-
->
 >
 >函数式组件
 
@@ -1327,6 +1325,7 @@ export default class Test extends React.Component {
 
   - 这种组件可以捕获发生在其==子组件树任何位置==的 JavaScript 错误，并打印这些错误
   - 同时展示==降级 UI==
+  - **自 React 16 起，任何未被错误边界捕获的错误将会导致整个 React 组件树被卸载**
 
   ```jsx
   class ErrorBoundary extends React.Component {

@@ -114,4 +114,8 @@
   a.card[class *= cardContainer] {
     margin-top: 1rem;
   }
+
+  .thin-scrollbar {
+    overscroll-behavior: none;
+  }
 }
