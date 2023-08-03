@@ -901,6 +901,77 @@ const App = ({ play }) => {
 
 #### (非) 受控组件
 
+>
+>
+>受控组件
+
+- 在 HTML 中，表单元素通常自己维护 *state*，并根据用户输入进行更新
+
+- 在 React 中，==可变状态==通常保存在组件的状态中，并且只能通过使用 `setState()` 来更新
+
+  - 将两者结合起来，使 React 的 state 成为==“唯一数据源”==
+  - 渲染表单的 React 组件还控制着用户输入过程中表单发生的操作
+  - 被 React 以这种方式控制取值的表单输入元素就叫做 ==“受控组件"==（即表单的值由 React 状态进行控制）
+
+- 当表单元素绑定 React 状态后，变为受控组件
+
+  - 此时表单元素不可以再次手动输入编辑
+  - 通常需要监听受控元素的 `onChange` 事件来更新状态
+
+  ```jsx
+  export default class Test extends React.Component {
+    state = {
+      input: ''
+    }
+  
+    changeInput = (e) => {
+      this.setState({ input: e.target.value });
+    }
+  
+    render() {
+      return <input value={this.state.input} onChange={this.changeInput} />
+    }
+  }
+  ```
+
+- 如果绑定了状态，输入仍可编辑，可能是意外地绑定了 `undefined/null`
+
+  ```jsx
+  const element = <input type="checkbox" checked={undefined} />;
+  ```
+
+
+
+>
+>
+>非受控组件
+
+- 非受控组件：数据将交由 DOM 节点来处理，需要获取数据时，通过绑定 `ref` 来访问 DOM
+- 在非受控组件中通常使用 `defaultValue` 来设置默认值
+
+```jsx
+export default class Test extends React.Component {
+ constructor(props) {
+   super(props);
+   this.inputRef = React.createRef(); 
+ }
+
+  handleInputChange = () => {
+    console.log('value', this.inputRef.current.value);
+  }
+
+  render() {
+    return (
+      <input 
+        ref={this.inputRef}
+        defaultValue="Hello React"
+        onChange={this.handleInputChange}
+      />
+    );
+  }
+}
+```
+
 
 
 #### 记忆值：Ref
@@ -1175,3 +1246,123 @@ const App = ({ play }) => {
     
 
 #### 性能优化
+
+>
+>
+>类组件
+
+- ==默认情况==下，只要==父组件重新渲染==或者当前组件调用了==更新状态==（即使状态并未改变）的方法
+
+  - 此时组件就会重新渲染，同时当前组件的所有子组件都会重新渲染
+  - 这会造成无意义的 **diff 比较**和**更新 DOM**
+
+  ```jsx
+  export default class Counter extends React.Component {
+    state = {
+      count: 0
+    }
+  
+    increment = () => {
+      // 状态并未改变，也进行了重新渲染
+      this.setState({ count: this.state.count });
+    }
+  
+    render() {
+      console.log('render');
+  
+      return (
+        <>
+          <h2>{this.state.count}</h2>
+          <button onClick={this.increment}>更新</button>
+        </>
+      );
+    }
+  }
+  ```
+
+- 可以借助 `shouldComponentUpdate` 钩子函数控制类组件是否重新渲染
+
+  - 返回 `false`：跳过更新
+  - 不返回或返回 `true`：进行更新
+
+  ```jsx
+  /* ...... */
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextState.count === this.state.count) {
+      return false;
+    }
+  }
+  ```
+
+- 同时，React 内部已经内置了`PureComponent` 组件
+
+  - 直接继承即可实现对应的自动比较更新
+  - 该组件内部实现的是==浅比较== `shallowEqual`
+
+  ```jsx
+  export default class Counter extends React.PureComponent {}
+  ```
+
+
+
+>
+
+>
+>
+>函数式组件
+
+- 对于函数式组件，直接使用 `memo` 高阶函数即可实现 `props` 的浅比较
+
+  ```jsx
+  const App = memo(({ title }) => {
+    return <h2>{title}</h2>;
+  });
+  ```
+
+  
+
+#### 错误边界
+
+- 错误边界是一种 React 组件，需要结合 `getDerivedStateFromError` 和 `componentDidCatch` 一起使用
+
+  - 这种组件可以捕获发生在其==子组件树任何位置==的 JavaScript 错误，并打印这些错误
+  - 同时展示==降级 UI==
+
+  ```jsx
+  class ErrorBoundary extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = { hasError: false };
+    }
+  
+    static getDerivedStateFromError(error) {
+      // 更新 state 使下一次渲染能够显示降级后的 UI
+      return { hasError: true };
+    }
+  
+    componentDidCatch(error, errorInfo) {
+      // 你同样可以将错误日志上报给服务器
+      logErrorToMyService(error, errorInfo);
+    }
+  
+    render() {
+      if (this.state.hasError) {
+        // 你可以自定义降级后的 UI 并渲染
+        return <h1>Something went wrong.</h1>;
+      }
+  
+      return this.props.children;
+    }
+  }
+  ```
+
+- 错误边界可以捕获发生在整个子组件树的渲染期间、生命周期方法以及构造函数中的错误
+
+  - 无法捕获事件处理、异步代码、服务端渲染、它自己抛出的错误
+  - 函数组件要想实现错误边界组件，需要自己实现类似的功能，或者使用 `react-error-boundary`
+
+
+
+
+
+## React 过渡动画
