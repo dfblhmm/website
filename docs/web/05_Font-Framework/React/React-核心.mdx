@@ -3,6 +3,9 @@ id: react-core
 title: 核心
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # React 核心
 
 ## 认识 React
@@ -1294,7 +1297,7 @@ export default class Test extends React.Component {
   }
   ```
 
-- 同时，React 内部已经内置了`PureComponent` 组件
+- 同时，React 内部已经内置了 `PureComponent` 组件
 
   - 直接继承即可实现对应的自动比较更新
   - 该组件内部实现的是==浅比较== `shallowEqual`
@@ -1365,3 +1368,302 @@ export default class Test extends React.Component {
 
 
 ## React 过渡动画
+
+- 借助 `react-transition-group` 可以为 React 组件在切换时添加一些过渡动画，提供更好的交互
+- 该库主要包含四个组件
+  - `Transition`：该组件是一个和平台无关的组件，在前端开发中，比较常用的是 *CSSTransition*
+  - `CSSTransition`：添加过渡动画效果
+  - `SwitchTransition`：用于两个组件显示和隐藏切换
+  - `TransitionGroup`：将多个动画组件包裹在其中，一般用于列表中元素的动画
+
+
+
+### CSSTransition
+
+- `CSSTransition` 用于执行组件显示/隐藏切换的动画
+  - 动画执行过程中，有三个状态：`appear`、`enter`、`exit`
+  - 属性 `classNames` 指定类名==前缀==
+  - 属性 `timeout` 指定动画时间，最好与 css 样式中的时间保持一致
+  - 属性 `appear` 指定是否在初次进入添加动画
+  
+- 需要指定 `in` 属性来触发==进入==或==退出==状态
+
+  - 如果添加 `unmountOnExit={true}`，组件会在执行退出动画结束后被移除掉
+  - 当 *in* 为 `true` 时触发进入状态
+    - 会添加 `-enter`、`-enter-acitve` 的类名开始执行动画
+    - 当动画执行结束后，会移除两个这两个类名，并且添加 `enter-done` 的类名
+  - 当 *in* 为 `false` 时触发退出状态
+    - 会添加 `-exit`、`-exit-active` 的类名开始执行动画
+    - 当动画执行结束后，会移除这两个类名，并且添加 `-exit-done` 的类名
+
+<div style={{ marginLeft: 32, marginTop: -20 }}>
+  <Tabs>
+  <TabItem value="App.jsx" label="App.jsx">
+
+```jsx
+import React, { PureComponent } from 'react';
+import { CSSTransition } from 'react-transition-group';
+import './App.css';
+
+export default class App extends PureComponent {
+  state = {
+    show: true
+  }
+
+  toggleShow = () => {
+    this.setState({
+      show: !this.state.show
+    });
+  }
+
+  render() {
+    const { show } = this.state;
+
+    return (
+      <div>
+        <button onClick={this.toggleShow}>切换显示</button>
+
+        <CSSTransition 
+          in={show}
+          timeout={2000}
+          unmountOnExit
+          classNames="react"
+          >
+          <h2>Hello React</h2>
+        </CSSTransition>
+      </div>
+    );
+  }
+}
+```
+
+  </TabItem>
+
+  <TabItem value="App.css" label="App.css">
+
+
+```css
+/* 首次进入 */
+.react-appear {
+  transform: translate(-200px);
+}
+.react-appear-active {
+  transform: translate(0);
+  transition: transform 2s ease;
+}
+
+/* 进入动画 */
+.react-enter {
+  opacity: 0;
+}
+.react-enter-active {
+  opacity: 1;
+  transition: opacity 2s ease;
+}
+
+/* 离开动画 */
+.react-exit {
+  opacity: 1;
+}
+.react-exit-active {
+  opacity: 0;
+  transition: opacity 2s ease;
+}
+```
+
+  </TabItem>
+  </Tabs>
+</div>
+
+
+
+### SwitchTransition
+
+- `SwitchTransition` 可以完成两个组件之间切换的炫酷动画
+
+- *SwitchTransition* 中主要有一个属性 `mode`
+  - `in-out`：新组件先进入，旧组件再移除
+  - `out-in`：旧组件先移除，新组件再进入
+- *SwitchTransition* 仍然需要借助 `CSSTransition` 来设置动画
+  - 此时不再借助 `in` 属性，而是通过 `key` 属性来进行切换组件
+
+<div style={{ marginLeft: 12, marginTop: -10 }}>
+  <Tabs>
+  <TabItem value="App.jsx" label="App.jsx">
+
+```jsx
+import React, { PureComponent } from 'react';
+import { CSSTransition, SwitchTransition } from 'react-transition-group';
+import './App.css';
+
+export default class App extends PureComponent {
+  state = {
+    toggle: true
+  }
+
+  toggleShow = () => {
+    this.setState({
+      toggle: !this.state.toggle
+    });
+  }
+
+  render() {
+    const { toggle } = this.state;
+
+    return (
+      <div>
+        <button onClick={this.toggleShow}>切换显示</button>
+
+        <SwitchTransition>
+          <CSSTransition 
+            key={toggle ? 'React' : 'Vue'}
+            timeout={2000}
+            unmountOnExit
+            appear
+            classNames="toggle"
+          >
+            <h2>{ toggle ? 'Hello React' : 'Hello Vue' }</h2>
+          </CSSTransition>
+        </SwitchTransition>
+      </div>
+    );
+  }
+}
+```
+
+  </TabItem>
+
+  <TabItem value="App.css" label="App.css">
+
+
+```css
+/* 首次进入 */
+.toggle-appear {
+  transform: translate(-200px);
+}
+.toggle-appear-active {
+  transform: translate(0);
+  transition: transform 2s ease;
+}
+
+/* 进入动画 */
+.toggle-enter {
+  opacity: 0;
+}
+.toggle-enter-active {
+  opacity: 1;
+  transition: opacity 2s ease;
+}
+
+/* 离开动画 */
+.toggle-exit {
+  opacity: 1;
+}
+.toggle-exit-active {
+  opacity: 0;
+  transition: opacity 2s ease;
+}
+```
+
+  </TabItem>
+  </Tabs>
+</div>
+
+
+
+### TransitionGroup
+
+- `TransitionGroup` 用于对一组数据的变化添加动画
+  - 需要将这些 *CSSTransition* 放入到一个 *TransitionGroup* 中来完成动画
+
+<div style={{ marginLeft: 12, marginTop: -10 }}>
+  <Tabs>
+  <TabItem value="App.jsx" label="App.jsx">
+
+
+```jsx
+export default class App extends PureComponent {
+  state = {
+    list: [0, 1, 2, 3]
+  }
+
+  update = () => {
+    const { list } = this.state;
+    this.setState({ list: [list.length, ...list] });
+  }
+
+  render() {
+    const { list } = this.state;
+
+    return (
+      <div>
+        <TransitionGroup>
+          {
+            list.map(i => (
+              <CSSTransition
+                key={i}
+                timeout={2000}
+                appear
+                classNames="group"
+              >
+                <span className="item">{i}</span>
+              </CSSTransition>
+            ))
+          }
+        </TransitionGroup>
+
+        <div>
+          <button onClick={this.update}>更新</button>
+        </div>
+      </div>
+    )
+  }
+}
+```
+
+  </TabItem>
+
+  <TabItem value="App.css" label="App.css">
+
+
+```css
+/* 首次进入/进入动画 */
+.group-appear, .group-enter {
+  transform: translateY(-200px);
+}
+.group-appear-active, .group-enter-active {
+  transform: translateY(0);
+  transition: transform 2s ease;
+}
+
+.item {
+  display: inline-block;
+  padding: 10px 20px;
+  background: skyblue;
+  margin: 10px;
+}
+```
+
+  </TabItem>
+  </Tabs>
+</div>
+
+
+
+
+
+## React 样式方案
+
+### 全局样式
+
+
+
+
+
+### 模块化样式
+
+
+
+
+
+### CSS In JS

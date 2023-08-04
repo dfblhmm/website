@@ -118,4 +118,14 @@
   .thin-scrollbar {
     overscroll-behavior: none;
   }
+
+  .tabs-container ul.tabs li.tabs__item {
+    & + li {
+      margin-top: 0;
+    }
+    
+    &:hover {
+      background-color: unset;
+    }
+  }
 }
