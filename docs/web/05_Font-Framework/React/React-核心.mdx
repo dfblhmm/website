@@ -1395,6 +1395,8 @@ export default class Test extends React.Component {
   - 当 *in* 为 `false` 时触发退出状态
     - 会添加 `-exit`、`-exit-active` 的类名开始执行动画
     - 当动画执行结束后，会移除这两个类名，并且添加 `-exit-done` 的类名
+  
+  <img src="./images/CSSTransition.gif" alt="CSSTransition" style="zoom:80%;" />
 
 <div style={{ marginLeft: 32, marginTop: -20 }}>
   <Tabs>
@@ -1428,7 +1430,8 @@ export default class App extends PureComponent {
           timeout={2000}
           unmountOnExit
           classNames="react"
-          >
+          appear
+        >
           <h2>Hello React</h2>
         </CSSTransition>
       </div>
@@ -1486,6 +1489,8 @@ export default class App extends PureComponent {
   - `out-in`：旧组件先移除，新组件再进入
 - *SwitchTransition* 仍然需要借助 `CSSTransition` 来设置动画
   - 此时不再借助 `in` 属性，而是通过 `key` 属性来进行切换组件
+
+<img src="./images/SwitchTransition.gif" alt="SwitchTransition" style="zoom:80%;" />
 
 <div style={{ marginLeft: 12, marginTop: -10 }}>
   <Tabs>
@@ -1575,6 +1580,8 @@ export default class App extends PureComponent {
 
 - `TransitionGroup` 用于对一组数据的变化添加动画
   - 需要将这些 *CSSTransition* 放入到一个 *TransitionGroup* 中来完成动画
+
+<img src="./images/TransitionGroup.gif" alt="TransitionGroup" style="zoom:80%;" />
 
 <div style={{ marginLeft: 12, marginTop: -10 }}>
   <Tabs>
