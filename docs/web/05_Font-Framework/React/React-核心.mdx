@@ -3,9 +3,6 @@ id: react-core
 title: 核心
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-
 # React 核心
 
 ## 认识 React
@@ -1660,6 +1657,34 @@ export default class App extends PureComponent {
 
 
 ## React 样式方案
+
+### 内联样式
+
+- 内联样式是官方推荐的一种 CSS 样式的写法
+
+  - `style` 属性接收一个采用==小驼峰命名==属性的 JavaScript 对象
+  - 并且可以引用 *state* 和 *props* 中的变量来设置相关的样式
+
+  ```jsx
+  export default function App({ color }) {
+    return (
+      <div style={{ fontSize: 20, color }}>Hello React!</div>
+    );
+  }
+  ```
+
+- 内联样式的优点
+
+  - 样式之间不会有冲突
+  - 可以动态获取 JavaScript 变量值
+
+- 内联样式的缺点
+
+  - 写法上都需要使用驼峰标识
+  - 大量的样式 , 代码混乱
+  - 某些样式无法编写 比如伪类 伪元素
+
+
 
 ### 全局样式
 
