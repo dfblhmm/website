@@ -1584,7 +1584,6 @@ export default class App extends PureComponent {
   <Tabs>
   <TabItem value="App.jsx" label="App.jsx">
 
-
 ```jsx
 export default class App extends PureComponent {
   state = {
@@ -1688,14 +1687,223 @@ export default class App extends PureComponent {
 
 ### 全局样式
 
+- 全局样式：将 CSS 编写到一个单独的文件，之后再进行引入
 
+  - 这样的编写方式和普通的网页开发中编写方式是一致的
+
+  ```jsx
+  import React from 'react';
+  // 引入全局样式
+  import './App.css';
+  
+  export default function App() {
+    return <div className="wrapper">全局样式</div>;
+  }
+  ```
+
+- 最大的缺点：不同 CSS 文件中的同名类名会导致==样式冲突==
 
 
 
 ### 模块化样式
 
+- 相比于全局样式，**CSS Module** 解决了==局部作用域==的问题
+
+  - 本质上是为每个组件的类名添加了==唯一== `hash`
+
+<div style={{ marginLeft: 32, marginTop: -10 }}>
+  <Tabs>
+  <TabItem value="App.jsx" label="App.jsx">
+
+```jsx
+import React from 'react';
+// 引入模块化样式
+import { title } from './App.module.css';
+
+export default function App() {
+  return <div className={title}>全局样式</div>;
+}
+```
+
+  </TabItem>
+
+  <TabItem value="App.module.css" label="App.module.css">
+
+
+```css
+.title {
+  font-size: 30px;
+  color: orangered;
+}
+```
+
+  </TabItem>
+  </Tabs>
+</div>
+
+- 缺点：CSS 中无法读取 JavaScript 变量值，无法生成==动态==样式
 
 
 
+### CSS in JS
 
-### CSS In JS
+>
+>
+>认识 CSS in JS
+
+- 官方文档也有提到过 CSS in JS 这种方案
+  - “CSS in JS” 是指一种模式，其中 CSS ==由 JavaScript 生成==而不是在外部文件中定义
+  - 此功能并不是 React 的一部分，而是由第三方库提供
+- CSS in JS 的模式：将样式（CSS）也写入到 JavaScript 中的方式，并且可以方便的使用 JavaScript 变量
+
+
+
+>
+>
+>使用 styled-components
+
+- `styled-components` 的本质是通过函数的调用，最终创建出一个组件
+
+  - 这个组件会被自动添加上一个==不重复==的类名
+  - 它支持类似于 CSS 预处理器一样的样式嵌套
+
+<div style={{ marginLeft: 32, marginTop: -10 }}>
+  <Tabs>
+  <TabItem value="App.jsx" label="App.jsx">
+
+  ```jsx
+  import React from 'react';
+  import { AppWrapper } from './App_style';
+  
+  export default function App() {
+    return <AppWrapper>全局样式</AppWrapper>;
+  }
+  ```
+
+  </TabItem>
+
+  <TabItem value="App_style.js" label="App_style.js">
+
+  ```js
+  import styled from 'styled-components';
+  
+  export const AppWrapper = styled.div`
+    font-size: 30px;
+    color: orangered;
+  `;
+  ```
+
+  </TabItem>
+  </Tabs>
+</div>
+
+- 使用该样式组件时支持传递 *props*，动态设置样式，在样式文件中通过==模板字符串==获取 *props*
+
+<div style={{ marginLeft: 32, marginTop: -10 }}>
+  <Tabs>
+  <TabItem value="App.jsx" label="App.jsx">
+
+  ```jsx
+  import React from 'react';
+  import { AppWrapper } from './App_style';
+  
+  export default function App() {
+    return <AppWrapper color="skyblue">全局样式</AppWrapper>;
+  }
+  ```
+
+  </TabItem>
+
+  <TabItem value="App_style.js" label="App_style.js">
+
+  ```js
+  import styled from 'styled-components';
+  
+  export const AppWrapper = styled.div`
+    font-size: 30px;
+    color: ${props => props.color};
+  `;
+  ```
+
+  </TabItem>
+  </Tabs>
+</div>
+
+- 支持组件样式的继承
+
+<div style={{ marginLeft: 32, marginTop: -10 }}>
+  <Tabs>
+  <TabItem value="App.jsx" label="App.jsx">
+
+  ```jsx
+  import React from 'react';
+  import { PrimaryButton } from './App_style';
+  
+  export default function App() {
+    return <PrimaryButton color="orange">按钮</PrimaryButton>;
+  }
+  ```
+
+  </TabItem>
+
+  <TabItem value="App_style.js" label="App_style.js">
+
+  ```js
+  import styled from 'styled-components';
+  
+  export const Button = styled.button`
+    padding: 5px 10px;
+    font-size: 16px;
+    border: 1px solid #eee;
+  `;
+  
+  export const PrimaryButton = styled(Button)`
+    background-color: ${props => props.color};
+  `;
+  ```
+
+  </TabItem>
+  </Tabs>
+</div>
+
+- 使用 `ThemeProvider` 支持全局主题的配置
+
+<div style={{ marginLeft: 32, marginTop: -10 }}>
+  <Tabs>
+  <TabItem value="App.jsx" label="App.jsx">
+
+  ```jsx
+  import React from 'react';
+  import { ThemeProvider } from 'styled-components';
+  import { PrimaryButton } from './App_style';
+  
+  export default function App() {
+    return (
+      <ThemeProvider theme={{ primary: '#f6da76' }}>
+        <PrimaryButton>按钮</PrimaryButton>
+      </ThemeProvider>
+    );
+  }
+  ```
+
+  </TabItem>
+
+  <TabItem value="App_style.js" label="App_style.js">
+
+  ```js
+  import styled from 'styled-components';
+  
+  export const Button = styled.button`
+    padding: 5px 10px;
+    font-size: 16px;
+    border: 1px solid #eee;
+  `;
+  
+  export const PrimaryButton = styled(Button)`
+    background-color: ${props => props.theme.primary};
+  `;
+  ```
+
+  </TabItem>
+  </Tabs>
+</div>
