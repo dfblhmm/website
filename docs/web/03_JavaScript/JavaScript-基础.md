@@ -1,6 +1,6 @@
 ---
 id: javaScript-basic
-title: JavaScript 基础
+title: 基础
 ---
 # JavaScript 基础
 

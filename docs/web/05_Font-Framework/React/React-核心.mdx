@@ -1284,6 +1284,7 @@ export default class Test extends React.Component {
 
   - 返回 `false`：跳过更新
   - 不返回或返回 `true`：进行更新
+  - 不要进行==深层==比较或使用 `JSON.stringify()`
 
   ```jsx
   /* ...... */
@@ -1907,3 +1908,30 @@ export default function App() {
   </TabItem>
   </Tabs>
 </div>
+
+
+
+
+
+## React Hooks
+
+### 认识 Hook
+
+- 类组件的缺点
+  - 复杂组件变得难以理解、维护
+  - 难以理解的 `class`
+  - 组件复用状态很难（比如多层 `Context` 嵌套，让组件逻辑变得复杂）
+
+- **Hook** 是 React 16.8 的新增特性
+  - 它可以让我们在不编写 class 的情况下使用 ==state== 以及其他 React 特性
+  - 完全可选，100% 向后兼容
+  - 基本可以代替所有类组件
+- **Hook** 的约束规则
+  - 只能在函数最外层调用，不能在循环、条件判断或子函数中调用
+  - 只能在 React 的 ==函数组件==或 ==自定义 Hook== 中使用，不要在其他普通函数中调用
+
+
+
+### 常用 Hook
+
+#### useState

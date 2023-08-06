@@ -1,3 +1,6 @@
+/**
+ * 转换 ==key== 语法为 <mark>key</mark>
+ */
 import visit from 'unist-util-visit';
 
 type SyntaxTree = Parameters<typeof visit>['0'];

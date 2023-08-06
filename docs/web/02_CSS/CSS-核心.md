@@ -1,6 +1,6 @@
 ---
 id: CSS
-title: CSS
+title: 核心
 ---
 # CSS
 

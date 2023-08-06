@@ -1,3 +1,7 @@
+/**
+ * 转换 img 元素的属性
+ * 1. 转换字符串形式的 style 为对象形式的 style
+ */
 import visit from 'unist-util-visit';
 import { parseSync, traverse, Visitor } from '@babel/core';
 import {
