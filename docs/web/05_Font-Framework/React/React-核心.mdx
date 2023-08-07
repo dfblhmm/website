@@ -1682,7 +1682,7 @@ export default class App extends PureComponent {
 
   - 写法上都需要使用驼峰标识
   - 大量的样式 , 代码混乱
-  - 某些样式无法编写 比如伪类 伪元素
+  - 某些样式无法编写 比如伪类、伪元素
 
 
 
@@ -1927,7 +1927,7 @@ export default function App() {
   - 完全可选，100% 向后兼容
   - 基本可以代替所有类组件
 - **Hook** 的约束规则
-  - 只能在函数最外层调用，不能在循环、条件判断或子函数中调用
+  - 只能在函数==最外层==调用，不能在循环、条件判断或子函数中调用
   - 只能在 React 的 ==函数组件==或 ==自定义 Hook== 中使用，不要在其他普通函数中调用
 
 
@@ -2158,6 +2158,274 @@ export default function App() {
 
 
 
-
-
 ### 性能优化 Hook
+
+#### useMemo
+
+- `useMemo` 在每次重新渲染的时候能够==缓存==计算的结果
+
+  - 参数一：要缓存计算值的函数，是一个没有任何参数的==纯函数==
+  - 参数二：响应式变量列表
+  - 返回值：计算函数的返回结果，仅在初次渲染和依赖更新时重新计算
+
+- 应用场景
+
+  - 跳过代价昂贵的重新计算
+
+    ```jsx
+    function App({ numberList }) {
+      const evenNumberList = useMemo(() => 
+        numberList.filter(n => n % 2 === 0),
+        [numberList]
+      );
+    }
+    ```
+
+  - 优化重新渲染子组件的性能
+
+    - 默认情况下，当一个组件重新渲染时，React 会==递归==地重新渲染它的所有子组件
+    - 在组件树嵌套层级非常深时，顶级组件无意义的数据变化会导致整个组件树重新渲染，导致性能变差
+    - 在响应式变量未发生变化时，结合 `memo` 可以跳过子组件的重新渲染
+
+    ```jsx
+    import React, { memo, useMemo, useState } from 'react';
+    
+    const Header = memo(({ info }) => {
+      console.log('re-render');
+      return <h2>{info.name} - {info.age}</h2>;
+    });
+    
+    const Counter = memo(({ count }) => <h2>{count}</h2>);
+    
+    export default function App() {
+      const [count, setCount] = useState(0);
+      
+      const info = useMemo(() => ({
+        /**
+         * 每次执行 setCount 都会使组件重新渲染
+         * 如果不使用 useMemo，相当于每次都创建了一个新对象
+         * Header 组件每次都会重新渲染
+         */
+        name: 'Avril',
+        age: 17
+      }), []);
+    
+      return (
+        <>
+          <Header info={info} />
+          <Counter count={count} />
+          <button onClick={() => setCount(count + 1)}>+1</button>
+        </>
+      )
+    }
+    ```
+
+
+
+#### useCallback
+
+- `useCallback` 可以在多次渲染中==缓存函数==
+
+  - 参数一：要缓存的函数
+
+  - 参数二：响应式变量列表
+
+  - 返回值：一个函数，仅在初次渲染和依赖更新时重新计算
+
+  - 简化实现
+
+    ```js
+    // 在 React 内部的简化实现
+    function useCallback(fn, dependencies) {
+      return useMemo(() => fn, dependencies);
+    }
+    ```
+
+- 应用场景
+
+  - 从记忆化回调中更新 *state*，通过传递更新函数来移除依赖
+
+    ```jsx
+    function TodoList() {
+      const [todos, setTodos] = useState([]);
+    
+      const handleAddTodo = useCallback((text) => {
+        const newTodo = { id: nextId++, text };
+        setTodos(todos => [...todos, newTodo]);
+      }, []); // ✅ 不需要 todos 依赖项
+      // ...
+    }
+    ```
+
+  - 优化重新渲染子组件的性能
+
+    ```jsx
+    import React, { memo, useCallback, useMemo, useState } from 'react';
+    
+    const Header = memo(({ info, changeInfo }) => {
+      console.log('re-render');
+      return (
+        <>
+          <h2>{info.name} - {info.age}</h2>
+          <button onClick={changeInfo}>更新</button>
+        </>
+      )
+    });
+    
+    const Counter = memo(({ count }) => <h2>{count}</h2>);
+    
+    export default function App() {
+      const [count, setCount] = useState(0);
+      const [info, setInfo] = useState({ name: 'Avril', age: 18 });
+      
+      const changeInfo = useCallback(() => {
+        /**
+         * 每次执行 setCount 都会使组件重新渲染
+         * 如果不使用 useCallback，相当于每次都创建了一个新函数
+         * Header 组件每次都会重新渲染
+         */
+        setInfo({ ...info, age: info.age + 1 });
+      }, [info])
+    
+      return (
+        <>
+          <Header info={info} changeInfo={changeInfo} />
+          <Counter count={count} />
+          <button onClick={() => setCount(count + 1)}>+1</button>
+        </>
+      );
+    }
+    ```
+
+    
+
+### 额外 Hook
+
+#### useContext
+
+- `useContext` 用于读取和订阅组件中的 *Context*
+
+  - 参数：一个 *Context* 对象，由 `React.createContext` 创建
+  - 返回值：由 *Provider* 共享的 `value` 值
+  - 如果 *Context* 发生变化，React 会自动重新渲染读取 *Context* 的组件
+
+  ```jsx
+  import { useContext } from 'react';
+  
+  function Button() {
+    const theme = useContext(ThemeContext);
+    // ...
+  }
+  ```
+
+- 使用 *Context* 传递数据时，在传递对象和函数时可以借助 *useMemo* 和 *useCallback* 优化重新渲染
+
+  ```jsx
+  import { useCallback, useMemo } from 'react';
+  
+  function MyApp() {
+    const [currentUser, setCurrentUser] = useState(null);
+  
+    const login = useCallback((response) => {
+      storeCredentials(response.credentials);
+      setCurrentUser(response.user);
+    }, []);
+  
+    const contextValue = useMemo(() => ({
+      currentUser,
+      login
+    }), [currentUser, login]);
+  
+    return (
+      <AuthContext.Provider value={contextValue}>
+        <Page />
+      </AuthContext.Provider>
+    );
+  }
+  ```
+
+
+
+#### useReducer
+
+- `useReducer` 用于处理复杂的 *state*，仅仅是 *useState* 的一种替代方案
+
+  - 参数列表
+    - 参数一（*reducer*）：用于更新 *state* 的纯函数
+    - 参数二：初始状态值
+    - 参数三：用于计算初始值的函数
+  - 返回值：`[state, dispatch]`
+
+  ```jsx
+  import { useReducer } from 'react';
+  
+  function reducer(state, action) {
+    // ...
+  }
+  
+  function MyComponent() {
+    const [state, dispatch] = useReducer(reducer, { age: 42 });
+    // ...
+  }
+  ```
+
+- 调用 `dispatch` 函数 **不会改变当前渲染的 state**
+
+
+
+#### useImperativeHandle
+
+- `useImperativeHandle` 用于自定义由 `ref` 暴露出来的句柄，需要结合 `forwardRef` 使用
+
+  - 参数一：从 *forwardRef* 渲染函数中获得的第二个参数
+  - 参数二：一个包含想暴露的属性和方法的==对象==
+
+  ```jsx
+  import { forwardRef, useRef, useImperativeHandle } from 'react';
+  
+  const MyInput = forwardRef(function MyInput(props, ref) {
+    const inputRef = useRef(null);
+  
+    useImperativeHandle(ref, () => {
+      return {
+        focus() {
+          inputRef.current.focus();
+        },
+        scrollIntoView() {
+          inputRef.current.scrollIntoView();
+        },
+      };
+    }, []);
+  
+    return <input {...props} ref={inputRef} />;
+  });
+  ```
+
+- **如果可以通过 props 实现，那就不应该使用 ref**
+
+
+
+#### useLayoutEffect
+
+- `useLayoutEffect` 和 `useEffect` 非常地相似，区别在于
+
+  - *useEffect* 会在渲染的内容==更新到 DOM 上后==执行，不会阻塞 DOM 的更新
+  - *useLayoutEffect* 会在渲染的内容==更新到 DOM 上前==执行，会阻塞DOM的更新
+  - 可以用于在浏览器重新绘制屏幕前计算布局
+
+  ```jsx
+  function Tooltip() {
+    const ref = useRef(null);
+    const [tooltipHeight, setTooltipHeight] = useState(0); // 你还不知道真正的高度
+  
+    useLayoutEffect(() => {
+      const { height } = ref.current.getBoundingClientRect();
+      setTooltipHeight(height); // 现在重新渲染，你知道了真实的高度
+    }, []);
+  
+    // ... 在下方的渲染逻辑中使用 tooltipHeight ...
+  }
+  ```
+
+- *useLayoutEffect* 可能会影响性能，尽可能使用 *useEffect*
+
