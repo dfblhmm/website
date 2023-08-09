@@ -2297,7 +2297,89 @@ export default function App() {
     }
     ```
 
-    
+
+
+
+### React@18 Hook
+
+#### useId
+
+- `useId` 是一个用于生成==横跨服务端和客户端==的稳定的唯一 ID 的同时避免 hydration 不匹配的 hook
+  - 主要用于 React 的==同构==应用开发
+  - React 确保它能够与==服务端渲染==一起工作
+- 不能使用 `useId` 来生成列表中的 *key*
+
+
+
+#### useTransition
+
+- `useTransition` 可以在==不阻塞 UI== 的情况下来更新状态
+
+  - 返回值：`[isPending, startTransition]`
+    - *isPending*：是否存在待处理的转换
+    - *startTransition*：必须接收一个==同步==函数，允许将状态更新标记为转换状态
+
+  ```jsx
+  import React, { useState, useTransition } from 'react';
+  
+  const list = Array(10000).fill(null).map((i, index) => index);
+  
+  export default function App() {
+    const [isPending, startTransition] = useTransition();
+    const [isEven, setIsEven] = useState(true);
+    const [numberList, setNumberList] = useState(list);
+  
+    const handleToggle = (e) => {
+      const { checked } = e.target;
+      setIsEven(checked);
+  
+      /**
+       * 不使用 startTransition
+       * 在处理列表更新时, 复选框的选中状态切换明显延迟
+       */
+      // if (checked) {
+      //   setNumberList(list.filter(n => n % 2 === 0));
+      // } else {
+      //   setNumberList(list.filter(n => n % 2 !== 0));
+      // }
+      
+      /**
+       * 使用 startTransition
+       * 复选框的选中状态正常无阻塞更新
+       * 列表更新被降低优先级处理
+       */
+      startTransition(() => {
+        if (checked) {
+          setNumberList(list.filter(n => n % 2 === 0));
+        } else {
+          setNumberList(list.filter(n => n % 2 !== 0));
+        }
+      });
+    }
+  
+    return (
+      <div>
+        <label htmlFor="is-even">
+          <input 
+            type="checkbox"
+            id="is-even"
+            checked={isEven}
+            onChange={handleToggle}
+          />
+          显示偶数
+        </label>
+  
+        { isPending ? 'Loading....' : numberList.map(n => <div key={n}>{n}</div>) }
+      </div>
+    );
+  }
+  ```
+
+  
+
+
+
+
 
 ### 额外 Hook
 
@@ -2401,7 +2483,7 @@ export default function App() {
   });
   ```
 
-- **如果可以通过 props 实现，那就不应该使用 ref**
+- **不要滥用 ref**，**如果可以通过 props 实现，那就不应该使用 ref**
 
 
 
@@ -2430,4 +2512,62 @@ export default function App() {
   ```
 
 - *useLayoutEffect* 可能会影响性能，尽可能使用 *useEffect*
+
+
+
+### 自定义 Hook
+
+- **自定义 Hook** 本质上只是一种函数代码逻辑的抽取
+
+  - 严格意义上来说，它本身并不算 React 的特性
+  - 函数名必须以 `use` 开头
+
+- 应用实例
+
+  - 获取元素的滚动位置
+
+    ```js
+    import { useEffect, useState } from 'react';
+    
+    /**
+     * 获取滚动位置
+     * @param {HTMLElement} el 要监听滚动的元素 
+     */
+    const useScrollPosition = (el) => {
+      const [scrollPosition, setScrollPosition] = useState({ x: 0, y: 0 });
+    
+      useEffect(() => {
+        const handleScroll = () => {
+          const { scrollLeft, scrollTop } = el;
+    
+          setScrollPosition({ x: scrollLeft, y: scrollTop });
+        }
+    
+        el.addEventListener('scroll', handleScroll);
+    
+        return () => {
+          el.removeEventListener('scroll', handleScroll);
+        }
+      }, []);
+    
+      return scrollPosition;
+    }
+    ```
+
+  - 本地数据存取
+
+    ```js
+    function useLocalStorage(key) {
+      const [data, setData] = useState(() => JSON.parse(localStorage.getItem(key)));
+    
+      useEffect(() => {
+        localStorage.setItem(key, JSON.stringify(data))
+      }, [data]);
+    
+      return [data, setData];
+    }
+    ```
+
+
+
 
