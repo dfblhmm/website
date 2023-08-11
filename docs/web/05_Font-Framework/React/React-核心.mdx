@@ -549,6 +549,117 @@ function App() {
 
 
 
+#### setState 解析
+
+>
+>
+>补充使用
+
+- `setState` 可以传入一个回调函数
+
+  - React 在更新状态时会调用这个函数并将==上一次==的状态传递过来
+  - 这个回调函数的==返回值==会作为需要更新的状态
+
+  ```jsx
+  class App extends React.Component {
+   	handleIncreaseAge = () => {
+      this.setState(prevState => ({
+        age: prevState.age + 1
+      }));
+    } 
+  }
+  ```
+
+- `setState` 的更新默认是==异步==的
+
+  - 设计为异步，可以显著的==提升性能==（批处理）
+
+  - 如果同步更新了 *state* ，但还没有执行 *render* 函数，会导致 *state* 和 *props* 不能==保持同步==
+
+    ```jsx
+    class App extends React.Component {
+     	handleClick() {
+        console.log(this.state.name); // "Taylor"
+        this.setState({ name: 'Robin' });
+        console.log(this.state.name); // 依然是 "Taylor"!
+      }
+    }
+    ```
+
+  - 如果需要获取到异步的结果
+
+    - 可以传递第二个回调函数作为参数
+    - React 将在提交更新后调用这个回调函数
+
+    ```jsx
+    class App extends React.Component {
+     	handleClick() {
+        console.log(this.state.name); // "Taylor"
+        this.setState({ 
+          name: 'Robin'
+        }, () => {
+          console.log(this.state.name); // 更新为 "Robin"
+        });
+      }
+    }
+    ```
+
+- 连续调用 `setState` 更新，进行==批处理==
+
+  - React 会将多次更新==合并成一个对象==，然后进行更新
+  - 在源码中，通过 `do {} while(true)` 循环进行==遍历链表==
+
+  ```jsx
+  function handleUpdate() {
+    // count 初始值为 0
+    this.setState({ count: this.state.count + 1 });
+    this.setState({ count: this.state.count + 1 });
+    this.setState({ count: this.state.count + 1 });
+    // 只执行一次更新，count 的值更新为 1
+  }
+  ```
+
+  
+
+>
+>
+>异步的版本变化
+
+- 在 **React 18** 之前，在 `setTimeout` 和 ==原生 DOM 事件== 中会做==同步==处理
+
+  ```jsx
+  class App extends React.Component {
+    handleClick() {
+      setTimeout(() => {
+        this.setState({ message: 'Hello' });
+        console.log(this.state.message) // 'Hello'
+      }, 0);
+    }
+    
+    componentDidMount() {
+      document.getElementById('btn').addEventListener('click', () => {
+        this.setState({ message: 'Hello' });
+        console.log(this.state.message) // 'Hello'
+      });
+    }
+  }
+  ```
+
+- 在 React 18 之后，所有的 `setState` 更新都变成==异步==处理
+
+  <img src="./images/image-20230811234120763.png" alt="image-20230811234120763" style="zoom:80%;" />
+
+  - 在极少数情况下，需要强制同步应用特定的 *state* 更新，此时可以将其包装在 `flushSync` 中
+
+    ```jsx
+    ReactDOM.flushSync(() => {
+      this.setState({ message: 'Hello' });
+    });
+    console.log(this.state.message) // 'Hello'
+    ```
+
+
+
 
 ### 组件的参数 props
 
@@ -2647,7 +2758,6 @@ export default function App() {
       return [data, setData];
     }
     ```
-
 
 
 
