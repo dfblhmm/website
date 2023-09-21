@@ -129,6 +129,7 @@ const config: Config = {
     'docs/web/04_Font-Engineering/images',
     'docs/web/05_Font-Framework/Vue/images',
     'docs/web/05_Font-Framework/React/images',
+    'docs/web/06_TypeScript/images',
 
     'docs/rust/images'
   ],

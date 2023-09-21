@@ -98,6 +98,20 @@ const sidebars: SidebarsConfig = {
           ]
         }
       ]
+    },
+
+    // TypeScript 
+    {
+      type: 'category',
+      label: 'TypeScript',
+      link: {
+        type: 'doc',
+        id: 'web/TypeScript/index'
+      },
+      items: [
+        // TypeScript 核心
+        'web/TypeScript/ts-core'
+      ]
     }
   ],
 
