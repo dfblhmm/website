@@ -46,6 +46,7 @@
 
   // ==key==强调
   mark {
+    padding: 0 4px;
     color: #e74b4b;
     background-color: transparent;
   }
@@ -78,6 +79,11 @@
     padding-left: 0;
     border-left: 0;
     border-bottom: 1px solid var(--ifm-blockquote-background);
+
+    // 空内容不显示
+    &:empty {
+      display: none;
+    }
 
     p {
       position: relative;
