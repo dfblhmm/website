@@ -169,3 +169,289 @@ title: 核心
   const age = 18;
   ```
 
+
+
+
+
+## 数据类型
+
+### JavaScript 类型
+
+#### number
+
+- 与 JavaScript 一样，TypeScript 不区分整数类型和浮点型，统一为 `number` 类型
+
+  ```typescript
+  const num: number = 10;
+  ```
+
+- TypeScript 同样支持二进制、八进制、十六进制的表示
+
+  ```typescript
+  const n1: number = 0b101;
+  const n2: number = 0o123;
+  const n3: number = 0xff;
+  ```
+
+
+
+#### bigint
+
+- `bigint` 用于表示绝对值大于或等于 2^53^ 的数字
+
+  ```typescript
+  const number: bigint = 12345678900000001n;
+  ```
+
+- 使用 `typeof` 测试时，返回 `"bigint"`
+
+  ```typescript
+  typeof 1n === "bigint"; // true
+  ```
+
+
+
+#### boolean
+
+`boolean` 类型只有两个取值：`true` 和 `false`
+
+```typescript
+let flag: boolean = true;
+flag = Date.now() % 2 === 0;
+```
+
+
+
+#### string
+
+`string` 类型表示字符串类型，可以使用单引号或者双引号表示
+
+```typescript
+const message: string = "Hello World";
+```
+
+
+
+#### null / undefined
+
+- 在 JavaScript 中，`undefined` 和 `null` 是两个基本数据类型
+
+- 在TypeScript中，它们既是实际的值，也是自己的类型
+
+  ```typescript
+  const s1: null = null;
+  const s2: undefined = undefined;
+  ```
+
+
+
+#### symbol
+
+`symbol` 表示符号类型，用于生成一个独一无二的值
+
+```typescript
+const t1 = Symbol('title');
+const t2 = Symbol('title');
+
+const info = {
+  [t1]: 'a',
+  [t2]: 'b'
+};
+```
+
+
+
+#### Array
+
+- `Array` 用于表示数组类型，数组中存放的元素属于同一类型
+
+- 数组类型存在两种定义方式
+
+  - `类型[]` 方式
+
+    ```typescript
+    const arr: number[] = [1, 2, 3];
+    ```
+
+  - `Array<类型>` 方式（泛型）
+
+    ```typescript
+    const arr: Array<string> = ['JavaScript', 'TypeScript'];
+    ```
+
+
+
+#### object
+
+- `object` 表示对象类型，但是此类型约束表示的是==空对象==，无法添加属性和方法
+
+  ```typescript
+  const info: object = {};
+  /*
+  * 类型“object”上不存在属性“name”
+  */
+  info.name = '';
+  ```
+
+- 通常使用接口 `interface` 来约束对象的属性和行为
+
+  ```typescript
+  interface Info {
+    name: string;
+    age: number;
+  }
+  
+  const info: Info = {
+    name: 'Avril',
+    age: 17
+  };
+  ```
+
+
+
+### TypeScript 类型
+
+#### any
+
+- 无法确定一个变量的类型，并且可能它会发生一些变化，这种情况使用 `any` 类型
+
+- 一旦使用了 `any` 类型，TS 会关闭对其的类型检测
+
+  - 此时所有的操作都变成合法的
+  - 这会带来类型安全问题，要尽量避免使用 `any` 类型
+
+  ```typescript
+  const num: any = 10;
+  /*
+  * 类型安全隐患
+  */
+  num.length = 10;
+  num.split('');
+  ```
+
+- `any` 类型的变量可以赋值给任意类型
+
+  ```typescript
+  let a: any = "str";
+  a = 123
+  a = false
+  ```
+
+
+
+#### unknown
+
+- `unknown` 类型用于描述类型==不确定==的变量
+
+  - 与 `any` 相反，其做任何操作都是==不合法==的
+  - 必须要先进行类型缩小后，才可以进行对象类型的操作
+
+  ```typescript
+  function foo(variable: unknown) {
+    if (typeof variable === "number") {
+      console.log(variable.toFixed(2));
+    } else if (typeof variable === 'string') {
+      variable.split(' ');
+    }
+  }
+  ```
+
+- 只能赋值给 `any` 和 `unknown` 类型，防止去干扰其他==确定的类型==
+
+  ```typescript
+  let b: unknown;
+  /**
+   * 不能将类型“unknown”分配给类型“string”
+   */
+  const c: string = b;
+  ```
+
+  
+
+#### void
+
+- `void` 通常用来指定一个函数是==没有返回值==
+
+  - 可以将 `undefined` 赋值给 `void` 类型
+
+  ```typescript
+  function foo(): void {
+    console.log(11);
+    return undefined;
+  }
+  ```
+
+- 当基于上下文的类型推导出返回类型为 void 的时候，并不会强制函数一定不能返回内容
+
+  ```typescript
+  const numbers = [1, 2, 3];
+  /**
+   * forEach 传入的回调函数没有返回值，但在此处也可以返回值
+   */
+  numbers.forEach(n => n.toFixed(2));
+  ```
+
+
+
+#### never
+
+- `never` 表示永远不会发生值的类型
+
+  - 比如一个函数中是一个死循环或者抛出一个异常，此时函数无返回值，可以指定为 `never` 类型
+
+  ```typescript
+  function throwError(): never {
+    throw new Error('error');
+  }
+  ```
+
+- 应用场景：强制完成类型枚举
+
+  ```typescript
+  /**
+   * 接收 string/number 类型参数，强制对类型进行完整穷举
+   */
+  function getType(variable: string | boolean) {
+    switch (typeof variable) {
+      case 'string':
+        console.log('string类型');
+        break;
+      default:
+        /**
+         * 编译时就会报错 (不能将类型“boolean”分配给类型“never”)
+         * 强制要求完成类型穷举
+         */
+        const extract: never = variable;
+    }
+  }
+  ```
+
+  
+
+#### tuple
+
+- `tuple` 表示==元组==类型(固定长度的数组)
+
+  - 相比数组，元组可以存放不同类型的元素，并且可以指定每一个元素的类型
+  - 元组中每个元素都有自己特定的类型，根据索引值获取到的值可以得到确定的类型
+
+  ```typescript
+  const tuple: [string, number] = ['aaa', 11];
+  const [str, num] = tuple;
+  
+  console.log(str.charAt(1));
+  console.log(num.toFixed(2));
+  ```
+
+- 元组类型通常用于指定函数==返回值==的类型
+
+  ```typescript
+  function useState<T>(init: T): [T, (v: T) => void] {
+    const state = init;
+    const setState = (newValue: T): void => {};
+  
+    return [state, setState];
+  }
+  ```
+
+  
