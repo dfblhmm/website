@@ -333,8 +333,8 @@ const info = {
 
   ```typescript
   let a: any = "str";
-  a = 123
-  a = false
+  a = 123;
+  a = false;
   ```
 
 
@@ -381,7 +381,7 @@ const info = {
   }
   ```
 
-- 当基于上下文的类型推导出返回类型为 void 的时候，并不会强制函数一定不能返回内容
+- 当基于==上下文==的类型推导出返回类型为 void 的时候，并不会强制函数一定不能返回内容
 
   ```typescript
   const numbers = [1, 2, 3];
@@ -405,7 +405,7 @@ const info = {
   }
   ```
 
-- 应用场景：强制完成类型枚举
+- 应用场景：强制完成类型穷举
 
   ```typescript
   /**
@@ -443,7 +443,7 @@ const info = {
   console.log(num.toFixed(2));
   ```
 
-- 元组类型通常用于指定函数==返回值==的类型
+- 元组类型通常用于指定==函数返回值==的类型
 
   ```typescript
   function useState<T>(init: T): [T, (v: T) => void] {
@@ -454,4 +454,351 @@ const info = {
   }
   ```
 
+
+
+
+
+## 类型系统
+
+### 类型别名和接口
+
+> 类型别名 type
+
+- 类型别名使用 `type` 关键字，可以对需要复用的类型进行抽取
+
+  ```typescript
+  type IDType = string | number;
+  const variable: IDType = 11;
+  ```
+
+
+
+> 接口 interface
+
+- 接口使用 `interface` 关键字，主要用于声明对象类型
+
+  ```typescript
+  interface Info {
+    name: string;
+    id: string;
+  }
+  ```
+
+- 对于对象类型，使用 `?` 可以声明==可选==属性，可选属性是声明类型和 `undefined` 的联合类型
+
+  ```typescript
+  interface Position {
+    x: number;
+    y: number;
+    z?: number;
+  }
   
+  const position2d: Position = { x: 100, y: 100 };
+  const position3d: Position = { x: 100, y: 100, z: 100 };
+  ```
+
+
+
+> 类型别名和接口区别
+
+- 类型别名通常用于定义 ==非对象==类型，接口通常用于定义对象类型
+
+  - 类型别名可以声明任意类型
+  - 接口只能声明对象类型和函数签名
+
+- 类型别名不可重复声明
+
+  - 接口可以==重复声明==，且类型声明会进行合并
+  - 合并时，同一属性的类型需要相同
+
+  ```typescript
+  interface Person {
+    name: string;
+  }
+  
+  interface Person {
+    age: number;
+  }
+  
+  const person: Person = {
+    name: 'Avril',
+    age: 17
+  };
+  ```
+
+- 接口可以使用==继承== 等扩展语法
+
+
+
+### 联合类型
+
+- 联合类型是由两个或者多个其他类型组成的类型，使用 `|` 操作符
+
+  - 表示可以是这些类型中的任何一个值
+  - 联合类型中的每一个类型被称之为联合成员
+
+  ```typescript
+  interface Info {
+    id: string | number;
+    name: string;
+  }
+  
+  const info: Info = { id: 10, name: 'Enemy' };
+  const info2: Info = { id: '_10032104', name: 'Airwaves' };
+  ```
+
+- 在使用联合类型的变量时，需要进行==类型缩小==后再使用
+
+  ```typescript
+  function getLength(id: string | number) {
+    if (typeof id === 'string') {
+      return id.length;
+    }
+    return id.toString().length;
+  }
+  ```
+
+
+
+### 交叉类型
+
+- 交叉类型表示需要==同时满足==多个类型的条件，使用 `&` 操作符
+
+  - 使用交叉类型，在定义类型时可以对原有类型进行扩展
+
+  ```typescript
+  interface Info {
+    name: string;
+    color: string;
+  }
+  
+  interface IAction {
+    run: () => void;
+  }
+  
+  const dog: IAction & Info = {
+    name: '小白',
+    color: 'white',
+    run() {
+      console.log(`${this.name} is running!`);
+    }
+  }
+  ```
+
+- 对两个无交集的类型进行交叉，会得到 `never` 类型
+
+  ```typescript
+  /**
+   * type ID = never
+   */
+  type ID = number & string;
+  ```
+
+- 对两个联合类型进行交叉，会取==交集==
+
+  ```typescript
+  type T1 = number | string;
+  type T2 = string | boolean;
+  
+  /**
+   * type T = string
+   */
+  type T = T1 & T2;
+  ```
+
+  
+
+### 类型断言
+
+- 使用 `as` 关键字进行类型断言，可以缩小类型范围
+
+  ```typescript
+  /**
+   * 将 Element 类型断言为 HTMLDivElement
+   */
+  const div = document.querySelector('#root') as HTMLDivElement;
+  ```
+
+- 只允许类型断言转换为 **更具体** 或者 **不太具体** 的类型范围
+
+  ```typescript
+  /**
+   * 向更具体的类型进行断言
+   */
+  const v1: string | undefined = '11';
+  const v2 = v1 as string;
+  
+  /**
+   * 向更宽泛的类型进行断言(不推荐，可能出现类型安全问题)
+   */
+  const v3: string = '22';
+  const v4 = v3 as any;
+  ```
+
+- 使用 `!` 可以进行==非空断言==，去除类型中的 `undefined/null` 类型
+
+  - 除非确定值一定存在，否则非空断言会导致类型安全问题
+
+  ```typescript
+  /**
+   * 去除获取的 null 类型
+   */
+  const { scrollTop } = document.querySelector('div')!;
+  ```
+
+
+
+### 字面量类型
+
+- 字面量类型类似于==枚举==，将取值在有限的范围内
+
+  - 字面量类型结合联合类型，可以实现枚举的效果，并且可以获取很好的代码提示
+
+  ```typescript
+  type Direction = 'left' | 'right';
+  
+  function action(direction: Direction) {
+    if (direction === 'left') {
+      console.log('Turn Left');
+    } else {
+      console.log('Turn Right');
+    }
+  }
+  ```
+
+- 对象在进行字面量推理的时候，会推导为==更通用==的类型
+
+  - 添加 `as const` 可以强制推导成字面量类型
+
+  ```typescript
+  /**
+   * const info: {
+      readonly name: "Avril";
+      readonly age: 17;
+    }
+   */
+  const info = {
+    name: 'Avril',
+    age: 17
+  } as const;
+  ```
+
+
+
+### 类型缩小
+
+类型缩小旨在将==不确定的类型==向==确定的类型==缩小
+
+> typeof
+
+- 在 TypeScript 中，`typeof` 是一种类型保护
+
+  - 在 `typeof` 的条件作用域内，类型会被缩小约束
+
+  ```typescript
+  function getLength(id: string | number) {
+    if (typeof id === 'string') {
+      return id.length;
+    }
+    return id.toString().length;
+  }
+  ```
+
+- 除了能用于类型保护外，`typeof` 还可以获取一个标识符的类型，起到==提取类型==的作用
+
+  ```typescript
+  const info = {
+    name: 'Avril',
+    age: 17
+  };
+  
+  /**
+   * type ID = {
+      name: string;
+      age: number;
+    }
+   */
+  type ID = typeof info;
+  ```
+
+
+
+> 平等缩小
+
+使用 `switch` 或相等的一些运算符（`===`、`!==`）来表达相等性
+
+```typescript
+function action(direction: 'left' | 'right') {
+  if (direction === 'left') {
+    console.log('Turn Left');
+  } else {
+    console.log('Turn Right');
+  }
+
+  switch (direction) {
+    case 'left':
+      console.log('Turn Left');
+      break;
+    case 'right':
+      console.log('Turn Right');
+  }
+}
+```
+
+
+
+> instanceof
+
+使用 `instanceof` 检查一个值是否是另一个值的 ==实例==
+
+```typescript
+function validateJson(json: string) {
+  try {
+    return true;
+  } catch (error) {
+    return error as Error;
+  }
+}
+
+const result = validateJson("{}")
+
+if (result instanceof Error) {
+  console.log(result.message);
+}
+```
+
+
+
+> in
+
+`in` 操作符用于确定对象是否具有给定名称的属性
+
+```typescript
+interface Teacher {
+  teaching: () => void;
+}
+
+interface Student {
+  studying: () => void;
+}
+
+function action2(person: Teacher | Student) {
+  if ('studying' in person) {
+    /**
+     * 此作用域内确定为 Student 类型
+     */
+    person.studying();
+  } else {
+    /**
+     * 此作用域内确定为 Teacher 类型
+     */
+    person.teaching();
+  }
+}
+```
+
+
+
+
+
+## 函数类型
