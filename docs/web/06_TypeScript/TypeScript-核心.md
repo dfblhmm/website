@@ -508,7 +508,7 @@ const info = {
 
 - 类型别名不可重复声明
 
-  - 接口可以==重复声明==，且类型声明会进行合并
+  - 接口可以==重复声明==，且类型声明会进行==合并==
   - 合并时，同一属性的类型需要相同
 
   ```typescript
@@ -771,7 +771,7 @@ if (result instanceof Error) {
 
 > in
 
-`in` 操作符用于确定对象是否具有给定名称的属性
+`in` 操作符用于确定对象是否含有给定名称的属性
 
 ```typescript
 interface Teacher {
@@ -782,7 +782,7 @@ interface Student {
   studying: () => void;
 }
 
-function action2(person: Teacher | Student) {
+function action(person: Teacher | Student) {
   if ('studying' in person) {
     /**
      * 此作用域内确定为 Student 类型
@@ -802,3 +802,304 @@ function action2(person: Teacher | Student) {
 
 
 ## 函数类型
+
+### 函数类型声明
+
+#### 函数类型表达式
+
+- 在 TypeScript 中，通过编写==函数类型表达式==可以约束函数的类型
+
+  - 语法：`(参数: 类型) => 返回值类型`
+  - 不同于其他编程语言，参数列表中的==形参名称==不能省略
+
+  ```typescript
+  type Sum = (n1: number, n2: number) => number;
+  
+  const sum: Sum = (n1, n2) => n1 + n2;
+  ```
+
+- 声明函数时，形参的个数可以==少于==类型声明中的参数个数
+
+  - 类型声明中多余的形参会被忽略
+  - 但声明函数时，形参个数==不能多于==类型声明中的个数
+
+  ```tex
+  In JavaScript, if you call a function with more arguments than there are parameters, the extra arguments are simply ignored. TypeScript behaves the same way.
+  ```
+
+  ```typescript
+  type Sum = (n1: number, n2: number) => number;
+  
+  /*
+  * 无报错
+  */
+  const sum1: Sum = (n1) => n1 * 2;
+  
+  /**
+   * Target signature provides too few arguments. Expected 3 or more, but got 2
+   */
+  const sum2: Sum = (n1, n2, n3) => n1 + n2;
+  ```
+
+
+
+#### 调用签名
+
+在 JavaScript 中，函数除了可以被调用，也可以有属性值
+
+- 函数类型表达式只能表达一个可以被调用的函数，无法为函数添加属性
+- 此时可以使用==接口==为函数添加属性，同时使用==调用签名==声明函数的调用类型
+
+- 调用签名语法：`(参数: 类型): 返回值类型`
+
+```typescript
+interface Sum {
+  description: string;
+  (n1: number, n2: number): number;
+}
+
+const sum: Sum = (n1, n2) => n1 + n2;
+sum.description = '两数之和';
+```
+
+
+
+#### 构造签名
+
+在 JavaScript 中，函数也可以被当作一个==构造函数== 通过 `new` 进行调用
+
+- 此时可以为函数类型添加==构造签名==，只需在 **调用签名** 前面添加 `new` 操作符
+
+```typescript
+type SomeConstructor = {
+  new (name: string): Dog;
+};
+
+function fn(ctor: SomeConstructor) {
+  return new ctor("hello");
+}
+
+class Dog {
+  name: string;
+  constructor(name: string) {
+    this.name = name;
+  }
+}
+
+fn(Dog);
+```
+
+
+
+### 函数参数类型
+
+#### 可选参数
+
+- 在声明函数的参数类型时，可以为参数名称添加 `?` 后缀，表示此参数是可选的
+
+  - 添加可选类型后，此参数的类型相当于给定类型与 `undefined` 的联合类型
+
+  ```typescript
+  function sum(x: number, y?: number) {}
+  
+  sum(1);
+  sum(1, 2);
+  ```
+
+- 可选参数需要放在必选参数的后面
+
+
+
+#### 默认参数
+
+- 在声明函数的参数类型时，可以为参数赋予==默认值==
+
+  - 默认参数不需要添加类型注解，TS 会根据默认值自动进行==类型推导==
+  - 对于默认参数，可以显式的传递 `undefined`（会被忽略），此时也会使用函数声明的默认参数
+
+  ```typescript
+  function drawCircle(radius: number, x = 0, y = 0) {
+    const ctx = document.querySelector('canvas')!.getContext('2d') as CanvasRenderingContext2D;
+    
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+  }
+  
+  /**
+   * 此时 x 然而会以 0 进行运算
+   */
+  drawCircle(50, undefined);
+  ```
+
+- 同样，默认参数也需要放在必选参数的后面
+
+
+
+#### 剩余参数
+
+- TS 同样支持剩余参数，剩余参数会以==数组==的形式进行存放
+
+  ```typescript
+  const sum = (init: number, ...args: number[]) => args.reduce((pre, cur) => pre + cur, init);
+  ```
+
+- 默认参数需要放在参数列表的最后
+
+
+
+### 函数重载
+
+- 在 TS 中，可以为函数编写不同的重载签名，表示函数可以以不同的方式进行调用
+
+  - 编写多个重载签名，再去编写一个通用的函数以及实现
+  - 有实现体的函数无法被直接调用，只能去调用匹配的重载签名
+
+  ```typescript
+  function sum(arg1: number, arg2: number): number;
+  function sum(arg1: string, arg2: string): string;
+  function sum(arg1: any, arg2: any): any {
+    return arg1 + arg2;
+  }
+  
+  sum('Hello', 'World');
+  sum(11, 22);
+  ```
+
+- 也可以使用接口声明多个==调用签名==来实现函数的重载
+
+  ```typescript
+  interface NavigateOptions {
+    replace?: boolean;
+    relative?: string;
+  }
+  
+  /**
+   * 声明多个重载签名
+   */
+  interface Navigate {
+    (to: string, options: NavigateOptions): void;
+    (delta: number): void;
+  }
+  
+  const navigate: Navigate = () => {};
+  
+  navigate(2);
+  navigate('/home', { replace: true });
+  ```
+
+- 在可能的情况下，如果联合类型能够实现，尽量使用联合类型来实现函数的多种调用形式
+
+
+
+### 函数 this 类型
+
+#### 指定 this 类型
+
+- 在没有进行任何配置时，函数内 `this` 的默认类型为 `any`
+
+  - 此时在 *this* 上做任何操作都是合法且不进行类型检测
+
+- 如果在 **tsconfig.json** 中配置了 `noImplicitThis: true`
+
+  - TS 会根据==上下文==推导 *this*
+
+    ```typescript
+    const person = {
+      name: 'Avril',
+      occupation: 'singer',
+      print() {
+        /**
+         * 根据上下文自动推导出 this 的类型
+         * this: {
+            name: string;
+            occupation: string;
+            print(): void;
+          }
+         */
+        console.log(`she is ${this.name} who is a ${this.occupation}`);
+      }
+    }
+    ```
+
+  - 在不能正确推导时就会报错，需要明确的指定
+
+    ```typescript
+    function foo() {
+      /**
+       * 无法自动推导出 this 的类型，需要明确指定
+       */
+      console.log(this);
+    }
+    ```
+
+- 函数的第一个参数可用于指定 `this` 的类型，且参数名称必须叫 `this`
+
+  - 后续调用函数传入参数时，从第二个参数开始传递，*this* 参数会在编译后被删除
+
+  ```typescript
+  function foo(this: typeof window) {
+    console.log(this.location.href);
+  }
+  ```
+
+  
+
+#### this 内置工具
+
+- `ThisParameterType` 用于提取一个函数类型的 *this* 参数类型
+
+  - 如果这个函数类型没有 *this* 参数返回 `unknown`
+
+  ```typescript
+  function bar(this: { data: number[] }) {}
+  /**
+   * type ThisOfBar = ThisParameterType<typeof bar>
+   */
+  type ThisOfBar = ThisParameterType<typeof bar>;
+  ```
+
+- `OmitThisParameter` 用于移除一个函数的 *this* 参数类型，并且返回当前的函数类型
+
+  ```typescript
+  function demo(this: {}, ...args: string[]) {}
+  /**
+   * type OmitThisOfDemo = (...args: string[]) => void
+   */
+  type OmitThisOfDemo = OmitThisParameter<typeof demo>;
+  ```
+
+- `ThisType` 被用作标记一个==上下文==的 *this* 类型
+
+  ```typescript
+  interface IData {
+    id: string;
+    price: number;
+  }
+  
+  interface IProduct {
+    data: IData;
+    share: () => string;
+    order: () => void;
+  }
+  
+  /**
+   * 通过 ThisType，可以将 product 对象中每个方法中的上下文 this 推导为 IData
+   * 在每个方法中，可以直接去获取 data 中的数据
+   */
+  const product: IProduct & ThisType<IData> = {
+    data: {
+      id: '1696417118933',
+      price: 3999
+    },
+    share() {
+      return `https://example.com/share?id=${this.id}`
+    },
+    order() {
+      window.open(`https://example.com/order?id=${this.id}`)
+    }
+  }
+  
+  product.order.call(product.data);
+  product.share.call(product.data);
+  ```
+
+  
