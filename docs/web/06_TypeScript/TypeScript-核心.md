@@ -554,20 +554,24 @@ const info = {
   }
   ```
 
-- 对于对象类型，使用 `?` 可以声明==可选==属性，可选属性是声明类型和 `undefined` 的联合类型
+- 对于对象类型，属性支持额外的修饰符
 
+  - `?`：可选属性，可选属性是声明类型和 `undefined` 的联合类型
+  - `readonly`：只读属性，只允许读取，不可重写
+  
   ```typescript
   interface Position {
     x: number;
-    y: number;
+    readonly y: number;
     z?: number;
   }
   
   const position2d: Position = { x: 100, y: 100 };
+  // position2d.y = 200; 不可进行属性值重写
   const position3d: Position = { x: 100, y: 100, z: 100 };
   ```
-
-
+  
+  
 
 > 类型别名和接口区别
 
@@ -1178,3 +1182,126 @@ fn(Dog);
 
 
 ## 面向对象
+
+### 类的定义
+
+- 在 TS 中，同样使用 `class` 关键字来定义一个类
+
+- 在类的内部声明类的属性以及对应的类型
+
+  - 默认情况下，由于 `strictPropertyInitialization` 配置的存在，在声明属性的时候必须要进行==初始化==
+  - 可以在声明的时候直接给予初始值，或者配合 `constructor` 进行赋值
+  - 如果不想初始化，可以使用 `!` 跳过检测
+
+  ```typescript
+  class Person {
+    name: string;
+    age: number = 0;
+    address!: string;
+  
+    constructor(name: string) {
+      this.name = name;
+    }
+    
+    say() {
+      console.log(`Hello, I am ${this.name}`);
+    }
+  }
+  ```
+
+- 属性的修饰符
+
+  - `?`：可选属性，可以不进行初始化
+  - `readonly`：只读属性（只允许在==构造器==或属性声明时赋值）
+
+  ```typescript
+  class Person {
+    name?: string;
+    readonly age: number = 0;
+  }
+  ```
+
+- 类除了可以作为一个工厂函数，也可以作为一种数据类型
+
+  ```typescript
+  class Person {
+    name: string;
+  
+    constructor(name: string) {
+      this.name = name;
+    }
+  }
+  
+  /*
+  * 此处 Person 既可以作为一个创建实例对象的类
+  * 也可以作为一种类型来约束变量 p
+  */
+  const p: Person = new Person('Avril');
+  ```
+
+
+
+### 类的继承
+
+- 与 JavaScript 中一致，在 TS 中使用 `extends` 可以完成类的继承
+
+  - ==继承==不仅可以抽取可复用的逻辑，而且是==多态==的前提
+
+- 在子类中通过 `super` 访问父类的属性和方法，也可以对父类的属性和方法进行重写
+
+  ```typescript
+  class Person {
+    name: string;
+  
+    constructor(name: string) {
+      this.name = name;
+    }
+    
+    print() {}
+  }
+  
+  class Student extends Person {
+    constructor(name: string) {
+      // 访问父类构造器
+      super(name);
+    }
+  
+    // 重写父类中的方法
+    print() {
+      console.log(this.name);
+    }
+  }
+  ```
+
+  
+
+### 类的成员修饰符
+
+- `public`： 修饰的是在任何地方可见、公有的属性或方法，默认编写的属性就是 *public* 的
+- `private`： 修饰的是仅在==同一类==中可见、私有的属性或方法
+- `protected`： 修饰的是仅在==类自身及子类==中可见、受保护的属性或方法
+
+```typescript
+class Person {
+  private address: string = '北京'
+  protected gender: '男' | '女' = '男'
+  
+  print() {
+    console.log(this.address); // '北京'
+  }
+}
+
+class Student extends Person {
+  print() {
+    console.log(this.gender) // '男'
+  }
+}
+
+const p1 = new Person('app')
+// p1.address —— 无法访问
+// p1.gender —— 无法访问
+```
+
+
+
+### 属性存取器
