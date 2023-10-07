@@ -456,6 +456,76 @@ const info = {
 
 
 
+#### enum
+
+- `enum` 表示==枚举==类型
+
+  - 枚举就是将一系列可能的值，一个个列举出来定义在一个类型中
+
+  ```typescript
+  enum Gender {
+    MALE,
+    FEMALE
+  }
+  
+  const male: Gender = Gender.MALE;
+  ```
+
+- 枚举类型默认是有值的
+
+  - 默认从 `0` 开始依次递增，如果改变了一个枚举的数值，后续未定义的枚举会以此依次递增
+
+    ```typescript
+    enum Gender {
+      MALE = 100,
+      FEMALE
+    }
+    
+    const male: Gender = Gender.FEMALE;
+    console.log(male === 101); // true
+    ```
+
+  - 也可以使用其他类型（常量或计算值）作为枚举类型的值
+
+    ```typescript
+    /*
+    * 常量
+    */
+    enum Direction {
+      Up = "UP",
+      Down = "DOWN",
+      Left = "LEFT",
+      Right = "RIGHT",
+    }
+    
+    /*
+    * 计算值
+    */
+    enum FileAccess {
+      // constant members
+      None,
+      Read = 1 << 1,
+      Write = 1 << 2,
+      ReadWrite = Read | Write,
+      // computed member
+      G = "123".length,
+    }
+    ```
+
+- 使用==数字枚举==成员的枚举类型支持反向映射
+
+  ```typescript
+  enum Direction {
+    LEFT,
+    RIGHT
+  }
+  
+  const left = Direction.LEFT;
+  console.log(Direction[left]); // "LEFT"
+  ```
+
+  
+
 
 
 ## 类型系统
@@ -1102,4 +1172,9 @@ fn(Dog);
   product.share.call(product.data);
   ```
 
-  
+
+
+
+
+
+## 面向对象
