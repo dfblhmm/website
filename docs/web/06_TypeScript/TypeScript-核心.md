@@ -571,6 +571,19 @@ const info = {
   const position3d: Position = { x: 100, y: 100, z: 100 };
   ```
   
+
+- 通过 `接口["成员属性"]` 的方式可以访问接口成员的类型
+
+  ```typescript
+  interface IPerson {
+    name: string;
+    hobbies: string[];
+  }
+  
+  // type A = string[]
+  type A = IPerson["hobbies"];
+  ```
+
   
 
 > 类型别名和接口区别
@@ -1304,4 +1317,241 @@ const p1 = new Person('app')
 
 
 
-### 属性存取器
+### 参数属性
+
+TS 提供了特殊的语法糖，可以把一个==构造函数参数==转成一个==同名同值==的类属性
+
+- 通过在构造函数参数前添加一个==可见性==修饰符来创建参数属性
+- 同时这些类属性字段也会得到这些修饰符
+- 甚至在构造函数中的赋值操作也可以省略
+
+```typescript
+class Person {
+  constructor(public name: string, readonly age: number) {}
+}
+
+const p = new Person('Avril', 17);
+console.log(p); // { name: 'Avril', age: 17 }
+
+/**
+ * 无法为“age”赋值，因为它是只读属性
+ */
+// p.age = 20
+```
+
+
+
+### 抽象类
+
+- ==抽象类==为 TS 中新增的类型，不存在于 JavaScript 中
+
+  - 是对一类事物的抽象，可以定义一些通用的抽象方法而不做实现，由继承的子类去做具体实现
+  - 通过 `abstract` 声明抽象类
+
+  ```typescript
+  /*
+  * 抽象形状类
+  */
+  abstract class Shape {
+    abstract getArea(): number
+  }
+  
+  class Rectangle extends Shape {
+    constructor(public width: number, public height: number) {
+      super();
+    }
+  
+    getArea() {
+      return this.height * this.width;
+    }
+  }
+  
+  class Circle extends Shape {
+    constructor(public r: number) {
+      super();
+    }
+  
+    getArea() {
+      return Math.PI * this.r ** 2;
+    }
+  }
+  
+  const rectangle = new Rectangle(10, 20);
+  console.log(rectangle.getArea()); // 300
+  
+  const circle = new Circle(10);
+  console.log(circle.getArea()); // 314.1592653589793
+  ```
+
+-  抽象类的特点
+
+  - 抽象类是不能被==实例化==
+  - 抽象类可以没有抽象方法，也可以拥有具体实现的方法
+  - 抽象方法必须被子类实现
+
+- 抽象类与接口的区别
+
+  - 抽象类是事物的抽象，用于捕捉子类的通用特性；接口是对通用行为的抽象
+  - 一个类可以同时实现多个接口，但只能继承一个类
+  - 抽象类中可以有实现体的方法，接口中只能存在函数的声明
+
+
+
+### 接口补充
+
+#### 索引签名
+
+通过索引签名，可以对具有==同一特征==的属性 — 值进行列举
+
+- 索引签名的属性类型必须是 `string` 或 `number`
+
+  ```typescript
+  interface IPrice {
+    /*
+    * 声明对象的 key 为 string 类型，值为数字类型
+    */
+    [key: string]: number;
+  }
+  
+  const price: IPrice = {
+    'apple': 3,
+    'banana': 5
+  }
+  ```
+
+- 如果同时声明，则需要满足 —— 数字索引的返回类型是字符索引返回类型的==子类型==
+
+  ```typescript
+  interface ICollection {
+    [key: string]: any;
+    [key: number]: number;
+  }
+  
+  const numbers: ICollection = [1, 2, 4];
+  ```
+
+
+
+#### 接口继承
+
+接口同样支持继承（`extends`）于其他接口，同时还支持继承==多个接口==
+
+```typescript
+interface Person {
+  name: string;
+  age: number;
+}
+
+interface Student {
+  studying: () => void;
+}
+
+interface Undergraduate extends Person, Student {
+  profession: string;
+}
+
+const john: Undergraduate = {
+  name: 'john',
+  age: 22,
+  studying() {},
+  profession: 'computer specialty'
+}
+```
+
+
+
+#### 实现接口
+
+- 接口定义后，也是可以被类实现，以约束类的行为
+- 由于 TS 的类型检测基于 ==鸭子类型==，所以实现的接口的类和对象都可以通过类型校验
+
+```typescript
+interface ITask {
+  task: () => void;
+}
+
+class Teacher implements ITask {
+  task() {
+    console.log('Teaching');
+  }
+}
+
+class Student implements ITask {
+  task() {
+    console.log('Studying');
+  }
+}
+
+/**
+ * role 参数需要实现 ITask 接口
+ */
+function runTask(role: ITask) {
+  role.task();
+}
+
+runTask(new Teacher());
+runTask(new Student());
+
+/**
+ * 实现了接口的任意对象也可通过类型校验
+ */
+runTask({
+  task() {}
+});
+```
+
+
+
+### 严格字面量赋值检测
+
+- 每个对象字面量==最初赋值==都被认为是 “新鲜的（fresh）”
+
+- 当一个新的对象字面量分配给一个变量或传递给一个==非空目标类型==的参数时，对象字面量指定目标类型中==不存在==的属性是错误的
+
+  ```typescript
+  interface IPerson {
+    name: string;
+    age: number;
+  }
+  
+  const p: IPerson = {
+    name: 'Avril',
+    age: 17,
+    /**
+     * Error: “address”不在类型“IPerson”中
+     */
+    address: 'Canada'
+  }
+  ```
+
+- 当类型断言或对象字面量的类型扩大时，新鲜度会消失
+
+  ```typescript
+  interface IPerson {
+    name: string;
+    age: number;
+  }
+  
+  /**
+   * 类型断言，此时可以绕过 TS 类型检测
+   */
+  const p: IPerson = {
+    name: 'Avril',
+    age: 17,
+    address: 'Canada'
+  } as IPerson;
+  
+  
+  const person = {
+    name: 'Avril',
+    age: 17,
+    address: 'Canada'
+  }
+  
+  /**
+   * 二次赋值，此时可以绕过 TS 类型检测
+   */
+  const realPerson: IPerson = person;
+  ```
+
+  
