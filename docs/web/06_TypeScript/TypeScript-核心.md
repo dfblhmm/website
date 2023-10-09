@@ -571,7 +571,6 @@ const info = {
   const position3d: Position = { x: 100, y: 100, z: 100 };
   ```
   
-
 - 通过 `接口["成员属性"]` 的方式可以访问接口成员的类型
 
   ```typescript
@@ -1012,7 +1011,7 @@ fn(Dog);
   }
   
   /**
-   * 此时 x 然而会以 0 进行运算
+   * 此时 x 仍然会以 0 进行运算
    */
   drawCircle(50, undefined);
   ```
@@ -1430,6 +1429,8 @@ console.log(p); // { name: 'Avril', age: 17 }
   const numbers: ICollection = [1, 2, 4];
   ```
 
+- 利用索引签名可以创建映射类型和一系列内置工具
+
 
 
 #### 接口继承
@@ -1554,4 +1555,234 @@ runTask({
   const realPerson: IPerson = person;
   ```
 
+
+
+
+
+
+## 泛型编程
+
+### 泛型定义
+
+- 泛型定义：将==类型参数化==，用于封装通用的接口
+
+  - 泛型使用 `<类型>` 语法定义
+
+    ```typescript
+    function foo<T>(arg: T) {}
+    ```
+
+  - 在定义泛型时，可以使用 `=` 赋默认值，使用时未传递类型则使用默认类型
+
+    ```typescript
+    function foo<T = string>(arg: T) {}
+    ```
+
+- 在使用泛型时，可以显式的传递类型，也可以自动类型推导出类型
+
+  ```typescript
+  function foo<T, V>(v1: T, v2: V) {}
   
+  // 显式传递
+  foo<string, number>("string", 22);
+  // 根据传递的参数类型自动类型推导
+  foo("string", 22);
+  ```
+
+  
+
+### 泛型接口/类
+
+- 定义接口或类时可以结合泛型动态决定属性类型
+
+- 泛型接口：`interface 接口<T>`
+
+  ```typescript
+  interface IPosition<T = number> {
+    x: T;
+    y: T;
+  }
+  
+  const position1: IPosition = { x: 100, y: 100 };
+  const position2: IPosition<string> = { x: '100.00', y: '100.00' };
+  ```
+
+- 泛型类：`class 类<T>`
+
+  ```typescript
+  class Point<T> {
+    constructor(public x: T, public y: T) {}
+  }
+  
+  const p1: Point<number> = new Point(1, 2)
+  const p2 = new Point<string>('1.0', '2.0')
+  ```
+
+
+
+### 泛型约束
+
+- 泛型约束：对传入的类型进行一定的约束，比如拥有相同的属性或行为
+
+  - 使用 `extends` 关键字对泛型进行约束，使其必须满足某些条件
+
+  ```typescript
+  /**
+   * 遍历一个可迭代对象
+   */
+  function ergodic<T extends Iterable<any>>(arg: T) {
+    for (const iterator of arg) {
+      console.log('iterator', iterator);
+    }
+  }
+  
+  ergodic('123');
+  ergodic([1, 2, 3]);
+  ergodic(new Set([1, 2, 3]));
+  ```
+
+- 类型参数可以被其他类型参数约束
+
+  - `keyof` 操作符：获取一个对象所有的属性名组成的==联合类型==
+
+  ```typescript
+  function getProperty<T, K extends keyof T>(obj: T, key: K) {
+    return obj[key];
+  }
+   
+  const x = { a: 1, b: 2 };
+  // 传入的属性约束为只能是 x 对象中的属性
+  getProperty(x, "a");
+  ```
+
+
+
+### 映射类型
+
+- 映射类型建立在索引签名的语法上，是使用了属性名的联合类型的泛型
+
+  - 在映射时，会遍历每一个属性键名生成一个新的类型
+  - 映射类型只能使用 `type` 完成，无法使用 `interface`
+  - 大部分内置类型工具都是通过映射类型来实现的 
+
+  ```typescript
+  type CopyType<T> = {
+    /**
+     * in 操作符会自动遍历每一个属性键名
+     */
+    [P in keyof T]: T[P];
+  }
+  
+  interface IPerson {
+    name: string;
+    age?: number;
+  }
+  
+  /**
+   * type A = {
+      name: string;
+      age?: number | undefined;
+    }
+   */
+  type A = CopyType<IPerson>;
+  ```
+
+- 在使用映射类型时，使用==映射修饰符==可以对原有类型进行修改
+
+  - 两个额外的修饰符 `readonly` 和 `?`
+  - 通过前缀 `-` 或 `+` 删除或添加这些修饰符，不写默认指定为 `+`
+
+  ```typescript
+  type MyRequired<T> = {
+    /**
+     * "-?" 会将所有可选属性 -> 必选属性
+     */
+    [P in keyof T]-?: T[P];
+  }
+  
+  interface IPerson {
+    name?: string;
+    age?: number;
+  }
+  
+  /**
+   * type A = {
+      name: string;
+      age: number;
+    }
+   */
+  type A = MyRequired<IPerson>;
+  ```
+
+
+
+### 条件类型
+
+- 条件类型：基于==输入==的值的类型来决定==输出==的值的类型
+
+  - 类似于 JS 中的三元运算符，条件类型语法
+
+    ```typescript
+    type Type = SomeType extends OtherType ? TrueType : FalseType;
+    ```
+
+  - 使用条件类型可以根据传入的类型，推断出不同的类型
+
+    ```typescript
+    interface IdLabel {
+      id: number /* 一些字段 */;
+    }
+    
+    interface NameLabel {
+      name: string /* 其它字段 */;
+    }
+    
+    type NameOrId<T extends number | string> = T extends number ? IdLabel : NameLabel;
+    
+    const e1: NameOrId<string> = { name: '1' };
+    const e2: NameOrId<number> = { id: 1 };
+    ```
+
+- 在条件类型中推断
+
+  - 条件类型提供了 `infer` 关键字，可以从正在比较的类型中推断类型，然后在 `true` 分支里引用该推断结果
+  - `infer T` 类型于一个类型==占位符== 
+
+  ```typescript
+  type MyReturnType<T extends (...args: any[]) => any> = 
+  	T extends (...args: any[]) => infer R ? R : never;
+  
+  // type A = string[]
+  type A = MyReturnType<typeof String.prototype.split>;
+  ```
+
+- 分发条件类型
+
+  - 当在泛型中使用条件类型的时候，如果传入一个==联合类型==，就会变成分发的
+
+    ```typescript
+    type ToArray<T> = T extends any ? Array<T> : never;
+    
+    /**
+     * type A = string[] | number[]
+     * 如果直接使用 Array<T>，结果是 (string | number)[]
+     */
+    type A = ToArray<string | number>;
+    ```
+
+  - 在条件类型中，泛型默认是分发的，如果要避免这种行为，将 `extends` 前后的类型都加上 `[]` 即可
+
+    ```typescript
+    type ToArray<T> = [T] extends [any] ? Array<T> : never;
+    
+    /**
+     * type A = (string | number)[]
+     * 此时会取消条件分发模式
+     */
+    type A = ToArray<string | number>;
+    ```
+
+
+
+### 内置类型工具
+
