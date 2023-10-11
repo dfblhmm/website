@@ -1786,3 +1786,277 @@ runTask({
 
 ### 内置类型工具
 
+>Partial< Type >
+
+用于构造一个 Type 下面的所有属性都设置为==可选==的类型，转换过程是==浅层==的
+
+```typescript
+type MyPartial<T> = {
+  [P in keyof T]?: T[P];
+}
+
+// 深层转换
+type MyDeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? MyDeepPartial<T[P]> : T[P];
+}
+
+interface IPerson {
+  name: string;
+  age: number;
+}
+
+/**
+ * type A = {
+    name?: string | undefined;
+    age?: number | undefined;
+  }
+ */
+type A = MyPartial<IPerson>;
+
+const p: MyPartial<IPerson> = { name: 'Avril' };
+```
+
+
+
+>Required< Type >
+
+用于构造一个 Type 下面的所有属性都设置为==必选==的类型，转换过程是==浅层==的
+
+```typescript
+type MyRequired<T> = {
+  [P in keyof T]-?: T[P];
+}
+
+// 深层转换
+type MyDeepRequired<T> = {
+  [P in keyof T]-?: T[P] extends object ? MyDeepRequired<T[P]> : T[P];
+}
+
+interface IPerson {
+  name: string;
+  age?: number;
+}
+
+/**
+ * type T = {
+    name: string;
+    age: number;
+  }
+ */
+type T = MyRequired<IPerson>;
+
+const p: T = { 
+  name: 'Avril',
+  age: 17 
+};
+```
+
+
+
+>Readonly< Type >
+
+用于构造一个 Type 下面的所有属性全都设置为==只读==的类型，转换过程是==浅层==的
+
+```typescript
+type MyReadonly<T> = {
+  readonly [P in keyof T]: T[P];
+}
+
+// 深层转换
+type MyDeepReadonly<T> = {
+  readonly [P in keyof T]: T[P] extends object ? MyDeepReadonly<T[P]> : T[P];
+}
+
+interface IPerson {
+  name: string;
+  age?: number;
+}
+
+/**
+ * type T = {
+    readonly name: string;
+    readonly age?: number;
+  }
+ */
+type T = MyReadonly<IPerson>;
+
+const p: T = { name: 'Avril' };
+
+// 无法为“name”赋值，因为它是只读属性
+// p.name = 10;
+```
+
+
+
+>Record<Keys, Type>
+
+用于构造一个==对象==类型，它所有的 **键** 都是 Keys 类型，所有的 **值** 都是 Type 类型
+
+```typescript
+/**
+ * type Key = string | number | symbol
+ */
+type Key = keyof any;
+
+type MyRecord<K extends Key, V> = {
+  [P in K]: V;
+}
+
+interface Action {
+  step: number;
+  speed: number;
+}
+
+type DirectionAction = MyRecord<'left' | 'top', Action>;
+
+const action: DirectionAction = {
+  left: { step: 10, speed: 1 },
+  top: { step: 10, speed: 1 }
+};
+```
+
+
+
+>Exclude<U, E>
+
+用于构造一个类型，它是从 U ==联合类型==里面==排除==了所有可以赋给 E 的类型
+
+```typescript
+type MyExclude<U, K extends U> = U extends K ? never : U;
+
+/**
+ * type A = string
+ */
+type A = MyExclude<string | number, number>;
+
+const a: A = "Hello World";
+```
+
+
+
+>Extract<Type, U>
+
+用于构造一个类型，它是从 Type 类型里面==提取==了所有可以赋给 U 的类型
+
+```typescript
+type MyExtract<T, U extends T> = T extends U ? T : never;
+
+/**
+ * type A = "name"
+ */
+type A = MyExtract<'name' | 'string', 'name'>;
+```
+
+
+
+>Pick<Type, Keys>
+
+用于构造一个类型，它是从 Type 类型里面挑选出一些属性 Keys
+
+```typescript
+type MyPick<T, K extends keyof T> = {
+  [P in K]: T[P];
+}
+
+interface IPerson {
+  name: string;
+  age: number;
+  address: string;
+}
+
+/**
+ * type A = {
+    name: string;
+    age: number;
+  }
+ */
+type A = MyPick<IPerson, 'name' | 'age'>;
+
+const p: A = {
+  name: 'Avril',
+  age: 17
+};
+```
+
+
+
+>Omit<Type, Keys>
+
+用于构造一个类型，它是从 Type 类型里面==过滤==出一些属性 Keys
+
+```typescript
+
+type MyOmit<T, K extends keyof T> = {
+  [P in Exclude<keyof T, K>]: T[P];
+}
+
+interface IPerson {
+  name: string;
+  age: number;
+  address: string;
+}
+
+/**
+ * type A = {
+    name: string;
+  }
+ */
+type A = MyOmit<IPerson, 'age' | 'address'>;
+
+const p: A = { name: 'Avril' };
+```
+
+
+
+>NonNullable< Type >
+
+用于构造一个类型，这个类型从 Type 中排除了 `null/undefined` 的类型
+
+```typescript
+type MyNonNullable<T> = T extends null | undefined ? never : T;
+
+/**
+ * type A = string
+ */
+type A = MyNonNullable<string | null | undefined>;
+
+const a: A = "Hello World";
+```
+
+
+
+> Parameters< Type >
+
+用于构造一个函数的==参数列表==的类型
+
+```typescript
+type MyParameters<T extends (...args: any[]) => any> = 
+	T extends (...args: infer P) => any ? P : never;
+
+/**
+ * type A = [start: number, end?: number | undefined]
+ */
+type A = MyParameters<typeof String.prototype.substring>;
+```
+
+
+
+>ReturnType< Type >
+
+用于构造一个函数的==返回值==的类型
+
+```typescript
+type MyReturnType<T extends (...args: any[]) => any> = 
+	T extends (...args: any[]) => infer R ? R : never;
+
+/**
+ * type A = string[]
+ */
+type A = MyReturnType<typeof String.prototype.split>;
+```
+
+
+
+
+
+## 模块化
