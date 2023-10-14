@@ -1951,7 +1951,7 @@ type A = MyExtract<'name' | 'string', 'name'>;
 
 >Pick<Type, Keys>
 
-用于构造一个类型，它是从 Type 类型里面挑选出一些属性 Keys
+用于构造一个类型，它是从 Type 类型里面==挑选==出一些属性 Keys
 
 ```typescript
 type MyPick<T, K extends keyof T> = {
@@ -2059,4 +2059,244 @@ type A = MyReturnType<typeof String.prototype.split>;
 
 
 
-## 模块化
+## 补充知识
+
+### 模块化
+
+- TS 中最主要使用的模块化方案是 ES Module
+
+  ```typescript
+  import { readFileSync } from 'fs';
+  
+  export const readFile = (path: string) => readFileSync(path, { encoding: 'utf-8' });
+  ```
+
+- 任何没有 export 的文件被认为是一个脚本，而非一个模块
+
+  - 全局脚本会共享同一个作用域，不能出现相同命名的变量声明
+  - 如果需要把文件改成一个没有导出任何内容的模块，可以添加 `export {}`
+
+- 内置类型导入
+
+  - 从其他模块中导入定义的==类型==，可以添加 `type` 关键字
+  - 当 TS 被编译成 JavaScript 文件时，可以让一个非 TypeScript 编译器（Babel、swc、esbuild） 知道什么导入可以被安全移除
+
+  ```typescript
+  import { type EncodingOption } from 'fs';
+  import type { ServerOptions, RequestOptions } from 'http';
+  ```
+
+
+
+### 命名空间
+
+在 ES 模块标准之前，TS 有自己的模块规范==命名空间== `namespace`
+
+- 命名空间目的是将一个模块内部再进行作用域的划分，防止一些命名冲突的问题
+- 虽然命名空间没有被废弃，但由于 ES 模块已经拥有了命名空间的大部分特性，因此 TS 更推荐使用 ES 标准模块
+
+```typescript
+export namespace Action {
+  type Direction = 'LEFT' | 'RIGHT';
+
+  export const move = (direction: Direction) => { };
+}
+
+Action.move('LEFT');
+```
+
+
+
+### 类型声明查找
+
+- 在 TS 中，存在一种 `.d.ts` 文件
+  - 它是用来做类型的声明，仅仅用于做==类型检测==
+  - 通常不会存在逻辑代码
+- TS 中类型查找的顺序：内置类型声明 -> 外部定义类型声明 -> 自定义类型声明
+
+
+
+#### 内置类型声明
+
+- 内置类型声明是 TS 自带的，内置了 TS 运行时的一些标准化 API 的声明文件
+  - 比如 DOM 相关 API、ES 标准 API 等
+  - 这些文件通常会命名为 `lib.[something].d.ts`
+
+- 内置类型声明文件通常在安装的 TS 环境中已经内置
+  - 可以通过 **tsconfig.json** 中的 `lib` 字段进行配置需要包括的库文件
+
+
+
+#### 外部类型声明
+
+外部类型声明通常是使用一些库（比如第三方库）时，需要的一些类型声明，通常有两种类型声明方式
+
+- 方式一：该库自身提供了类型声明文件，比如根目录下的 `index.d.ts`
+- 方式二：通过社区的一个公有库 [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped/) 存放类型声明文件，通过 `node_modules/@types` 查找
+
+
+
+#### 自定义类型声明
+
+> 自定义声明
+
+- 通常自定义 `types` 文件夹下定义的 `.d.ts` 文件
+
+  - 这些类型声明全局可用
+  - 可以将通用的类型声明定义到单独的 `.d.ts` 文件中
+
+  <img src="./images/image-20231015000306665.png" alt="image-20231015000306665" style="zoom:80%;" />
+
+- 或者开发一个库文件同时需要定义声明文件
+
+  - 可以在 **package.json** 文件中的 `types` 字段指定类型的入口文件
+
+  ```typescript
+  export type ResponseType =
+      | 'arraybuffer'
+      | 'blob'
+      | 'document'
+      | 'json'
+      | 'text'
+      | 'stream';
+  ```
+
+  
+
+> declare 声明
+
+- 声明模块：`declare module '模块名' {}`
+
+  - 用于第三方库没有类型声明文件
+  - 在声明模块的内部，通过 `export` 导出对应库的类、函数等
+
+  ```typescript
+  declare module 'xxx' {
+    export function test(): void;
+  }
+  
+  /*
+  * 其他文件中
+  */
+  import { test } from 'xxx';
+  ```
+
+- 声明文件： `declare module '文件后缀'`
+
+  - 用于导入的==静态文件资源==的声明
+
+  ```typescript
+  declare module "*.svg";
+  
+  declare module '*.png' {
+    const src: string;
+    export default src;
+  }
+  ```
+
+- 命名空间： `declare namespace 全局变量 {}`
+
+  - 用于声明全局 **script** 脚本引入的脚本文件中标识符类型声明
+
+  ```typescript
+  declare namespace _ {
+    export function join(...args: any[]): string;
+  }
+  
+  /**
+   * 其他模块中全局可用
+   */
+  _.join(['A', 'B', 'C']);
+  ```
+
+
+
+### tsconfig.json
+
+- **tsconfig.json** 文件的作用
+  - 让 TypeScript Compiler 在编译的时候，知道如何去编译 TS 代码和进行类型检测
+  - 让编辑器可以按照正确的方式识别 TS 代码（对于哪些语法进行提示、类型错误检测等）
+
+- JavaScript 项目可以使用 **jsconfig.json** 文件
+  - 它的作用与 tsconfig.json 基本相同，只是默认启用了一些 JavaScript 相关的编译选项
+  - 该文件可以让编译器启用 TS 相关的类型提示，获得更好的代码提示
+
+- [文档](https://www.typescriptlang.org/tsconfig) 中对于 **tsconfig.json** 文件的配置有详细的介绍，常见配置如下
+
+  ```json
+  {
+    "compilerOptions": {
+      // 目标代码
+      "target": "ESNext",
+      
+      // 指定需要使用到的库（可以不配置，直接根据 target 指定的目标来自动获取）
+      "lib": ["ESNext", "dom"],
+      
+      // jsx文件的处理方式 -> preserve: 保留原有的jsx格式
+      "jsx": "preserve",
+      
+      // 生成代码使用的模块化
+      "module": "commonjs",
+      
+      // 模块解析规则
+      "moduleResolution": "node",
+      
+      // 文件路径查找时的基本路径
+      "baseUrl": "./",
+      
+      // 路径别名，类似 webpack 的 alias
+      "paths": {
+        "@/*": ["src/*"]
+      },
+      
+      // 允许导入带有 “.json” 扩展名的模块
+      "resolveJsonModule": true,
+      
+      // 允许在ts文件中导入js文件
+      "allowJs": true,
+      
+      // 收到来自 JavaScript 文件的错误消息
+      "checkJs": false,
+      
+      // 是否生成类型声明文件 .d.ts
+      "declaration": true,
+      
+      // 是否生成 sourceMap 文件
+      "sourceMap": true,
+      
+      // 如果指定，所有全局（非模块）文件将编译生成到指定的单个文件中
+      // "outFile": "./",
+      
+      // 导出文件的路径
+      // "outDir": "./",
+      
+      // tsc编译时是否去掉注释
+      "removeComments": true,
+      
+      // 是否不生成js代码，通常用作项目的类型检测
+      // "noEmit": true,
+      
+      // 是否帮助导入一些需要的功能模块
+      "importHelpers": true,
+      
+      // 类型检测不通过时不进行编译
+      "noEmitOnError": true,
+      
+      // 指定生成的类型声明文件的根目录
+      // "declarationDir": "./",
+      
+      /*
+      	allowSyntheticDefaultImports 与 esModuleInterop 通常一起使用
+      	作用：允许esModule 和 CommonJs 之间互相调用
+      */
+      "allowSyntheticDefaultImports": true,
+      "esModuleInterop": true,
+      
+      // 开启严格模式的总开关
+      "strict": true,
+      
+      // 跳过对库文件（比如 node_modules 中的第三方库）进行类型检测,仅仅检测用到的类型
+      "skipLibCheck": true
+    }
+  }
+  ```
