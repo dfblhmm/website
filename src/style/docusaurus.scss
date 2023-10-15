@@ -17,6 +17,7 @@
 
 // 左侧导航栏
 .theme-doc-sidebar-container {
+
   // 菜单折叠箭头
   button.menu__caret {
     &:hover {
@@ -30,10 +31,16 @@
 }
 
 // 右侧 markdown 文档导航菜单
-[class *= tableOfContents] {
+[class *=tableOfContents] {
   .table-of-contents {
-    & > li {
+    &>li {
       margin-bottom: 20px;
+    }
+  }
+
+  .table-of-contents__link {
+    &:hover {
+      text-decoration: underline;
     }
   }
 }

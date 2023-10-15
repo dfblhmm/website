@@ -3,10 +3,14 @@
   "compilerOptions": {
     "baseUrl": ".",
     "target": "ESNext",
-    "resolveJsonModule": true, 
+    "module": "CommonJS",
+    "resolveJsonModule": true,
     "esModuleInterop": true,
+    "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true,
     "paths": {
-      "@site/*": ["./*"]
+      "@site/*": ["./*"],
+      "@src/*": ["./src/*"]
     }
   }
 }

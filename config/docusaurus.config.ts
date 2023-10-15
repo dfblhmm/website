@@ -1,14 +1,17 @@
+import { resolve } from 'path';
 import lightCodeTheme from 'prism-react-renderer/themes/github';
 import darkCodeTheme from 'prism-react-renderer/themes/dracula';
 
 import { Config } from '@docusaurus/types';
 import { Options, ThemeConfig } from '@docusaurus/preset-classic';
 
-import { transformImg, transformMark } from './plugins/index';
+import { transformImg, transformMark } from './plugins';
+import { getSidebarData } from './sidebar';
 
 const classicPresetConfig: Options = {
   docs: {
-    sidebarPath: require.resolve('./sidebars.ts'),
+    // showLastUpdateTime: true,
+    sidebarPath: resolve(__dirname, './sidebar/docs.ts'),
     remarkPlugins: [transformImg, transformMark]
     // editUrl: '',
   },
@@ -40,9 +43,9 @@ const themeConfig: ThemeConfig = {
     items: [
       {
         type: 'docSidebar',
-        sidebarId: 'web',
+        sidebarId: 'front',
         position: 'left',
-        label: 'Web 前端',
+        label: '前端',
       },
       {
         type: 'docSidebar',
@@ -59,52 +62,6 @@ const themeConfig: ThemeConfig = {
     ]
   },
 
-  // footer: {
-  //   style: 'dark',
-  //   links: [
-  //     {
-  //       title: 'Docs',
-  //       items: [
-  //         {
-  //           label: 'Tutorial',
-  //           to: '/docs/intro',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       title: 'Community',
-  //       items: [
-  //         {
-  //           label: 'Stack Overflow',
-  //           href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-  //         },
-  //         {
-  //           label: 'Discord',
-  //           href: 'https://discordapp.com/invite/docusaurus',
-  //         },
-  //         {
-  //           label: 'Twitter',
-  //           href: 'https://twitter.com/docusaurus',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       title: 'More',
-  //       items: [
-  //         {
-  //           label: 'Blog',
-  //           to: '/blog',
-  //         },
-  //         {
-  //           label: 'GitHub',
-  //           href: 'https://github.com/facebook/docusaurus',
-  //         },
-  //       ],
-  //     },
-  //   ],
-  //   copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
-  // },
-
   prism: {
     theme: lightCodeTheme,
     darkTheme: darkCodeTheme,
@@ -116,20 +73,20 @@ const themeConfig: ThemeConfig = {
 };
 
 const config: Config = {
-  title: 'My Site',
+  title: '不系之舟泛若舟',
   tagline: 'Dinosaurs are cool',
   favicon: 'img/favicon.ico',
 
   staticDirectories: [
     'public',
-    'docs/web/images',
-    'docs/web/01_HTML/images',
-    'docs/web/02_CSS/images',
-    'docs/web/03_JavaScript/images',
-    'docs/web/04_Font-Engineering/images',
-    'docs/web/05_Font-Framework/Vue/images',
-    'docs/web/05_Font-Framework/React/images',
-    'docs/web/06_TypeScript/images',
+    'docs/front/images',
+    'docs/front/01_HTML/images',
+    'docs/front/02_CSS/images',
+    'docs/front/03_JavaScript/images',
+    'docs/front/04_Font-Engineering/images',
+    'docs/front/05_Font-Framework/Vue/images',
+    'docs/front/05_Font-Framework/React/images',
+    'docs/front/06_TypeScript/images',
 
     'docs/rust/images'
   ],
@@ -154,7 +111,16 @@ const config: Config = {
 
   plugins: ['docusaurus-plugin-sass'],
 
-  themeConfig
+  themeConfig,
+
+  /**
+   * 自定义的元数据
+   */
+  customFields: {
+    sidebarOptions: {
+      front: getSidebarData('docs').front
+    }
+  }
 };
 
 export = config;

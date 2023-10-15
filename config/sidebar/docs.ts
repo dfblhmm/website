@@ -1,17 +1,17 @@
 import { SidebarsConfig } from '@docusaurus/plugin-content-docs';
 
 const sidebars: SidebarsConfig = {
-  web: [
+  front: [
     {
       type: 'doc',
-      id: 'web/index',
+      id: 'front/index',
       label: '前言'
     },
     // HTML
     {
       type: 'doc',
       label: 'HTML',
-      id: 'web/HTML/HTML'
+      id: 'front/HTML/HTML'
     },
 
     // CSS
@@ -20,11 +20,11 @@ const sidebars: SidebarsConfig = {
       label: 'CSS',
       link: {
         type: 'doc',
-        id: 'web/CSS/index'
+        id: 'front/CSS/index'
       },
       items: [
         // CSS 语法
-        'web/CSS/CSS'
+        'front/CSS/CSS'
       ]
     },
 
@@ -34,13 +34,13 @@ const sidebars: SidebarsConfig = {
       label: 'JavaScript',
       link: {
         type: 'doc',
-        id: 'web/JavaScript/index'
+        id: 'front/JavaScript/index'
       },
       items: [
         // JavaScript 基础
-        'web/JavaScript/javaScript-basic',
+        'front/JavaScript/javaScript-basic',
         // JavaScript 进阶
-        'web/JavaScript/javaScript-advance'
+        'front/JavaScript/javaScript-advance'
       ]
     },
 
@@ -50,13 +50,13 @@ const sidebars: SidebarsConfig = {
       label: '前端工程化',
       link: {
         type: 'doc',
-        id: 'web/Font-Engineering/index'
+        id: 'front/Font-Engineering/index'
       },
       items: [
         // 包管理工具
-        'web/Font-Engineering/package-management-tool',
+        'front/Font-Engineering/package-management-tool',
         // Git
-        'web/Font-Engineering/Git'
+        'front/Font-Engineering/Git'
       ]
     },
 
@@ -66,7 +66,7 @@ const sidebars: SidebarsConfig = {
       label: '前端框架',
       link: {
         type: 'doc',
-        id: 'web/Font-Framework/index'
+        id: 'front/Font-Framework/index'
       },
       items: [
         // Vue
@@ -75,13 +75,13 @@ const sidebars: SidebarsConfig = {
           label: 'Vue',
           link: {
             type: 'doc',
-            id: 'web/Font-Framework/Vue/index'
+            id: 'front/Font-Framework/Vue/index'
           },
           items: [
             // Vue 核心
-            'web/Font-Framework/Vue/vue-core',
+            'front/Font-Framework/Vue/vue-core',
             // Vue 路由
-            'web/Font-Framework/Vue/vue-router',
+            'front/Font-Framework/Vue/vue-router',
           ]
         },
         // React
@@ -90,11 +90,11 @@ const sidebars: SidebarsConfig = {
           label: 'React',
           link: {
             type: 'doc',
-            id: 'web/Font-Framework/React/index'
+            id: 'front/Font-Framework/React/index'
           },
           items: [
             // React 核心
-            'web/Font-Framework/React/react-core'
+            'front/Font-Framework/React/react-core'
           ]
         }
       ]
@@ -106,11 +106,11 @@ const sidebars: SidebarsConfig = {
       label: 'TypeScript',
       link: {
         type: 'doc',
-        id: 'web/TypeScript/index'
+        id: 'front/TypeScript/index'
       },
       items: [
         // TypeScript 核心
-        'web/TypeScript/ts-core'
+        'front/TypeScript/ts-core'
       ]
     }
   ],
