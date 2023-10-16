@@ -87,6 +87,7 @@ const config: Config = {
     'docs/front/05_Font-Framework/Vue/images',
     'docs/front/05_Font-Framework/React/images',
     'docs/front/06_TypeScript/images',
+    'docs/front/08_NodeJs/images',
 
     'docs/rust/images'
   ],

@@ -112,6 +112,20 @@ const sidebars: SidebarsConfig = {
         // TypeScript 核心
         'front/TypeScript/ts-core'
       ]
+    },
+
+    // NodeJs 
+    {
+      type: 'category',
+      label: 'NodeJs',
+      link: {
+        type: 'doc',
+        id: 'front/NodeJs/index'
+      },
+      items: [
+        // NodeJs 基础
+        'front/NodeJs/node-basic'
+      ]
     }
   ],
 
