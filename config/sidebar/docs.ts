@@ -1,4 +1,4 @@
-import { SidebarsConfig } from '@docusaurus/plugin-content-docs';
+import type { SidebarsConfig } from '@docusaurus/plugin-content-docs';
 
 const sidebars: SidebarsConfig = {
   front: [
@@ -142,4 +142,4 @@ const sidebars: SidebarsConfig = {
   ]
 };
 
-export = sidebars;
+export default sidebars;

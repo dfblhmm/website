@@ -1888,7 +1888,7 @@ const p: T = { name: 'Avril' };
 
 
 
->Record<Keys, Type>
+>Record\<Keys, Type>
 
 用于构造一个==对象==类型，它所有的 **键** 都是 Keys 类型，所有的 **值** 都是 Type 类型
 
@@ -1917,7 +1917,7 @@ const action: DirectionAction = {
 
 
 
->Exclude<U, E>
+>Exclude\<U, E>
 
 用于构造一个类型，它是从 U ==联合类型==里面==排除==了所有可以赋给 E 的类型
 
@@ -1934,7 +1934,7 @@ const a: A = "Hello World";
 
 
 
->Extract<Type, U>
+>Extract\<Type, U>
 
 用于构造一个类型，它是从 Type 类型里面==提取==了所有可以赋给 U 的类型
 
@@ -1949,7 +1949,7 @@ type A = MyExtract<'name' | 'string', 'name'>;
 
 
 
->Pick<Type, Keys>
+>Pick\<Type, Keys>
 
 用于构造一个类型，它是从 Type 类型里面==挑选==出一些属性 Keys
 
@@ -1980,7 +1980,7 @@ const p: A = {
 
 
 
->Omit<Type, Keys>
+>Omit\<Type, Keys>
 
 用于构造一个类型，它是从 Type 类型里面==过滤==出一些属性 Keys
 

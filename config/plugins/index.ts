@@ -1,2 +1,2 @@
-export { default as transformImg } from './transformImg';
-export { default as transformMark  } from './transformMark';
+export * from './transformImg';
+export * from './transformMark';

@@ -1,107 +1,111 @@
 /**
  * 转换 img 元素的属性
  * 1. 转换字符串形式的 style 为对象形式的 style
+ * 2. 去掉图片 src 路径前面的相对路径
  */
-import visit from 'unist-util-visit';
-import { parseSync, traverse, Visitor } from '@babel/core';
+import { visit } from "unist-util-visit";
 import {
-  JSXExpressionContainer,
   ObjectProperty,
-  StringLiteral,
-
-  isJSXIdentifier,
-  isStringLiteral,
-
   stringLiteral,
-  jsxExpressionContainer,
+  program,
+  expressionStatement,
   objectExpression,
   objectProperty,
   identifier
-} from '@babel/types';
-import generator from '@babel/generator';
+} from "@babel/types";
+import generator from "@babel/generator";
+import { parse } from "@babel/parser";
 
-const imgReg = /^\s*\<img/;
+interface MdxJsxAttribute {
+  type: "mdxJsxAttribute";
+  name: string;
+  value: string | IObject;
+}
+
+const imgTagReg = /^\s*img\s*$/;
 
 /**
- * 将html形式的style属性转换为jsx形式
+ * transform Babel AST -> EsTree
+ * @param obj
+ */
+const transToEsTree = (obj: IObject) => {
+  const { code } = generator(obj);
+  const { program } = parse(code, { plugins: ["estree"] });
+
+  return program;
+};
+
+/**
+ * 将html形式的 style 属性转换为 jsx-prop 形式
  * @param value style属性
  */
-function createStyleObjectAttribute(value: string): JSXExpressionContainer {
+function createStyleObjectAttribute(value: MdxJsxAttribute["value"]) {
+  if (typeof value === "object") {
+    return value;
+  }
+
   // 存储对象键值对
   const objectProperties: ObjectProperty[] = [];
 
   // 获取属性对
-  const attributeArr = value.split(';').filter(Boolean);
+  const attributeArr = value.replaceAll(/\s/g, "").split(";").filter(Boolean);
 
   // 遍历属性对获取对象键值对
   for (const style of attributeArr) {
     // 获取对象key-value
-    const [k, v] = style.split(':');
+    const [k, v] = style.split(":");
+
     // 使用key-value构造property
-    const objProp = objectProperty(identifier(k.trim()), stringLiteral(v.trim()));
+    const objProp = objectProperty(identifier(k), stringLiteral(v));
+
     // 完整的对象属性列表
     objectProperties.push(objProp);
-  } 
+  }
 
   // 构造对象
   const obj = objectExpression(objectProperties);
 
   // 返回组装好的jsx对象props
-  return jsxExpressionContainer(obj);
+  return {
+    type: "mdxJsxAttributeValueExpression",
+    value: "",
+    data: {
+      estree: transToEsTree(program([expressionStatement(obj)], [], "module"))
+    }
+  };
 }
 
 /**
- * 转换图片src，去除前面的路径
+ * 转换图片src，去除前面的相对路径
  * @param src 图片路径
  */
-function transformImgSrc(src: string): StringLiteral {
+function transformImgSrc(src: string): string {
   const staticSrc = src.split(/[\\/]/).filter(Boolean).at(-1);
-  return stringLiteral(`/${staticSrc}`);
+  return `/${staticSrc}`;
 }
 
-function transFormImg(jsx: string): string {
-  // 获取 ast
-  const ast = parseSync(jsx, { filename: 'img' });
+export const transformImg = () => (ast: any) => {
+  visit(ast, "mdxJsxFlowElement", (node) => {
+    const { name, attributes = [] } = node;
+    if (!imgTagReg.test(name)) return;
 
-  // 属性转换器
-  const styleAttributeVisitor: Visitor = { 
-    JSXAttribute(path) {
-      const { name, value } = path.node;
-      if (!isStringLiteral(value)) return;
+    // transform img attribute
+    node.attributes = (attributes as MdxJsxAttribute[]).map((attrNode) => {
+      const { name, value } = attrNode;
 
-      const v = value.value.trim();
+      let newValue = value;
 
-      // style 属性
-      if (isJSXIdentifier(name, { name: 'style' })) {
-        path.node.value = createStyleObjectAttribute(v);
+      switch (name) {
+        case "src":
+          newValue = transformImgSrc(value as string);
+          break;
+        case "style":
+          newValue = createStyleObjectAttribute(value);
+        default:
+          break;
       }
 
-      // src 属性
-      if (isJSXIdentifier(name, { name: 'src' })) {
-        path.node.value = transformImgSrc(v);
-      }
-    }
-  };
-  
-  // 遍历并修改ast
-  traverse(ast, {
-    JSXOpeningElement(path) {
-      // 解析 img 元素
-      if (!isJSXIdentifier(path.node.name, { name: 'img' })) return;
-      // 遍历属性并转换
-      path.traverse(styleAttributeVisitor);
-    }
+      return { ...attrNode, value: newValue };
+    });
   });
-
-  return generator(ast).code.slice(0, -1);
-}
-
-
-export default () => (ast) => {
-  visit(ast, 'jsx', (node: any) => {
-    const { value } = node;
-    if (!imgReg.test(value)) return;
-
-    node.value = transFormImg(value);
-  });
-}
+};
