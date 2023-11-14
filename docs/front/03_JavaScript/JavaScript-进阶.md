@@ -744,7 +744,7 @@ img { float: right; }
 
 #### V8 引擎的解析 (Parse)
 
-​	<img src="./images/image-20211127232836637.png" alt="image-20211127232836637" style="zoom: 50%;" />
+ <img src="./images/image-20211127232836637.png" alt="image-20211127232836637" style="zoom: 50%;" />
 
 - ==Blink== 将源码通过 ==Stream流== 将获取到源码传递给 ==V8引擎==
 
@@ -5557,7 +5557,7 @@ co(getData);
   console.log(moduleA === obj); // true
   ```
 
-​		<img src="./images/image-20220706002454177.png" alt="image-20220706002454177" style="zoom: 70%;" />
+   <img src="./images/image-20220706002454177.png" alt="image-20220706002454177" style="zoom: 70%;" />
 
 - **module.exports** 和 **exports** 的关系
 

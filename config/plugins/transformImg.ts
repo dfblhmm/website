@@ -101,6 +101,7 @@ export const transformImg = () => (ast: any) => {
           break;
         case "style":
           newValue = createStyleObjectAttribute(value);
+          break;
         default:
           break;
       }
