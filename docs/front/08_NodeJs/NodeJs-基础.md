@@ -137,3 +137,212 @@ title: 基础
 
 ### 文件系统 — fs
 
+#### 认识文件系统
+
+- `fs` 是 **File System** 的缩写，表示文件系统
+
+- 对于==服务器端==语言或框架，往往都需要与文件系统建立连接
+  - 提供静态服务，就需要服务器能读取磁盘资源并返回给客户端
+  - 使用数据库存储用户数据，数据库本身也是在操作文件
+  - 读写配置文件
+
+- Node.js 文件操作的 API 分为了三大类
+
+  - 同步操作：代码会被阻塞，不会继续执行
+
+    ```js
+    const { readFileSync } = require("fs");
+    
+    /**
+     * @description 同步操作
+     */
+    const content = readFileSync("./demo.txt", { encoding: "utf-8" });
+    console.log(content);
+    ```
+
+  - 异步回调函数操作：代码不会被阻塞，当获取到结果时，传入的回调函数被执行
+
+    ```js
+    const { readFile } = require("fs");
+    
+    /**
+     * @description 异步回调操作
+     */
+    readFile("./demo.txt", (err, data) => {
+      if (err) return;
+      console.log(data.toString());
+    });
+    ```
+
+  - 异步 **Promise** 操作：返回一个 **Promise**
+
+    ```js
+    const { readFile } = require("fs/promises");
+    
+    /**
+     * @description Promise 异步操作
+     */
+    readFile("./demo.txt", { encoding: "utf-8" })
+      .then((content) => console.log(content))
+      .catch((err) => console.error(err));
+    ```
+
+
+
+#### 文件操作符
+
+- 文件描述符（File Descriptors）
+  - 在常见的操作系统上，对于每个进程，内核都维护着一张当前打开着的==文件==和==资源==的表格
+  - 每个==打开的==文件都分配了一个称为文件描述符的简单的==数字标识符==
+  - 在系统层，所有文件系统操作都使用这些文件描述符来==标识==和==跟踪==每个特定的文件
+  - **Windows** 系统使用了一个虽然不同但概念上类似的机制来跟踪资源
+
+- 为了简化用户的工作，Node.js 抽象出操作系统之间的特定差异，并为所有打开的文件分配一个数字型的文件描述符
+
+- `fs.open()` 方法用于分配新的文件描述符
+
+  - 一旦被分配，则文件描述符可用于从文件读取数据、向文件写入数据、或请求关于文件的信息
+
+  ```js
+  const { readFileSync, openSync } = require("fs");
+  
+  const fd = openSync("./demo.txt");
+  const content = readFileSync(fd, { encoding: "utf-8" });
+  
+  console.log(content);
+  ```
+
+  
+
+#### 文件读写
+
+- `readFile`：读取文件内容
+
+  ```js
+  const { readFileSync } = require("fs");
+  
+  /**
+   * @description 读取文件
+   */
+  const content1 = readFileSync("./demo.txt");
+  
+  /**
+   * @description 不配置编码格式，默认返回 Buffer
+   * <Buffer 48 65 6c 6c 6f 20 4e 6f 64 65 2e 6a 73 21>
+   */
+  console.log(content1);
+  
+  const content2 = readFileSync("./demo.txt", { encoding: "utf-8" });
+  /**
+   * Hello Node.js!
+   */
+  console.log(content2);
+  ```
+
+- `watchFile`：写入文件内容
+
+  ```js
+  const { writeFileSync } = require("fs");
+  
+  writeFileSync("./demo.txt", "Hello World!", {
+    /**
+     * @description "a+" 代表在文件 “末尾追加”，不配置 flag 默认会覆盖原文件
+     */
+    flag: "a+"
+  });
+  ```
+
+- 读取/写入可以传入一个额外的配置对象
+
+  - `flag`：文件的读写方式
+  - `encoding`：文件读/写的编码格式，不进行配置则默认使用 `Buffer`（二进制数据）
+
+
+
+#### 文件夹操作
+
+- `mkdirSync`：新建文件夹
+
+- `readdirSync`：获取文件夹内的内容
+
+  - `withFileTypes`：设置此属性为 ==true==，获得的文件对象会携带文件类型判断方法
+
+  ```js
+  const { readdirSync } = require("fs");
+  const { resolve } = require("path");
+  
+  /**
+   * 获取文件夹内的所有文件列表
+   * @param {string} dir 目录路径
+   */
+  function getDirFileList(dir, temp = []) {
+    const dirent = readdirSync(dir, { withFileTypes: true });
+  
+    for (const file of dirent) {
+      const { name } = file;
+  
+      if (file.isDirectory()) {
+        // 文件夹
+        getDirFileList(resolve(dir, name), temp);
+      } else if (file.isFile()) {
+        // 文件
+        temp.push(name);
+      }
+    }
+  
+    return temp;
+  }
+  
+  const list = getDirFileList("./");
+  ```
+
+
+
+### 路径解析 — path
+
+- `path` 模块用于 Node.js 中的路径获取、解析、拼接等场景
+
+- 常见 API
+
+  - `resolve()`：路径拼接，遇到 `/`、相对路径时==解析查找==后进行拼接
+  - `basename()`：获取文件名
+  - `extname()`：获取文件后缀名
+
+  
+
+
+
+### 事件系统 — events
+
+- Node.js 中的核心 API 都是基于==异步事件==驱动的
+  - 在这个体系中，某些对象（发射器）发出某一个事件
+  - 监听这个事件（监听器），并且传入的回调函数，这个回调函数会在监听到事件时调用
+
+- 使用方法
+
+  ```js
+  const EventEmitter = require("events");
+  
+  /**
+   * @description 创建事件控制实例
+   */
+  const emitter = new EventEmitter();
+  
+  /**
+   * @description 监听事件
+   */
+  emitter.on("action", (...args) => {
+    // [ '向左', '向右' ]
+    console.log(args);
+  });
+  
+  /**
+   * @description 发射事件
+   */
+  emitter.emit("action", "向左", "向右");
+  
+  /**
+   * @description 移除监听
+   */
+  emitter.off("action");
+  ```
