@@ -102,9 +102,11 @@ title: 基础
 
 
 
-### 运行 JavaScript
+### 执行 JavaScript
 
-- 使用 Node.js 运行 js 文件：直接跟上需要运行的文件即可
+- Node.js 使用内置集成的 ==V8== 引擎解析、执行 JavaScript
+
+- 使用 Node.js 执行 `js` 文件：直接跟上需要运行的文件即可
 
   ```bash
   node ./要运行的文件.js
@@ -310,15 +312,13 @@ title: 基础
 
   
 
-
-
 ### 事件系统 — events
 
 - Node.js 中的核心 API 都是基于==异步事件==驱动的
   - 在这个体系中，某些对象（发射器）发出某一个事件
   - 监听这个事件（监听器），并且传入的回调函数，这个回调函数会在监听到事件时调用
 
-- 使用方法
+- 常见 API
 
   ```js
   const EventEmitter = require("events");
@@ -346,3 +346,73 @@ title: 基础
    */
   emitter.off("action");
   ```
+
+
+
+### 二进制操作 — Buffer
+
+#### 认识 Buffer
+
+- 计算机中所有的内容：文字、数字、图片、音频、视频最终都会使用==二进制==来表示
+  - Node.js 提供了一个类 `Buffer`，并且它是==全局==可用的
+
+- Buffer 中存储的是二进制数据
+  - 可以将 Buffer 看成是一个存储二进制的数组
+  - 这个数组中的每一项，可以保存 ==8== 位二进制：`1111 1111`（也可称为一个==字节==）
+
+
+
+#### 创建 Buffer
+
+- 创建 Buffer 时，并不会频繁的向操作系统申请内存
+  - 它会默认先申请一个 ==8 * 1024== (8kb) 个字节大小的内存
+  - 当所要存储的数据空间不足时，再次向操作系统申请内存
+
+- 使用 `Buffer.from()` 编码，通过 `toString()` 解码
+
+  - 默认会使用 `UTF-8` 的编码格式
+  - 编码、解码需要使用相同的==编码格式==，否则解码可能会==乱码==  
+
+  ```js
+  const buf = Buffer.from("Hello");
+  
+  /**
+   * 对于字符串 "Hello"，解析每个字符
+   * 先将字符经过 ASCII 编码等到每个字节的十六进制表示
+   * 最后再将十六进制转换为二进制存储到每个二进制字节（8位）中
+   */
+  console.log(buf); // <Buffer 48 65 6c 6c 6f>
+  
+  /**
+   * 解码
+   */
+  console.log(buf.toString());
+  ```
+
+- 使用 `Buffer.alloc()` 可以手动申请==给定字节==的内存空间
+
+  - 申请到的空间默认没有进行填充，每个字节默认为 `00`
+  - 可以手动操作每个字节的数据
+
+  ```js
+  const buffer = Buffer.alloc(8);
+  
+  /**
+   * @description 创建出来的空间默认为空
+   * <Buffer 00 00 00 00 00 00 00 00>
+   */
+  console.log(buffer);
+  
+  /**
+   * @description 手动填充字节空间
+   */
+  buffer.write("Hello World");
+  
+  /**
+   * 申请的空间不够，只填充了前8个字符
+   * Hello Wo
+   */
+  console.log(buffer.toString());
+  ```
+
+  
