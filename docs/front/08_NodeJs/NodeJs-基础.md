@@ -415,4 +415,153 @@ title: 基础
   console.log(buffer.toString());
   ```
 
+
+
+#### 读写二进制文件
+
+- 对于文件读取，若未指定编码格式，默认会以 `Buffer` 形式呈现
+
+  ```js
+  const { readFileSync } = require("fs");
   
+  const data = readFileSync("./demo.txt");
+  
+  console.log(data); // <Buffer 48 65 6c 6c 6f 20 57 6f 72 6c 64>
+  console.log(data.toString()); // Hello World
+  ```
+
+- 对于文件写入，支持直接写入 `Buffer` 二进制数据
+
+  ```js
+  const { writeFileSync } = require("fs");
+  
+  const buffer = Buffer.from("Hello World!");
+  
+  writeFileSync("./test.txt", buffer);
+  ```
+
+
+
+### 流 — Stream
+
+#### 认识流
+
+- ==流==是==连续字节==的一种表现形式和抽象概念；流应该是==可读可写==的
+  - Node.js 中很多对象是基于流实现的，如 http 模块的 `request/response` 对象
+  - 所有的流都是 `EventEmitter` 的实例
+
+- Node.js 中有四种基本流类型
+  - `Writable`：可以向其写入数据的流
+  - `Readable`：可以从中读取数据的流
+  - `Duplex`：同时为 Readable 和 Writable
+  - `Transform`：Duplex 可以在写入和读取数据时修改或转换数据的流
+
+
+
+#### 文件读写流
+
+- 相比直接读写文件，使用可读/可写流，可以控制==读取位置==、==读取大小==、==暂停和恢复==读写
+
+- 创建读取流：`fs.createReadStream`
+
+  ```js
+  const { createReadStream } = require("fs");
+  
+  /**
+   * @description 创建可读流
+   */
+  const reader = createReadStream("./package.json", {
+    /**
+     * @description 开始位置
+     */
+    start: 0,
+    /**
+     * @description 结束位置
+     */
+    end: 200,
+    /**
+     * @description 一次读取字节大小，默认 64kb
+     */
+    highWaterMark: 10,
+    /**
+     * @description 读取编码
+     */
+    encoding: "utf-8"
+  });
+  
+  /**
+   * @description 读取到数据
+   */
+  reader.on("data", (data) => {
+    console.log(data);
+  
+    // 暂停读取
+    reader.pause();
+  
+    // 每间隔 1s 继续读取
+    setTimeout(() => reader.resume(), 1000);
+  });
+  
+  /**
+   * @description 读取完成
+   */
+  reader.on("close", () => console.log("文件读取结束"));
+  ```
+
+- 创建写入流：`fs.createWriteStream`
+
+  - 区别于读取流，写入流不会自动关闭，需要手动调用 `close` 方法关闭写入流
+
+  ```js
+  const { createWriteStream } = require("fs");
+  
+  /**
+   * @description 创建写入流
+   */
+  const writer = createWriteStream("./test.txt", { flags: "a+" });
+  
+  /**
+   * @description 写入流关闭
+   */
+  writer.on("close", () => console.log("写入完成"));
+  
+  /**
+   * @description 写入数据
+   */
+  writer.write("Hello");
+  
+  /**
+   * @description 关闭写入流
+   * 等同于 writer.write("World!") + writer.close()
+   */
+  writer.end("World!");
+  ```
+
+- `reader.pipe()`：将 *Writable* 流绑定到 *readable*，使其自动切换到流动模式并将其所有数据推送到绑定的 *Writable*
+
+  ```js
+  const { createReadStream, createWriteStream } = require("fs");
+  
+  /**
+   * @description 创建可读流
+   */
+  const reader = createReadStream("./demo.txt");
+  
+  /**
+   * @description 创建可写流
+   */
+  const writer = createWriteStream("./test.txt");
+  
+  /**
+   * @description 将可读流读取的数据直接传送给可写流
+   */
+  reader.pipe(writer);
+  ```
+
+
+
+
+
+## Web 服务器
+
+### http 模块
