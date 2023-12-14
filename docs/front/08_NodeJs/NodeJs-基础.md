@@ -562,6 +562,126 @@ title: 基础
 
 
 
-## Web 服务器
+## 服务器 — http 模块
 
-### http 模块
+### 认识 Web 服务器
+
+- 当应用程序（客户端）需要某一个资源时，可以向一台服务器，通过 ==HTTP== 请求获取到这个资源
+
+  - 提供资源的这个服务器，就是一个 ==Web 服务器==
+  - 在 Node.js 中，通过内置的 `http` 模块可以开启一个服务器
+
+  ```js
+  const http = require("http");
+  
+  /**
+   * @description 创建一个服务
+   */
+  const server = http.createServer((req, res) => {
+    res.end("Hello World!");
+  });
+  
+  /**
+   * @description 监听端口，为这个端口提供服务
+   */
+  server.listen(3000, () => {
+    console.log("Server running at http://localhost:3000");
+  });
+  
+  ```
+
+  <img src="./images/image-20231214231337168.png" alt="image-20231214231337168" style="zoom: 70%;" />
+
+- 调用 `http.createServer` 实际是在创建 `http.Server` 的实例
+
+  ```js
+  /**
+   * req 对象是一个可读流
+   * res 对象是一个可写流
+   */
+  new http.Server((req, res) => {
+    res.end("Hello World!");
+  }).listen(3000, () => {
+    console.log("Server running at http://localhost:3000");
+  });
+  ```
+
+
+
+### 请求对象 — request
+
+#### 请求基本信息
+
+- 客户端发送一次 *HTTP* 请求，会包含许多信息
+
+  - Node.js 将所有请求相关的信息封装到 `request` 对象
+  - 此对象是一个==可读流==的实例
+
+  ```js
+  const http = require("http");
+  
+  http.createServer((req, res) => {
+    /**
+     * @description 请求的路径
+     */
+    console.log(req.url);
+    /**
+     * @description 请求方式
+     */
+    console.log(req.method);
+    /**
+     * @description 请求头信息
+     */
+    console.log(req.headers);
+  }).listen(3000);
+  ```
+
+- 通过匹配不同的 *url* 和 *method*，创建不同的接口（==后端路由==）
+
+  ```js
+  const http = require("http");
+  
+  http.createServer((req, res) => {
+    const { method, url } = req;
+    console.log("method", method);
+  
+    if (url === '/login' && method === 'POST') {
+      res.end('欢迎登录');
+    } else if (url === '/home' && method === 'GET') {
+      res.end('首页')
+    }
+  }).listen(4000);
+  ```
+
+  
+
+#### 请求头
+
+`request.headers` 包含了此次请求所携带的==请求头==，包含许多重要的信息
+
+<img src="./images/image-20231214235544214.png" alt="image-20231214235544214" style="zoom:80%;" />
+
+- `Content-Type`：请求所携带数据的类型
+
+  | 类型                                | 说明                            |
+  | ----------------------------------- | ------------------------------- |
+  | *application/json*                  | JSON 数据类型                   |
+  | *application/x-www-form-urlencoded* | 形如 `name=ikun&level=1` 的数据 |
+  | *multipart/form-data*               | 表单数据 / 文件上传             |
+
+- `Connection: Keep-Alive`：*HTTP* 是否保持连接
+
+  ```
+  HTTP/1.1 200 OK
+  Connection: Keep-Alive
+  ```
+
+- `Accept`：告知服务器，客户端可接受文件的格式类型
+
+  ```
+  Accept: text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8
+  ```
+
+
+
+#### 请求参数解析
