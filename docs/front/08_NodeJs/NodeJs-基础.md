@@ -685,3 +685,67 @@ title: 基础
 
 
 #### 请求参数解析
+
+- 解析 `query` 参数
+
+  ```js
+  const http = require("http");
+  const url = require("url");
+  
+  http.createServer((req, res) => {
+    /**
+     * 例如客户端请求 http://localhost:4000?pageNum=1&pageSize=20
+     * @description 先解析出 url 中的 queryString
+     */
+    const { query } = url.parse(req.url);
+    /**
+     * @description 解析 queryString 中的查询参数
+     */
+    const queryParams = Object.fromEntries(new URLSearchParams(query));
+    // { pageNum: '1', pageSize: '20' }
+    console.log(queryParams);
+  
+    /**
+     * @description 关闭写入流，响应此次请求
+     */
+    res.end("Hello");
+  }).listen(4000);
+  ```
+
+- 解析 `body` 参数，对于此类参数，需要监听 `data` 事件，获取传递的参数
+
+  ```js
+  const http = require("http");
+  
+  http.createServer((req, res) => {
+    /**
+     * @description 将请求对象的读取编码设置为 UTF-8，否则在 data 事件中获取到的数据是 buffer 类型
+     */
+    req.setEncoding("utf-8");
+    /**
+     * @description 获取传递的请求体内容
+     */
+    req.on("data", (data) => {
+      const paramType = req.headers["content-type"];
+  
+      if (/application\/x-www-form-urlencoded/.test(paramType)) {
+        /**
+         * @description pageNum=1&pageSize=20 类型数据
+         */
+        req.body = Object.fromEntries(new URLSearchParams(data));
+      } else if (/application\/json/.test(paramType)) {
+        /**
+         * @description JSON 类型数据
+         */
+        req.body = JSON.parse(data);
+      }
+    });
+    
+    /**
+     * @description 关闭写入流，响应此次请求
+     */
+    res.end("Hello");
+  }).listen(4000);
+  ```
+
+  
