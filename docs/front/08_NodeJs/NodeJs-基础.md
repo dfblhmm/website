@@ -671,6 +671,9 @@ title: 基础
 
 - `Connection: Keep-Alive`：*HTTP* 是否保持连接
 
+  - 在 Node.js 中，默认的保持连接时间为 ==5s==
+
+
   ```
   HTTP/1.1 200 OK
   Connection: Keep-Alive
@@ -748,4 +751,105 @@ title: 基础
   }).listen(4000);
   ```
 
+
+
+### 响应对象 — response
+
+#### 返回响应结果
+
+- 响应数据：`response.end(data)`
+
+  - `end` 方法会写入数据，同时会关闭写入流
+  - 必须手动关闭写入流，否则请求端会一直无法收到响应导致==超时==或==失败==
+
+  ```js
+  const http = require("http");
   
+  http.createServer((req, res) => {
+    /**
+     * @description 设置响应结果
+     */
+    res.end("Hello World!");
+  }).listen(4000);
+  ```
+
+- 设置响应状态码：设置 `statusCode` 属性
+
+  ```js
+  const http = require("http");
+  
+  http.createServer((req, res) => {
+    /**
+     * @description 设置状态码
+     */
+    res.statusCode = 200;
+    /**
+     * @description 设置响应结果
+     */
+    res.end("Hello World!");
+  }).listen(4000);
+  ```
+
+
+
+#### 响应头
+
+- 返回头部信息，主要有两种方式
+
+  - `response.setHeader`：一次写入一个头部信息
+
+    ```js
+    response.setHeader("Content-Type", "application/json;charset=UTF-8");
+    ```
+
+  - `response.writeHead`：同时写入 *header* 和 *status*
+
+    ```js
+    response.writeHead(200, {
+      "Content-Type": "application/json;charset=UTF-8"
+    });
+    ```
+
+- 客户端可以根据响应头设置的 `Content-Type` 来正确的解析数据类型
+
+
+
+### 发送 HTTP 请求
+
+在 Node.js 中，通过 `http.request` 可以创建一个 HTTP 连接
+
+- 该 API 返回一个==可写==流，通过写入数据即可发送一个 HTTP 请求
+
+```js
+const http = require("http");
+
+/**
+ * @description 创建连接，返回一个请求对象（可写流）
+ */
+const request = http.request(
+  {
+    hostname: "localhost",
+    port: 4000,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json;charset=UTF-8"
+    }
+  },
+  (res) => {
+    /**
+     * @description 设置数据解析编码
+     */
+    res.setEncoding("utf-8");
+    /**
+     * @description 获取响应结果
+     */
+    res.on("data", console.log);
+  }
+);
+
+/**
+ * @description 发送请求
+ */
+request.end(JSON.stringify({ id: 111 }));
+```
+
