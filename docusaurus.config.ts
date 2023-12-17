@@ -8,7 +8,7 @@ import { transformImg, transformMark, getSidebarData, getStaticDirectories } fro
 
 const classicPresetConfig: Preset.Options = {
   docs: {
-    // showLastUpdateTime: true,
+    showLastUpdateTime: true,
     sidebarPath: resolve(__dirname, "./config/sidebar/docs.ts"),
     remarkPlugins: [transformImg, transformMark]
     // editUrl: '',
@@ -46,10 +46,10 @@ const themeConfig: Preset.ThemeConfig = {
         label: "前端"
       },
       {
-        type: 'docSidebar',
-        sidebarId: 'rust',
-        position: 'left',
-        label: 'Rust'
+        type: "docSidebar",
+        sidebarId: "rust",
+        position: "left",
+        label: "Rust"
       }
       // { to: '/blog', label: 'Blog', position: 'left' },
       // {
@@ -63,7 +63,7 @@ const themeConfig: Preset.ThemeConfig = {
   prism: {
     theme: themes.github,
     darkTheme: themes.dracula,
-    additionalLanguages: ["bash", "json", "rust"]
+    additionalLanguages: ["bash", "json", "rust", "nginx"]
   }
 };
 
@@ -97,7 +97,7 @@ const config: Config = {
   presets: [["classic", classicPresetConfig]],
 
   plugins: [
-    "docusaurus-plugin-sass",
+    "docusaurus-plugin-sass"
     // () => ({
     //   name: "webpack",
     //   configureWebpack() {

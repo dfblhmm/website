@@ -879,23 +879,23 @@ request.end(JSON.stringify({ id: 111 }));
 
 -  方案一：静态资源和 API 服务器部署在==同一个==服务器中
 
-  ```js
-  const express = require("express");
-  
-  const app = express();
-  
-  /**
-   * @description 提供静态资源服务
-   */
-  app.use(express.static("./"));
-  
-  /**
-   * @description 提供 API 服务
-   */
-  app.use("/hello", (req, res) => {
-    res.end("Hello World!");
-  }).listen(3000);
-  ```
+    ```js
+    const express = require("express");
+    
+    const app = express();
+    
+    /**
+     * @description 提供静态资源服务
+     */
+    app.use(express.static("./"));
+    
+    /**
+     * @description 提供 API 服务
+     */
+    app.use("/hello", (req, res) => {
+      res.end("Hello World!");
+    }).listen(3000);
+    ```
 
 - 方案二：==CORS==(跨域资源共享)
 
