@@ -853,3 +853,114 @@ const request = http.request(
 request.end(JSON.stringify({ id: 111 }));
 ```
 
+
+
+
+
+## 跨域 — CORS
+
+### 跨域的产生原因
+
+-  ==同源策略==是一个重要的安全策略，它用于限制一个 **origin** 的文档或者它加载的脚本如何能与另一个源的资源进行交互
+  - 它能帮助阻隔恶意文档，减少可能被攻击的媒介
+  - 如果两个 *URL* 的 ==协议==(protocol)、==主机==(host)==端口==(port) 都相同，则这两个 URL 是同源
+  - 两个==不满足同源策略==的 *URL* 进行资源访问，就会产生==跨域==
+
+- 跨域的产生与==前后端架构分离==有很大关系
+  - 早期的服务器端渲染没有跨域问题
+  - 随着前后端分离，前端部署的==静态资源==和服务器开发的 ==API接口== 往往是部署在不同的服务器端口或者不同的服务器上
+
+- 静态资源服务器和 API 服务器是同一台服务器的相同端口是不会产生跨域
+  - 即服务器同时提供 API 服务和 静态资源服务
+
+
+
+### 跨域的常见解决方式
+
+-  方案一：静态资源和 API 服务器部署在==同一个==服务器中
+
+  ```js
+  const express = require("express");
+  
+  const app = express();
+  
+  /**
+   * @description 提供静态资源服务
+   */
+  app.use(express.static("./"));
+  
+  /**
+   * @description 提供 API 服务
+   */
+  app.use("/hello", (req, res) => {
+    res.end("Hello World!");
+  }).listen(3000);
+  ```
+
+- 方案二：==CORS==(跨域资源共享)
+
+  ```js
+  const express = require("express");
+  
+  const app = express();
+  
+  /**
+   * @description 提供 API 服务
+   */
+  app.use((req, res) => {
+    res.writeHead(200, {
+      /**
+       * @description 允许的来源地址，* 代表允许所有
+       */
+      "Access-Control-Allow-Origin": "*",
+      /**
+       * @description 允许的请求方式
+       */
+      "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+      /**
+       * @description 允许携带的请求头
+       */
+      "Access-Control-Allow-Headers":
+        "Accept, Accept-Encoding, Accept-Language, Connection, Content-Length, Content-Type, Host, Origin, Referer, User-Agent",
+      /**
+       * @description 跨域请求允许携带 cookie
+       */
+      "Access-Control-Allow-Credentials": true
+    });
+  
+    res.end("Hello World!");
+  }).listen(3000);
+  ```
+
+- 方案三：代理服务器（服务器间请求不存在跨域）
+
+  - 借助 Node.js 进行代理转发
+
+    ```js
+    const express = require("express");
+    const { createProxyMiddleware } = require("http-proxy-middleware");
+    
+    const app = express();
+    
+    app.use(
+      "/api",
+      createProxyMiddleware("/api", {
+        target: "http://localhost:4000",
+        changeOrigin: true
+      })
+    ).listen(3000);
+    ```
+
+  - Nginx 开启代理转发
+
+    ```nginx
+    # 提供静态服务
+    location = / {
+      index index.html;
+    }
+    
+    # 提供代理转发
+    location /api {
+      proxy_pass http://api.example.com;
+    }
+    ```
