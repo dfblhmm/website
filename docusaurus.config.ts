@@ -6,6 +6,9 @@ import type * as Preset from "@docusaurus/preset-classic";
 
 import { transformImg, transformMark, getSidebarData, getStaticDirectories } from "./config";
 
+const { ALGOLIA_APP_ID, ALGOLIA_APP_KEY } = process.env;
+console.log("ALGOLIA_APP_ID", ALGOLIA_APP_ID);
+
 const classicPresetConfig: Preset.Options = {
   docs: {
     showLastUpdateTime: true,
@@ -64,6 +67,21 @@ const themeConfig: Preset.ThemeConfig = {
     theme: themes.github,
     darkTheme: themes.dracula,
     additionalLanguages: ["bash", "json", "rust", "nginx"]
+  },
+
+  // search
+  algolia: {
+    appId: ALGOLIA_APP_ID,
+    apiKey: ALGOLIA_APP_KEY,
+    indexName: "docs",
+    contextualSearch: true,
+    externalUrlRegex: "external\\.com|domain\\.com",
+    replaceSearchResultPathname: {
+      from: "/docs/",
+      to: "/"
+    },
+    searchParameters: {},
+    searchPagePath: "search"
   }
 };
 
@@ -81,7 +99,7 @@ const config: Config = {
   ],
 
   // Set the production url of your site here
-  url: "https://your-docusaurus-test-site.com",
+  url: "https://website-dfblhmmp.vercel.app",
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: "/",
