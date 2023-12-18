@@ -7,7 +7,6 @@ import type * as Preset from "@docusaurus/preset-classic";
 import { transformImg, transformMark, getSidebarData, getStaticDirectories } from "./config";
 
 const { ALGOLIA_APP_ID, ALGOLIA_APP_KEY } = process.env;
-console.log("ALGOLIA_APP_ID", ALGOLIA_APP_ID);
 
 const classicPresetConfig: Preset.Options = {
   docs: {
