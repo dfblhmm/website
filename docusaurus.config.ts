@@ -75,11 +75,6 @@ const themeConfig: Preset.ThemeConfig = {
     indexName: ALGOLIA_APP_INDEX_NAME,
     contextualSearch: true,
     externalUrlRegex: "external\\.com|domain\\.com",
-    replaceSearchResultPathname: {
-      from: "/docs/",
-      to: "/"
-    },
-    searchParameters: {},
     searchPagePath: "search"
   }
 };
