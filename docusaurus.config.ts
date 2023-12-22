@@ -6,7 +6,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 
 import { transformImg, transformMark, getSidebarData, getStaticDirectories } from "./config";
 
-const { ALGOLIA_APP_ID, ALGOLIA_APP_KEY, ALGOLIA_APP_INDEX_NAME } = process.env;
+const { ALGOLIA_APP_ID, ALGOLIA_API_KEY, ALGOLIA_APP_INDEX_NAME } = process.env;
 
 const classicPresetConfig: Preset.Options = {
   docs: {
@@ -71,7 +71,7 @@ const themeConfig: Preset.ThemeConfig = {
   // search
   algolia: {
     appId: ALGOLIA_APP_ID,
-    apiKey: ALGOLIA_APP_KEY,
+    apiKey: ALGOLIA_API_KEY,
     indexName: ALGOLIA_APP_INDEX_NAME,
     contextualSearch: true,
     externalUrlRegex: "external\\.com|domain\\.com",
