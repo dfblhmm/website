@@ -43,7 +43,7 @@ title: HTML
 - 用户角度
 
   1. 用户在浏览器输入一个==网站地址==
-  2. 浏览器会找到对应的==服务器地址==（DNS服务解析域名得到对应的IP地址），请求==静态资源==
+  2. 浏览器会找到对应的==服务器地址==（DNS 服务解析域名得到对应的IP地址），请求==静态资源==
   3. 服务器==返回==静态资源给浏览器
   4. 浏览器对静态资源进行==解析和展示==
 
@@ -74,11 +74,11 @@ title: HTML
 
 - 网页的组成
 
-  - 阶段一：HTML元素
+  - 阶段一：HTML 元素
 
-  - 阶段二：HTML元素 + CSS样式
+  - 阶段二：HTML 元素 + CSS 样式
 
-  - 阶段三：HTML元素 + CSS样式 + JavaScript脚本
+  - 阶段三：HTML 元素 + CSS 样式 + JavaScript 脚本
 
 - HTML：网页的==内容结构==
 - CSS：网页的==视觉体验==
@@ -104,7 +104,7 @@ title: HTML
 - 浏览器最核心的部分是==渲染引擎（Rendering Engine）==，一般也称为==浏览器内核==。负责==解析==网页语法，并==渲染==网页
 
 - 不同浏览器的内核
-  - ==Trident==：IE、360安全浏览器、搜狗高速浏览器、百度浏览器、UC浏览器
+  - ==Trident==：IE、360安全浏览器、搜狗高速浏览器、百度浏览器、UC 浏览器
   - ==Gecko==：Mozilla Firefox
   - ==Presto== -> ==Blink==：Opera
   - ==Webkit==：Safari、360极速浏览器、搜狗高速浏览器、移动端浏览器（Android、iOS）
@@ -191,25 +191,26 @@ title: HTML
 
 
 ## HTML结构分析
-- 一个完整的 HTML 结构包含几个部分
 
-  - ==文档声明==
-  - ==html== 元素
-    - head 元素
-    - body 元素
+一个完整的 HTML 结构包含几个部分
 
-  ```html
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Document</title>
-  </head>
-  <body></body>
-  </html>
-  ```
+- ==文档声明==
+- ==html== 元素
+  - head 元素
+  - body 元素
 
-  
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+</head>
+<body></body>
+</html>
+```
+
+
 
 ### 文档声明
 
@@ -223,8 +224,8 @@ title: HTML
 
 ### html 元素
 
--  元素 表示一个 HTML 文档的==根==（顶级元素），所以它也被称为==根元素==。所有其他元素必须是此元素的==后代==
-- W3C标准建议为html元素增加一个 `lang` 属性
+-  `html` 元素表示一个 HTML 文档的==根==（顶级元素），所以它也被称为==根元素==。所有其他元素必须是此元素的==后代==
+- W3C 标准建议为 html 元素增加一个 `lang` 属性
   - 帮助语音合成工具确定要使用的发音
   - 帮助翻译工具确定要使用的翻译规则
   - 常见值：`en`、`zh-CN`
@@ -233,11 +234,11 @@ title: HTML
 
 ### head元素 
 
-- HTML head 元素规定文档相关的==配置信息==（也称之为元数据），包括文档的标题，引用的文档样式和脚本等
+- `head` 元素规定文档相关的==配置信息==（也称之为元数据），包括文档的标题，引用的文档样式和脚本等
 - 网页的标题：`title` 元素
 - 网页的编码：`meta` 元素
   - 可以用于设置网页的==字符编码==，不设置或者设置错误会导致乱码
-  - 一般都使用 ==utf-8== 编码，涵盖了世界上几乎所有的文字
+  - 一般都使用 ==UTF-8== 编码，涵盖了世界上几乎所有的文字
 
 ```html
 <head>
@@ -250,7 +251,7 @@ title: HTML
 
 ### body元素
 
-- body 元素里面的内容将是在浏览器窗口中看到的东西，也就是网页的具体==内容和结构==
+- `body` 元素里面的内容将是在浏览器窗口中看到的东西，也就是网页的具体==内容和结构==
 
 - 大部分 HTML 元素都是在 body 中编写呈现的
 
@@ -863,7 +864,7 @@ HTML5 增加了对媒体类型的支持（之前通过 flash 实现，弊端较�
   |      |   空格   | `&nbsp;` | `&#160;` |
   |  \<   |   小于   |  `&lt;`  | `&#60;`  |
   |  >   |   大于   |  `&gt;`  | `&#62;`  |
-  |  ©   |   版本   | `&copy;` | `&#169;` |
+  |  ©   |   版权   | `&copy;` | `&#169;` |
   |  ®   | 注册商标 | `&reg;`  | `&#174;` |
 
   
@@ -958,7 +959,7 @@ HTML5 增加了对媒体类型的支持（之前通过 flash 实现，弊端较�
 
 - link 元素是==外部资源链接==元素，规范了==文档与外部资源==的关系。通常是在 head 元素中
 
-- link 元素最常用于链接==样式表==（ CSS），此外也可以被用来创建==站点图标==
+- link 元素最常用于链接==样式表==（CSS），此外也可以被用来创建==站点图标==
 
 - link 元素常见的属性
 
@@ -1012,6 +1013,3 @@ HTML5 增加了对媒体类型的支持（之前通过 flash 实现，弊端较�
     <meta name="description" content="The MDN Web Docs site provides information about Open Web technologies including HTML, CSS, and APIs for both Web sites and progressive web apps.">
     <meta name="keyword" content="淘宝,掏宝,网上购物">
     ```
-
-    
-
