@@ -24,7 +24,7 @@ const sidebars: SidebarsConfig = {
       },
       items: [
         // CSS 语法
-        "front/CSS/CSS"
+        "front/CSS/css-core"
       ]
     },
 
@@ -38,9 +38,9 @@ const sidebars: SidebarsConfig = {
       },
       items: [
         // JavaScript 基础
-        "front/JavaScript/javaScript-basic",
+        "front/JavaScript/js-basic",
         // JavaScript 进阶
-        "front/JavaScript/javaScript-advance"
+        "front/JavaScript/js-advance"
       ]
     },
 

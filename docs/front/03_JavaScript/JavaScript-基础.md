@@ -1,5 +1,5 @@
 ---
-id: javaScript-basic
+id: js-basic
 title: 基础
 ---
 # JavaScript 基础
@@ -237,11 +237,11 @@ title: 基础
     ```js
     /**
      * 是否为数组类型
-     * @param {*} arr 数组
+     * @param {*} 变量
      * @returns {boolean}
      */
-    function isArray(arr) {
-      return Object.prototype.toString.call(arr) === '[object Array]';
+    function isArray(variable) {
+      return Object.prototype.toString.call(variable) === '[object Array]';
     }
     ```
 
@@ -335,10 +335,10 @@ let a, b;
   - 最小正数值 `Number.MIN_VALUE`，小于这个的数字会被转化为 0
   - 最大正数值 `Number.MAX_VALUE`
 
-- `isNaN()`：用于判断是否不是一个数字，返回一个布尔值
+- `isNaN()`：用来确定一个值是否为 `NaN`，返回一个布尔值
 
   ```js
-  const num = isNaN(10 * '文字'); // NaN
+  const num = Number.isNaN(10 * '文字'); // NaN
   ```
 
   
