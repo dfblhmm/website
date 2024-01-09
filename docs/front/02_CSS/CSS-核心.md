@@ -2,12 +2,11 @@
 id: css-core
 title: 核心
 ---
-
 # CSS
 
 ## 认识 CSS
 
-- CSS：层叠样式表（ Cascading Style Sheet ）是为网页添加==样式==的代码
+- CSS：层叠样式表（Cascading Style Sheet）是为网页添加==样式==的代码
 
 - CSS 是一种计算机语言，但是不算是一种编程语言
 
@@ -21,20 +20,18 @@ title: 核心
 
   - 直到 1997 年初，W3C 组织才专门成立了 CSS 的工作组，1998 年 5 月发布了 ==CSS2==
 
-  - 在 2006~2009 非常流行 ==“DIV+CSS ”== 布局 的方式来替代所有的 html 标签
+  - 在 2006~2009 非常流行 ==“DIV+CSS ”== 布局来替代所有的 html 标签
 
   - 从 CSS3 开始，所有的 CSS 分成了不同的==模块==（modules），每一个 module 都有于 CSS2 中额外增加的功能，以及==向后兼容==
 
     <img src="./images/image-20220911181116470.png" alt="image-20220911181116470" style="zoom:80%;" />
 
-  - 直到 2011 年 6 月 7 日， 第一个 module —— ==CSS 3 Color Module== 终于发布
+  - 直到 2011 年 6 月 7 日， 第一个 module — ==CSS  Color Module== 终于发布
 
 - CSS 的出现是为了美化 HTML，并且让 结构 (HTML) 与样式 (CSS) 分离
 
   - 为 HTML 添加各种各样的样式 ，比如颜色、字体、大小、下划线等
   - 对 HTML 进行布局 ，按照某种结构显示
-
-
 
 
 
@@ -106,8 +103,6 @@ title: 核心
 
 
 
-
-
 ## CSS 选择器
 
 CSS 选择器：按照一定的规则==选出符合条件==的元素 ，为之添加 CSS 样式
@@ -131,14 +126,12 @@ CSS 选择器：按照一定的规则==选出符合条件==的元素 ，为之�
 
 ### 简单选择器
 
-- ==元素==选择器（ type selectors ）, 使用元素的==名称==
-- ==类==选择器（ class selectors ）, 使用 `.类名`
+- ==元素==选择器（type selectors）, 使用元素的==名称==
+- ==类==选择器（class selectors）, 使用 `.类名`
 
-- ==id== 选择器（ id selectors ）, 使用 `#id`
-
+- ==id== 选择器（id selectors）, 使用 `#id`
   - 一个 HTML 文档里面的 id 值是==唯一==的，不能重复
   - id 值如果由多个单词组成，单词之间可以用 ==连字符（-）== 、==下划线（_）== 连接 ，也可以使用驼峰标识（不推荐）
-
 
   ```css
   div {
@@ -159,7 +152,6 @@ CSS 选择器：按照一定的规则==选出符合条件==的元素 ，为之�
 - 拥有某一个属性：`[att]`
 
 - 属性等于某个值：`[att=val]`
-
 
 ```html
 <style>
@@ -203,7 +195,6 @@ CSS 选择器：按照一定的规则==选出符合条件==的元素 ，为之�
 - 相邻兄弟选择器（该元素后面紧跟的一个兄弟元素）：使用符号 `+` 进行连接
 
 - 普遍兄弟选择器（该元素后面所有的兄弟元素）：使用符号 `~` 进行连接
-
 
 ```html
 <style>
@@ -249,16 +240,14 @@ CSS 选择器：按照一定的规则==选出符合条件==的元素 ，为之�
 
 [伪类](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Pseudo-classes) 是选择器的一种 ，它用于选择处于==特定状态==的元素
 
->
->
->动态伪类
+#### 动态伪类
 
 - `:link` ：选中尚未访问的链接
 - `:visited` ：选中已访问过的链接
 - `:hover`：鼠标悬停在元素上时
 - `:active` ：匹配被用户激活的元素（如用户按下按键和松开按键之间的状态）
 - `:focus`：选中获得焦点的元素（如表单输入）
-- 当直接对元素设置CSS时，相当于对上面所有的动态伪类都设置生效了
+- 当直接对元素设置 CSS 时，相当于对上面所有的动态伪类都设置生效了
 
 ```css
 a:link {
@@ -274,9 +263,7 @@ div {
 
 
 
->
->
->目标伪类
+#### 目标伪类
 
 - `:target`：代表一个唯一的页面元素 (目标元素)，其 id 与当前 URL ==片段（Fragment）==匹配
 
@@ -289,13 +276,11 @@ div {
 
 
 
->
->
->元素状态伪类
+#### 元素状态伪类
 
 - `:enabled` ：被启用的（enabled：一个元素能够被激活（如选择、点击或接受文本输入），或者能够获取焦点）元素
 - `:disabled` ：被禁用的元素
-- `:checked`：匹配任意被勾选/选中的 radio(单选按钮)、checkbox(复选框)、或 option(select 中的一项)
+- `:checked`：匹配任意被勾选/选中的 radio (单选按钮)、checkbox (复选框)、或 option (select 中的一项)
 
 ```css
 input:enabled {
@@ -314,9 +299,13 @@ input:disabled {
 
 
 
->
->
->结构伪类
+#### 否定伪类
+
+`:not(x)`：x 是一个简单选择器，表示==除 x 以外的元素==
+
+
+
+#### 结构伪类
 
 - `:nth-child()`
 
@@ -328,8 +317,8 @@ input:disabled {
 
 - `:nth-of-type()` 与 `:nth-child()` 区别
 
-  - :nth-of-type 计数时只计算==同种==类型的元素（先找元素再确定个数）
-  - :nth-child 计数时包含不同类型的元素（先找个数再确定元素）
+  - :nth-of-type 计数时只计算==同种==类型的元素（==先找元素再确定个数==）
+  - :nth-child 计数时包含不同类型的元素（==先找个数再确定元素==）
 
   ```html
   <style>
@@ -359,30 +348,10 @@ input:disabled {
 
 
 
-
->
->
->否定伪类
-
-- `:not(x)`：x 是一个简单选择器，表示==除 x 以外的元素==
-
-
-
 ### 伪元素选择器
 
 - 伪元素是一个附加至选择器末的关键词，允许你对被选择元素的特定部分修改样式
 - 为了区分伪元素和伪类，建议伪元素使用 2 个冒号，比如 ::first line
-
-- 常见伪元素
-
->
->
->::first-line 和 ::first-letter
-
-- `::first-line`：可以针对 首行文本设置属性
-- `::first-letter`：可以针对 首字母设置属性
-
-
 
 >
 >
@@ -418,9 +387,7 @@ input:disabled {
     }
     ```
 
-  - 使用该伪元素时，即使没有文本内容，`content` 属性也==不能省略==，否则无法生效
-
-
+- 使用该伪元素时，即使没有文本内容，`content` 属性也==不能省略==，否则无法生效
 
 
 
@@ -456,7 +423,7 @@ input:disabled {
 
 - 对于==行内非替换元素==无效
 
-- `text-indent: 2em;`：缩进2个文字
+- `text-indent: 2em;`：缩进 2 个文字
 
   
 
@@ -464,7 +431,7 @@ input:disabled {
 
 - 定义==行内级元素==（文字、图片、input 等）如何相对它的==块父元素==对齐（水平方向上）
 - 常见取值
-  - `left` ( 默认 ) ：左对齐
+  - `left` (默认) ：左对齐
   - `right`：右对齐
   - `center`：居中对齐
   - `justify`：两端对齐，对最后一行无效（如果要强制生效可设置 `text-align-last: justify` ）
@@ -476,8 +443,6 @@ input:disabled {
 - `letter-spacing`：设置==字符==之间的间距
 - `word-spacing`：设置==单词==之间的间距
 - 默认都是 0，可以设置 `px`、`em`、百分比等，也可以设置负数
-
-
 
 
 
@@ -534,7 +499,7 @@ input:disabled {
 
 
 
-###  line-height
+### line-height
 
 - 用于设置文本的==行高==（一行文字所占据的高度）
 
@@ -547,7 +512,7 @@ input:disabled {
 - height 和 line-height 的区别
   - `height`：元素的整体高度
   - `line-height` ：元素中每一行文字所占据的高度
-  - 假设 ==块级==元素中只有一行文字，设置==行高 = 高度==可以使这行文字在 d块级元素内部==垂直居中==
+  - 假设 ==块级==元素中只有一行文字，设置==行高 = 高度==可以使这行文字在父块级元素内部==垂直居中==
   
 - 设置行高可以将==块级元素、inline-block 元素==的高度撑起来，但对于==行内非替换元素==则无效
 
@@ -575,8 +540,6 @@ input:disabled {
     font: 12px/1.5 tahoma, arial, 'Hiragino Sans GB', '\5b8b\4f53', sans-serif;
   }
   ```
-
-
 
 
 
@@ -681,8 +644,6 @@ input:disabled {
 
 
 
-
-
 ## CSS 盒子模型
 
 ### 盒子模型概述
@@ -738,7 +699,7 @@ input:disabled {
 
 - padding 并非必须是四个值 , 也可以有其他值
 
-  | padding 值个数 |         padding 例子          |                  释义                  |
+  | padding 值个数 |         padding 例子          |                  含义                  |
   | :------------: | :---------------------------: | :------------------------------------: |
   |       4        | padding: 10px 20px 30px 40px; | 上: 10px, 右: 20px, 下: 30px, 左: 40px |
   |       3        |   padding: 10px 20px 30px;    |     上: 10px, 左右: 20px, 下: 30px     |
@@ -763,7 +724,7 @@ input:disabled {
 - 设置边框的方式
   - 边框宽度
     - border-top-width、border-right-width、border-bottom-width、border-left-width
-    - `border-width` 是上面 4 个属性的简写属性（也支持设置不同数量，类似padding）
+    - `border-width` 是上面 4 个属性的简写属性（也支持设置不同数量，类似 padding）
   - 边框颜色
     - border-top-color、border-right-color、border-bottom-color、border-left-color
     - `border-color` 是上面 4 个属性的简写属性
@@ -771,7 +732,7 @@ input:disabled {
     - border-top-style、border-right-style、border-bottom-style、border-left-style
     - `border-style` 是上面 4 个属性的简写属性
 
-- 如果我们相对某一边同时设置 宽度 样式 颜色 , 可以进行如下设置 
+- 如果我们相对某一边同时设置 宽度、样式、颜色 , 可以进行如下设置 
 
   - border-top/right/bottom/left
   - `border` ：统一设置 4 个方向的边框
@@ -935,7 +896,6 @@ input:disabled {
 
 
 
-
 ### 外轮廓 — outline
 
 - `outline` 表示元素的==外轮廓==
@@ -947,7 +907,6 @@ input:disabled {
   - `outline-color` : 外轮廓的颜色
   - `outline`：简写属性，跟 border 用法类似
 - 应用实例：去除 a 元素、input 元素 focus 状态下的 轮廓效果
-
 
 
 
@@ -979,7 +938,6 @@ input:disabled {
   }
   ```
 
-  
 
 
 ### 文字阴影 — text-shadow
@@ -994,7 +952,7 @@ input:disabled {
   <shadow-t> = <color>? && <length>{2,3}
   ```
 
-  - 相对于 box-shadow, 它没有 spread-radius 和 inset
+- 相比于 box-shadow, 它没有 spread-radius 和 inset
 
   ```css
   .text {
@@ -1003,7 +961,6 @@ input:disabled {
   ```
 
   
-
 
 ### CSS 属性 — box-sizing
 
@@ -1024,8 +981,6 @@ input:disabled {
   - 元素的实际占用高度 = height
 
   <img src="./images/image-20220918222822803.png" alt="image-20220918222822803" style="zoom: 67%;" />
-
-
 
 
 
@@ -1145,26 +1100,19 @@ body {
 
   
 
-
-
-
 ### background-image 和 img 对比
-
-- 对比
-
-  |                               |        img         | background-image |
-  | :---------------------------: | :----------------: | :--------------: |
-  |             性质              |      HTML元素      |     CSS样式      |
-  |       图片是否占用空间        |         ✅          |        ❌         |
-  |    浏览器右键直接查看地址     |         ✅          |        ❌         |
-  | 是否支持 CSS Sprite（精灵图） |         ❌          |        ✅         |
-  | 更有可能被搜索引擎收录（SEO） | ✅（结合 alt 属性） |        ❌         |
 
 - img：作为网页内容的重要组成部分，比如广告图片、 LOGO 图片、文章配图、产品图片
 
 - background-image：可有可无
 
-
+|                               |        img         | background-image |
+| :---------------------------: | :----------------: | :--------------: |
+|             性质              |      HTML元素      |     CSS样式      |
+|       图片是否占用空间        |         ✅          |        ❌         |
+|    浏览器右键直接查看地址     |         ✅          |        ❌         |
+| 是否支持 CSS Sprite（精灵图） |         ❌          |        ✅         |
+| 更有可能被搜索引擎收录（SEO） | ✅（结合 alt 属性） |        ❌         |
 
 
 
@@ -1260,7 +1208,7 @@ body {
 
   - ==视口==：文档的==可视==区域
   - 画布：用于渲染文档的区域；文档内容超出视口范围，可以通过滚动查看
-  - 画布 >= 视口
+  - ==画布 >= 视口==
 
   <img src="./images/image-20220925231621876.png" alt="image-20220925231621876" style="zoom:67%;" />
 
@@ -1385,8 +1333,6 @@ body {
 
 
 
-
-
 ## CSS 元素浮动
 
 ### 认识浮动
@@ -1451,7 +1397,7 @@ body {
 
   - 方法二：在父元素最后增加一个空的块级子元素，并且让它设置 `clear: both`（增加无意义标签，不推荐）
 
-  - 方法三：给父元素添加一个伪元素（推荐）
+  - 方法三：==给父元素添加一个伪元素==（推荐）
 
     ```css
     .clear-fix::after {
@@ -1469,8 +1415,6 @@ body {
     ```
 
     
-
-
 
 ## CSS Flex 布局
 
@@ -1572,16 +1516,16 @@ flex items 默认都是沿着 main axis（主轴）从 main start 开始往 main
 
 #### flex-flow
 
-- `flex-flow` 属性是 flex-direction 和 flex-wrap 的简写
+`flex-flow` 属性是 flex-direction 和 flex-wrap 的简写
 
-  - 顺序任意 , 并且都可以省略
+- 顺序任意 , 并且都可以省略
 
-  ```css
-  .box {
-    display: flex;
-    flex-flow: column wrap;
-  }
-  ```
+```css
+.box {
+  display: flex;
+  flex-flow: column wrap;
+}
+```
 
 
 
@@ -1660,8 +1604,6 @@ flex items 默认都是沿着 main axis（主轴）从 main start 开始往 main
 
 
 
-
-
 ### flex item 的属性
 
 #### order
@@ -1695,7 +1637,7 @@ flex items 默认都是沿着 main axis（主轴）从 main start 开始往 main
 
 - 如果所有 flex items 的 flex-grow 总和 sum 超过 1 ，每个 flex item 扩展的 size 为
 
-  (flex container 的剩余 size) * (flex-grow / sum)
+  `(flex container 的剩余 size) * (flex-grow / sum)`
 
 - flex items 扩展后的最终 size ==不能超过== `max-width/height`
 
@@ -1733,7 +1675,7 @@ flex items 默认都是沿着 main axis（主轴）从 main start 开始往 main
   - 当 flex items 在 主轴方向上==超过==了 flex container 的 size，flex-shrink 属性才会有效
 - 如果所有 flex items 的 flex-shrink 总和超过 1 ，每个 flex item 收缩的 size 为
   
-  (flex items 超出 flex container 的 size * 收缩比例) / (所有 flex items 的收缩比例之和)
+  `(flex items 超出 flex container 的 size * 收缩比例) / (所有 flex items 的收缩比例之和)`
 - flex items 收缩后的最终 size ==不能小于== `min-width/height`
 
 ```html
@@ -1833,13 +1775,11 @@ flex items 默认都是沿着 main axis（主轴）从 main start 开始往 main
 
 
 
-
-
 ## CSS 属性 - transform
 
 - `transform` 属性可以==旋转==、==缩放==、==倾斜==或==平移==给定元素
 
-- 常见的函数 transform function 有：
+- 常见的变换函数有：
 
   - 平移：`translate(x, y)`
   - 缩放：`scale(x, y)`
@@ -1893,7 +1833,7 @@ flex items 默认都是沿着 main axis（主轴）从 main start 开始往 main
 
 - translate 是 `translateX` 和 `translateY` 函数的简写
 
-- translate 的百分比可以完成一个元素的水平垂直居中
+- translate 的百分比可以完成一个元素的==水平垂直居中==
 
   ```css
   .box {
@@ -1907,6 +1847,7 @@ flex items 默认都是沿着 main axis（主轴）从 main start 开始往 main
 
 
 ### 缩放 - scale
+
 - 缩放：`scale(x, y)` 函数可改变元素的大小
 
   <img src="./images/image-20221004214425991.png" alt="image-20221004214425991"  />
@@ -1933,6 +1874,7 @@ flex items 默认都是沿着 main axis（主轴）从 main start 开始往 main
 
 
 ### 旋转 - rotate
+
 - 旋转：`rotate(angle)`
 
   <img src="./images/image-20221004214411616.png" alt="image-20221004214411616"  />
@@ -1953,6 +1895,7 @@ flex items 默认都是沿着 main axis（主轴）从 main start 开始往 main
   
 
 ### 倾斜 - skew
+
 - 倾斜：`skew(x, y)` 函数定义了一个元素在二维平面上的倾斜转换
 
   <img src="./images/image-20221004222036657.png" alt="image-20221004222036657" style="zoom: 80%;" />
@@ -1978,7 +1921,7 @@ flex items 默认都是沿着 main axis（主轴）从 main start 开始往 main
   - 一个值：设置 x 轴的原点
   - 两个值：设置 x 轴和 y 轴的原点
 
-- 值类型：必须是 < length>、< percentage> 或 left, center, right, top, bottom 关键字中的一个
+- 值类型：必须是 \<length>、\<percentage> 或 left, center, right, top, bottom 关键字中的一个
 
   - `left`、`center`、`right`、`top`、`bottom` 关键字
   - 长度（length）：从左上角开始计算
@@ -1991,7 +1934,7 @@ flex items 默认都是沿着 main axis（主轴）从 main start 开始往 main
   }
   ```
 
-  
+- 每次执行完一个变换函数后，形变的原点坐标可能会发生变化
 
 
 
@@ -2055,9 +1998,9 @@ flex items 默认都是沿着 main axis（主轴）从 main start 开始往 main
 #### 认识 animation
 
 - 过渡动画（transition）的缺点
-  - transition 只能定义开始状态和结束状态，==不能定义中间状态==，只有两个状态
-  - transition ==不能重复执行==， 除非再次触发动画
-  - transition 需要在==特定状态==下会触发才能执行，比如某个属性被修改了
+  - 只能定义开始状态和结束状态，==不能定义中间状态==，只有两个状态
+  - ==不能重复执行==， 除非再次触发动画
+  - 需要在==特定状态==下会触发才能执行，比如某个属性被修改了
 - CSS animation 可以有更多状态的变化
 - CSS animation 的使用分成两个步骤
   - 步骤一：使用 `@keyframes` 定义动画序列（每一帧动画如何执行）
@@ -2066,30 +2009,32 @@ flex items 默认都是沿着 main axis（主轴）从 main start 开始往 main
 
 
 #### @keyframes 规则
-- `@keyframes` 可以定义多个变化状态，并且使用 `animation-name` 来声明匹配
 
-  - 关键帧使用==百分比==来指定动画发生的时间点
-  - ==0%== 表示动画的开始时刻，==100%== 表示动画的最终时刻
-    - 这两个时间点十分重要，所以还有特殊的别名： from 和 to
-    - 也就是说 from 相当于 0%，to 相当于 100%
+`@keyframes` 可以定义多个变化状态，并且使用 `animation-name` 来声明匹配
 
-  ```css
-  @keyframes animation-demo {
-    0% {
-      transform: translate(0);
-    }
-    50% {
-      transform: translate(400px);
-    }
-    100% {
-      transform: translate(0);
-    }
+- 关键帧使用==百分比==来指定动画发生的时间点
+- ==0%== 表示动画的开始时刻，==100%== 表示动画的最终时刻
+  - 这两个时间点十分重要，所以还有特殊的别名： `from` 和 `to`
+  - from 相当于 0%，to 相当于 100%
+
+```css
+@keyframes animation-demo {
+  0% {
+    transform: translate(0);
   }
-  ```
+  50% {
+    transform: translate(400px);
+  }
+  100% {
+    transform: translate(0);
+  }
+}
+```
 
 
 
 #### animation 属性
+
 `animation` 属性是一个简写属性
 
 ```tex
@@ -2146,8 +2091,6 @@ animation = <single-animation>#
   animation: animation-demo 2s linear 2s infinite normal forwards;
 }
 ```
-
-
 
 
 
@@ -2213,8 +2156,6 @@ animation = <single-animation>#
 
   
 
-
-
 ## BFC
 
 ### 认识 FC 和 BFC
@@ -2263,7 +2204,7 @@ animation = <single-animation>#
 
   - 表格标题（`display: table-caption`，HTML 表格标题默认值）
 
-  - 匿名表格单元格元素（display 值为 `table`、`table-row`、 `table-row-group`、`table-header-group`、`table-footer-group`（分别是 HTML table、tr、tbody、thead、tfoot 的默认值）或 `inline-table`）
+  - 匿名表格单元格元素（display 值为 `table/table-row/table-row-group/table-header-group/table-footer-group`（分别是 HTML table、tr、tbody、thead、tfoot 的默认值）或 `inline-table`）
 
   - `overflow` 值不为 `visible`、`clip` 的块元素
 
@@ -2271,7 +2212,7 @@ animation = <single-animation>#
 
   - 网格元素（`display: flex/inline-flex` 元素的直接子元素），如果它们本身也不是 flex、grid、table 容器
 
-  - display 值为 `flow-root` 的元素（不会引入任何副作用）
+  - display 值为 `flow-root` 的元素（==无副作用==）
 
     
 
@@ -2285,7 +2226,7 @@ In a block formatting context, each box's left outer edge touches the left edge 
 
 - 在 BFC 中，盒子会在==垂直方向==上一个挨着一个地排布
 - 垂直方向的间距由 `margin` 决定
-- 在==同一个== BFC 中，相邻两个盒子之间的==垂直方向==上的 margin 会==折叠==（解决 margin 折叠问题）
+- 在==同一个== BFC 中，相邻两个盒子之间的==垂直方向==上的 margin 会==折叠==（margin 折叠的产生原因）
 - 在 BFC 中，每个元素的==左边缘==是紧挨着包含块的左边缘的
 
 
@@ -2357,8 +2298,6 @@ In a block formatting context, each box's left outer edge touches the left edge 
 
   
 
-
-
 ## CSS 单位
 
 CSS 中的单位整体可以分成两类
@@ -2401,7 +2340,7 @@ CSS 中的单位整体可以分成两类
   - 所以在设备像素之上，操作系统为开发者进行抽象，提供了逻辑像素的概念
   - 比如一台显示器，在操作系统上是以 1920x1080 设置的显示分辨率 ，那么无论是 2k 、4k 的显示器，对于开发者来说，都是1920x1080 的大小
 - ==CSS 像素==
-  - CSS 中我们经常使用的单位也是 px ，它在默认情况下等同于设备独立像素（逻辑像素）
+  - CSS 中经常使用的单位也是 `px` ，它在默认情况下等同于设备独立像素（逻辑像素）
   - 通过 `window.screen.width` 和 `window.screen.height` 获取到电脑的逻辑分辨率
 
 
@@ -2420,8 +2359,6 @@ CSS 中的单位整体可以分成两类
 
 
 
-
-
 ## 移动端适配
 
 CSS 移动端适配
@@ -2437,7 +2374,7 @@ CSS 移动端适配
 - 但是在移动端，布局视口和视觉视口是不太一样的
   - 因为移动端的网页窗口往往比较小 ，我们可能会希望一个大的网页在移动端可以完整的显示
   - 所以在默认情况下，==移动端的布局视口是大于视觉视口==
-- 在移动端中，可以将视口划分为[三种情况](https://www.quirksmode.org/mobile/viewports2.html)
+- 在移动端中，可以将视口划分为 [三种情况](https://www.quirksmode.org/mobile/viewports2.html)
   - ==布局视口==（layout viewport）
   - ==视觉视口==（visual layout）
   - ==理想视口==（ideal layout）
@@ -2492,7 +2429,7 @@ CSS 移动端适配
     | `minimum-scale` | 一个 `0.0` 和 `10.0` 之间的正数                | 定义缩放的最小值。浏览器设置可以忽略此规则                   |
     | `user-scalable` | `yes` 或者 `no`                                | 默认为 `yes`，如果设置为 `no`，用户将无法缩放当前页面。浏览器设置可以忽略此规则 |
 
-    
+
 
 ### 适配方案
 
@@ -2508,7 +2445,6 @@ CSS 移动端适配
 
 #### rem 适配
 
-
 - rem 单位是相对于 `html` 元素的 `font-size` 来设置的，可以动态的修改 html 的 font-size 尺寸，在不同的屏幕下就会有不同的尺寸
 
 - 动态设置 html 的 font-size
@@ -2518,7 +2454,7 @@ CSS 移动端适配
     - 通过媒体查询来设置不同尺寸范围内的屏幕 html 的 font size 尺寸
     - 缺点：需要针对不同的屏幕编写大量的媒体查询
 
-  - 通过 js 代码动态设置（`lib-flexible`库）
+  - 通过 js 代码动态设置（`lib-flexible` 库）
 
     - 根据 html 的宽度计算出 font-size 的大小 ，并且设置到 html 上
     - 监听页面的 `resize` 事件，并且重新设置 font-size 的大小到 html 上
@@ -2541,10 +2477,9 @@ CSS 移动端适配
 
 #### vw 适配
 
-
 - rem 事实上是作为一种过渡的方案，它利用的也是 `vw` 的思想
   - 1rem 等同于设计稿的 1/10 ，在利用 1rem 计算相对于整个屏幕的尺寸大小
-  - 因此在1/10情况下，1rem = 10 vw
+  - 因此在 1/10 情况下，1rem = 10 vw
 - vw 相比于 rem 的优势
   - 不需要去计算 html 的 font-size 大小，也不需要给 html 设置这样一个 font-size
   - 不会因为设置 html 的 font-size 大小，而必须给 body 再设置一个 font-size（防止继承）
@@ -2554,11 +2489,7 @@ CSS 移动端适配
 
 
 
-
-
-
-
-## 补充知识
+## 扩展知识
 
 ### CSS 属性 - overflow
 
@@ -2578,7 +2509,7 @@ CSS 移动端适配
 
 - 当 opacity 属性的值应用于某个元素上时，是把这个元素（包括它的内容）当成一个==整体==看待，即使这个值没有被子元素继承
 
-- 属性值（0~1之间的数字）
+- 属性值（0~1 之间的数字）
 
   - `0`：元素完全透明 (即元素不可见)
   - `1`：元素完全不透明（默认值）
@@ -2599,7 +2530,7 @@ CSS 移动端适配
 
 - `cursor` 可以设置鼠标指针（光标）在悬浮在元素上面时的显示样式
 
-- cursor 常见的取值
+- 常见取值
 
   - `auto`：浏览器根据上下文决定指针的显示样式，比如根据文本和非文本切换指针样式
   - `default`：由操作系统决定，一般就是一个小箭头
@@ -2611,7 +2542,6 @@ CSS 移动端适配
     cursor: pointer;
   }
   ```
-
 
 
 
@@ -2659,7 +2589,7 @@ Line boxes are created as needed to hold inline-level content within an inline f
 - 有图片、文字时
 
   - 行盒 需要将图片和文字全部包裹进去，因此会把父盒子的高度撑大
-  - 图片下方出现一些==空白像素==的原因：`vertical-align` 默认值是 baseline（基线对齐，字母 x 的底部）
+  - 图片下方出现一些==空白像素==的原因：`vertical-align` 默认值是 baseline（==基线对齐==，字母 `x` 的底部）
   - 解决空白像素方法
     - 设置 img 的 `vertical-align: top/middle/bottom`
     - 设置 img `display: block`
@@ -2793,7 +2723,7 @@ Line boxes are created as needed to hold inline-level content within an inline f
 
 - `top`：将行内级盒子的顶部跟==行盒==顶部对齐
 
-- `middle`：行内级盒子的中心点与父盒基线加上 x-height 一半的线对齐（文字下沉，不能做到真正意义上的垂直居中）
+- `middle`：==行内级盒子的中心点与父盒基线加上 x-height 一半的线对齐==（文字下沉，不能做到真正意义上的垂直居中）
 
   - 设置 line-height = height ，可以使盒子内部的文字居中
 
@@ -2832,9 +2762,7 @@ Line boxes are created as needed to hold inline-level content within an inline f
 
 - 百分比：把行内级盒子提升或者下降一段距离（距离相对于 line-height 计算 元素高度）
 
-- < length >：把行内级盒子提升或者下降一段距离
-
-
+- \<length>：把行内级盒子提升或者下降一段距离
 
 
 
@@ -2843,30 +2771,35 @@ Line boxes are created as needed to hold inline-level content within an inline f
 `pointer-events` 属性指定在什么情况下某个特定的图形元素可以成为==鼠标事件==的 `target`
 
 - `auto`：默认值
-- `none`：元素永远不会成为鼠标事件的 target，禁用了包括 `hover` 在内的鼠标事件。但是，当其后代元素的 `pointer-events` 属性指定其他值时，鼠标事件可以指向后代元素，在这种情况下，鼠标事件将在捕获或冒泡阶段触发父元素的事件侦听器
+- `none`：元素永远不会成为鼠标事件的 target，禁用了包括 `hover` 在内的鼠标事件
+  - 但是，当其后代元素的 `pointer-events` 属性指定其他值时，鼠标事件可以指向后代元素
+  - 在这种情况下，鼠标事件将在捕获或冒泡阶段触发父元素的事件侦听器
+
 
 
 
 ### CSS 字符编码
 
-- 在 CSS 中有多种方法去声明字符编码，浏览器会按照以下顺序尝试查找编码（找到就停止）
+在 CSS 中有多种方法去声明字符编码，浏览器会按照以下顺序尝试查找编码（找到就停止）
 
-  -  文件的编码
+- 文件的编码
 
-  -  由 HTTP Content-Type 中的 charset 属性给出的值
+- 由 HTTP Content-Type 中的 charset 属性给出的值
 
-  -  CSS 文件中设置的编码
+- CSS 文件中设置的编码
 
-    ```css
-    @charset "UTF-8";
-    ```
+  ```css
+  @charset "UTF-8";
+  ```
 
-  -  都找不到默认指定 ==UTF-8==
+- 都找不到默认指定 ==UTF-8==
 
 
 
 ### CSS 颜色的表示方法
+
 - ==颜色关键字==：是不区分大小写的标识符，它表示一个具体的颜色，如 red
+
 - ==RGB 颜色==
   - RGB 是一种色彩空间，通过 R（red，红色）、G（green，绿色）、B（blue，蓝色）三原色来组成了不同的颜色，通过调整这三个颜色不同的==比例==，可以组合成其他的颜色
   - RGB 各个原色的取值范围是 ==0~255==
@@ -2876,13 +2809,13 @@ Line boxes are created as needed to hold inline-level content within an inline f
     - R (红) 、G (绿)、B (蓝) 和 A (alpha ) 是十六进制字符 (0—F) ，A 是可选的
     - 三位数符号（#RGB ）是六位数形式（#RRGGBB ）的减缩版，比如 #f09 和 #ff0099 表示同一颜色
   - 函数符：==rgb[a] (R, G, B[, A])==
-    - R (红) 、G (绿)、B (蓝) 可以是 < number>（数字），或者 < percentage>（百分比）
+    - R (红) 、G (绿)、B (蓝) 可以是 \<number>（数字），或者 \<percentage>（百分比）
     - A (alpha) 可以是 0 到 1 之间的数字，或者百分比，数字 1 相当于 100% (完全不透明)
 
 ```css
 body {
   color: red;
- 	background-color: #3343;
+  background-color: #3343;
   border: 1px solid rgba(100, 89, 200, 0.2);
 }
 ```
@@ -2892,8 +2825,9 @@ body {
 ### 浏览器渲染流程
 
 渲染流程图
+
 - 下载 HTML 文件，并开始解析 HTML
-- 遇到 CSS 的link 链接，下载CSS 并开始解析，此时并==不会阻塞== HTML 的继续解析
+- 遇到 CSS 的 link 元素，下载CSS 并开始解析，此时并==不会阻塞== HTML 的继续解析
 - 解析的 HTML 时创建对应的 DOM Tree
 - ==等待== CSS 解析完成，完成后将 CSS 样式附加到对应的 DOM Node 上
 - 创建 Render Tree（渲染树），并展示在页面上
@@ -2980,7 +2914,7 @@ body {
 
 #### 字体图标
 
-- 字体可以设计成各式各样的形状，把字体直接设计成图标的样子，这个就叫做==字体图标==
+- 字体可以设计成各式各样的形状，把字体直接设计成图标的样子，就叫做==字体图标==
 
 - 字体图标的优点
 
@@ -3018,9 +2952,6 @@ body {
 
 
 
-
-
-
 ### CSS 精灵图
 
 - CSS Sprite：一种 CSS 图像合成技术 ，将各种小图片合并到一张图片上，然后利用 CSS 的==背景定位==来显示对应的图片部分
@@ -3044,19 +2975,18 @@ body {
 
 
 
-
 ### 元素隐藏方法
 
 - `display: none`：元素不显示出来 , 并且也不占据位置 , ==不占据任何空间==
 - `visibility: hidden`：虽然元素不可见 , 但是会占据元素应该占据的空间
-- `opacity: 0`：设置整个元素的透明度 , 会==影响所有的子元素==
+- `opacity: 0`：设置整个元素的透明度 , 会==影响所有的子元素==，==鼠标事件仍然生效==
 
 
 
 ### 包含块
 
 - 元素的尺寸及位置，常常会受它的包含块所影响
-  - 一些属性，如 `width` `height` `padding`  `margin`，当我们对其赋予==百分比==值时，这些值的计算值，就是以元素的包含块作为参照对象
+  - 一些属性，如 `width/height/padding/margin`，当我们对其赋予==百分比==值时，这些值的计算值，就是以元素的包含块作为参照对象
 - 确定一个元素的包含块的过程完全依赖于这个元素的 `position` 属性
   - 如果 position 属性为 `static`、`relative` 或 `sticky`，包含块可能由它的==最近的祖先块元素==（比如 inline-block, block）的内容区的边缘组成
   - 如果 position 属性为 `absolute` ，包含块就是由它的最近的 position 的值==不是 static 的祖先元素==的内边距区的边缘组成
@@ -3151,8 +3081,6 @@ body {
 
 
 
-
-
 ### CSS 函数
 
 CSS 函数通常可以帮助我们更加灵活的来编写样式的值
@@ -3192,20 +3120,19 @@ CSS 函数通常可以帮助我们更加灵活的来编写样式的值
 
 #### CSS 函数 - calc
 
-- `calc()` 函数允许在声明 CSS 属性值时执行一些计算（支持==加减乘除==的运算）
+`calc()` 函数允许在声明 CSS 属性值时执行一些计算（支持==加减乘除==的运算）
 
-  + 运算符的两边必须要有==空格==
+- 运算符的两边必须要有==空格==
 
-  + 通常用来设置一些元素的尺寸或者位置
+- 通常用来设置一些元素的尺寸或者位置
 
-  ```css
-  .box {
-    display: inline-block;
-    width: calc(100% - 60px); /* 父元素宽度减去60px */
-  }
-  ```
+```css
+.box {
+  display: inline-block;
+  width: calc(100% - 60px); /* 父元素宽度减去60px */
+}
+```
 
-  
 
 
 #### CSS 函数 - blur
@@ -3213,6 +3140,7 @@ CSS 函数通常可以帮助我们更加灵活的来编写样式的值
 - `blur()` 函数将==高斯模糊==应用于输出图片或元素
 
   - `blur(radius)`，radius：模糊的半径 , 用于定义高斯函数的偏差值，偏差值越大，图片越模糊
+  - 高斯模糊会导致页面性能下降，不应过度使用
 
 - 通常会和两个属性一起使用
 
@@ -3273,12 +3201,10 @@ CSS 函数通常可以帮助我们更加灵活的来编写样式的值
 
 
 
-
-
 ### 浏览器前缀
 
 - 浏览器前缀的由来
-  - 每一个 CSS 属性在正式推出之前，都需要经历 草案 -> 推荐 -> 成为标准 的阶段
+  - 每一个 CSS 属性在正式推出之前，都需要经历 ==草案 -> 推荐 -> 标准== 的阶段
   - 浏览器会提供一个==带浏览器前缀==的 CSS 属性，供开发者使用
     - 如果这个 CSS 属性在最后被==废弃==了，浏览器解析时会将这些带前缀的 CSS 属性置为==无效==属性
     - 如果这个 CSS 属性最后成为了标准或者==更改了属性名==，浏览器解析时会将这些带前缀的属性==映射==为标准的属性
@@ -3343,7 +3269,7 @@ CSS 函数通常可以帮助我们更加灵活的来编写样式的值
   - 通常会将媒体特性描述为一个表达式
   - 每条媒体特性表达式都必须用==括号==括起来
 
-- 常见的[媒体特性](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Media_Queries/Using_media_queries#%E5%AA%92%E4%BD%93%E7%89%B9%E6%80%A7)
+- 常见的 [媒体特性](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Media_Queries/Using_media_queries#%E5%AA%92%E4%BD%93%E7%89%B9%E6%80%A7)
 
   | 名称        | 简介                                            |
   | :---------- | :---------------------------------------------- |
@@ -3372,10 +3298,10 @@ CSS 函数通常可以帮助我们更加灵活的来编写样式的值
       background-color: red;
     }
   }
+  
   @media screen and (min-width: 375px) {
     body {
       background-color: orange;
     }
   }
   ```
-
