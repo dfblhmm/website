@@ -1,5 +1,6 @@
 // 定义css变量
 :root {
+  // `code` 单行代码块
   --ifm-code-background: #2cc51e;
   --ifm-hover-overlay: #f5f5f5;
 
@@ -12,6 +13,9 @@
     --ifm-heading-vertical-rhythm-top: 2;
 
     --ifm-blockquote-background: #fea500;
+
+    // a 链接默认添加【下划线】
+    // --ifm-link-decoration: underline;
   }
 }
 
