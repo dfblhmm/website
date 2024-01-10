@@ -25,7 +25,7 @@ title: 基础
 
 - 缺点
 
-  - 程序全是些 0 和 1 的指令代码，可读性差，容易出错
+  - 程序全是 0 和 1 的指令代码，可读性差，容易出错
   - 不易编写
 
 
@@ -35,7 +35,7 @@ title: 基础
 - 阶段二：汇编语言
 
   - 为了解决机器语言的缺陷，人们发明了另外一种语言 — 汇编语言
-  - 这种语言用==符号==来 代替 0、1 代码（经过 汇编器 ，汇编代码再进一步转成 010）
+  - 这种语言用==符号==来 代替 0、1 代码（经过汇编器 ，汇编代码再进一步转成二进制）
 
   <img src="images/image-20221025001550847.png" alt="image-20221025001550847" style="zoom:80%;" />
 
@@ -46,8 +46,8 @@ title: 基础
 
 - 缺点
 
-  - 不同的机器有不同的汇编语言语法和编译器，代码==缺乏可移植性==
-  - 符号非常多，难以难记
+  - 不同的机器（CPU）有不同的汇编语言语法和编译器，代码==缺乏可移植性==
+  - 符号非常多，难以记忆
   - 很容易产生 BUG ，难于调试
 
 - 应用场景：操作系统内核、驱动程序、单片机程序
@@ -62,7 +62,7 @@ title: 基础
   - 简单、易用、易于理解，语法和结构类似于普通英文
   - 一个程序还可以在不同的机器上运行，具有==可移植性==
 - 缺点
-  - 程序不能直接被计算机识别，需要经==编译器==翻译成二进制指令后，才能运行到计算机上
+  - 程序不能直接被计算机识别，需要经==编译器==翻译成二进制指令后，才能运行在计算机上
   - 效率要低于机器语言和汇编语言
 
 
@@ -77,10 +77,11 @@ title: 基础
 
 
 ### JavaScript 的历史
-- 1994 年，网景公司（ Netscape ）发布了 Navigator 浏览器 0.9 版
+
+- 1994 年，网景公司（Netscape）发布了 Navigator 浏览器 0.9 版
 
   - 这是历史上第一个比较成熟的网络浏览器
-  - 但是，这个版本的浏览器只能用来浏览网页，不具备与访问者互动的能力
+  - 但是，这个版本的浏览器只能用来浏览网页，不具备与访问者交互的能力
   - 网景公司急需一种网页脚本语言，使得浏览器可以与网页互动
 
   <img src="images/image-20221025003452068.png" alt="image-20221025003452068" style="zoom: 80%;" />
@@ -124,10 +125,11 @@ title: 基础
 
 
 ### JavaScript 的组成
-- ECMAScript 是 JavaScript 的标准，描述了该语言的语法和基本对象
-  - JavaScript 是 ECMAScript 的语言层面的实现
-  - 因为除了语言规范之外，JavaScript 还需要对页面和浏览器进行各种操作
-  - 除了基本实现之外，还包括 DOM 操作和 BOM 操作
+
+ECMAScript 是 JavaScript 的标准，描述了该语言的语法和基本对象
+- JavaScript 是 ECMAScript 的语言层面的实现
+- 因为除了语言规范之外，JavaScript 还需要对页面和浏览器进行各种操作
+- 除了基本实现之外，还包括 DOM 操作和 BOM 操作
 
 <img src="images/image-20221025010303909.png" alt="image-20221025010303909" style="zoom:80%;" />
 
@@ -139,11 +141,10 @@ title: 基础
 
 
 
-
-
-## JavaScript 基本语法
+## 基本语法
 
 ### 编写方式
+
 - HTML 代码行内（不推荐）
 
   ```html
@@ -174,7 +175,7 @@ title: 基础
 
   - 浏览器不支持脚本
 
-  - 浏览器对脚本的支持被关闭
+  - 浏览器对脚本的支持被禁用
 
   ```html
   <noscript>
@@ -199,6 +200,7 @@ title: 基础
 
 
 ### 语句和分号
+
 - 语句是向浏览器发出的==指令==，通常表达一个操作或者行为
 
   ```js
@@ -209,7 +211,7 @@ title: 基础
 - 通常每条语句的后面我们会添加一个==分号==，表示语句的结束
 
   - 当存在==换行符==时，在大多数情况下可以省略分号
-  - JavaScript 会将将换行符理解成“隐式”的分号
+  - JavaScript 会将换行符解释成“隐式”的分号
 
 
 
@@ -237,7 +239,7 @@ title: 基础
     ```js
     /**
      * 是否为数组类型
-     * @param {*} 变量
+     * @param {*} variable 变量
      * @returns {boolean}
      */
     function isArray(variable) {
@@ -249,7 +251,7 @@ title: 基础
 
 
 
-### JavaScript 变量
+### 变量
 
 #### 变量的命名格式
 
@@ -267,17 +269,15 @@ let a, b;
 #### 变量的命名规范
 
 - 第一个字符必须是==字母==、==下划线== 或 美元符号（==$==），其他字符可以是 字母、下划线、美元符号或数字
-- 不能使用[关键字](https://developer.mozilla.org/zh-CN/docs/web/javascript/reference/lexical_grammar#%E5%85%B3%E9%94%AE%E5%AD%97)和保留字命名
+- 不能使用 [关键字](https://developer.mozilla.org/zh-CN/docs/web/javascript/reference/lexical_grammar#%E5%85%B3%E9%94%AE%E5%AD%97) 和保留字命名
 - 变量严格==区分大小写==
 
 
 
-
-
-## JavaScript 数据类型
+## 数据类型
 
 - JavaScript 中的==值==都具有特定的==类型==
-- 在 JavaScript 中有 8 种基本的数据类型（ 7 种原始类型和 1 种复杂类型）
+- 在 JavaScript 中有 8 种基本的数据类型（7 种原始类型和 1 种复杂类型）
   - Number
   - String
   - Boolean
@@ -289,6 +289,7 @@ let a, b;
 
 
 ### typeof 操作符
+
 - ECMAScript 的类型系统是松散的，使用 `typeof` ==操作符==可以获取变量的类型
 - 对一个值使用 typeof 操作符会返回下列字符串之一
   - `"undefined"`：未定义
@@ -303,7 +304,8 @@ let a, b;
 
 
 ### Number 类型
-- `Number` 类型代表==数字==类型（整数和浮点数）
+
+- `Number` 类型代表==数字==类型（不区分整数和浮点数）
 
   ```js
   const num1 = 10;
@@ -332,7 +334,7 @@ let a, b;
 
 - 数字表示的范围
 
-  - 最小正数值 `Number.MIN_VALUE`，小于这个的数字会被转化为 0
+  - 最小正数值 `Number.MIN_VALUE`，小于这个值的数字会被转化为 0
   - 最大正数值 `Number.MAX_VALUE`
 
 - `isNaN()`：用来确定一个值是否为 `NaN`，返回一个布尔值
@@ -349,7 +351,7 @@ let a, b;
 
   - 双引号：`"22"`
   - 单引号：`'11'`
-  - 反引号：`` 
+  - 反引号：``
 
   ```js
   const str1 = '11';
@@ -369,6 +371,7 @@ let a, b;
 
 
 ### Boolean 类型
+
 - `Boolean`（布尔）类型用于表示==真假==
 
 - 布尔是计算机科学中的逻辑数据类型，以发明布尔代数的数学家 乔治 · 布尔 为名
@@ -383,9 +386,10 @@ let a, b;
 
 
 ### undefined 类型
+
 - `undefined` 类型只有一个值，就是特殊值 `undefined` 
 
-- 如果我们声明一个变量，但是没有对其进行初始化时，它默认就是 undefined
+- 声明一个变量，但是没有对其进行初始化时，它默认就是 undefined
 
   ```js
   let name;
@@ -395,12 +399,13 @@ let a, b;
   
 
 ### Object 类型
+
 - `Object` 类型是一个特殊的类型，我们通常把它称为==引用类型==或复杂类型
 
   - 其他的数据类型我们通常称之为==原始类型==，它们的值只保存一个单独的内容
   - Object 往往可以表示一组数据，是其他数据的一个==集合==
 
-- 在 JavaScript 中我们可以使用 ==花括号== `{}` 的字面量表示方式来表示一个对象
+- 在 JavaScript 中使用 ==花括号== `{}` 的字面量表示方式来表示一个对象
 
   ```js
   const info = {
@@ -427,6 +432,7 @@ let a, b;
 - 大多数情况下，运算符和函数会自动将赋予它们的值转换为正确的类型，这是一种==隐式转换==
 
 #### 字符串 String 的转换
+
 - 隐式转换：一个字符串和另一个类型进行操作
 
   - 如果运算符左右两边有一个是字符串，那么另一边会自动转换成字符串类型进行拼接
@@ -447,6 +453,7 @@ let a, b;
   
 
 #### 数字类型 Number 的转换
+
 - 隐式转换：在算数运算中，通常会将其他类型转换成数字类型来进行运算
 
   - 比如 `"6" / "3" = 2`
@@ -466,21 +473,20 @@ let a, b;
 
 
 #### 布尔类型 Boolean 的转换
+
 - 布尔类型的转换发生在==逻辑运算==中，也可以通过调用 `Boolean()` 函数进行显式转换
 - 转换规则
-  - 直观上为 ==“空”== 的值（如 0、空字符串、null 、undefined 和 NaN ）将变为 `false`
-  - 其他值变成 true
+  - 直观上为 ==“空”== 的值（如 0、空字符串、null 、undefined 和 NaN）将转换为 `false`
+  - 其他值变成 `true`
   - 字符串 `"0"` 会转换为 `true`
 
 
 
-
-
-## JavaScript 运算符
+## 运算符
 
 ### 算术运算符
 
-- 算术运算符用在数学表达式中 , 是对数据进行计算的符号
+算术运算符用在数学表达式中 , 是对数据进行计算的符号
 
 | 运算符 | 运算规则   | 示例                 |
 | ------ | ---------- | -------------------- |
@@ -508,6 +514,7 @@ let a, b;
 
 
 ### 原地修改
+
 - 原地修改是对一个变量做运算的简写方式
 
 - 原地修改只能用于变量，不能直接运用于数字
@@ -554,7 +561,7 @@ let a, b;
 
   | 运算符      | 运算规则           | 示例                                 |
   | ----------- | ------------------ | ------------------------------------ |
-  | `==`、`===` | 相等、严格相等     | '3' == 3（true）、'3' === 3（false） |
+  | `==`、`===` | 相等、严格相等     | `'3' == 3`（true）、`'3' === 3`（false） |
   | `!=`、`!==` | 不相等、严格不相等 | '3' !\= 3（false）、'3' !== 3（true） |
   | `>`、`>=`   | 大于、大于等于     | 4 > 3（true）、3 >= 3（true）        |
   | `<`、`<=`   | 小于、小于等于     | 4 \< 3（false）、3 \<= 3（true）       |
@@ -572,7 +579,7 @@ let a, b;
 
 - 用于简化 `if else` 的分支语句
 
-- 使用格式：计算条件结果，如果结果为真，则返回value1，否则返回value2
+- 使用格式：计算条件结果，如果结果为真，则返回 value1，否则返回 value2
 
   ```js
   const result = condition ? value1 : value2;
@@ -639,9 +646,8 @@ console.log(!!10); // true
 
 
 
+## 分支语句
 
-
-## JavaScript 分支语句
 - 在程序开发中，程序有三种不同的执行方式
   - 顺序：从上向下，顺序执行代码
   - 分支：根据条件判断，决定执行代码的分支
@@ -651,7 +657,7 @@ console.log(!!10); // true
 
 - 单分支语句：`if(...)`
 
-  - 计算括号里的条件表达式，如果计算结果是 true，就会执行对应的代码块
+  - 计算括号里的条件表达式，如果计算结果是 `true`，就会执行对应的代码块
 
   ```js
   if (4 > 3) {
@@ -676,6 +682,7 @@ console.log(!!10); // true
 
   ```js
   const num = 10;
+  
   if (num <= 5) {
     console.log('小于等于5');
   } else if (num > 5 && num <= 10) {
@@ -684,7 +691,7 @@ console.log(!!10); // true
     console.log('大于10');
   }
   ```
-
+  
   
 
 ### switch 语句
@@ -692,11 +699,12 @@ console.log(!!10); // true
 - `switch` 是分支结构的一种语句
 
   - 通过判断表达式的结果是否等于 case 语句的常量，来执行相应的分支体的
-  - 与 if 语句不同的是，switch 语句只能做值的==相等判断== （使用==严格相等== `===`，而 if 语句可以做值的==范围判断==
+  - 与 if 语句不同的是，switch 语句只能做值的==相等判断== （使用==严格相等== `===`，而 if 语句可以做值的==范围判断==）
   - switch 语句有至少一个 case 代码块和一个可选的 default 代码块
 
   ```js
   const a = 10;
+  
   switch (a) {
     case 10:
       console.log(10); // 10
@@ -712,14 +720,12 @@ console.log(!!10); // true
 
 
 
+## 循环语句
 
-
-## JavaScript 循环语句
-
-- 在 JavaScript 中支持三种循环方式
-  - `while` 循环
-  - `do ... while` 循环
-  - `for` 循环
+在 JavaScript 中支持三种循环方式
+- `while` 循环
+- `do ... while` 循环
+- `for` 循环
 
 ### while 循环
 
@@ -791,10 +797,11 @@ do {
 - 循环的控制
 
   - `break`：直接跳出循环，循环结束
-  - `continue`：跳过本次循环次，执行下一次循环体
+  - `continue`：跳过本次循环，执行下一次循环体
 
   ```js
   let count = 0;
+  
   while(count < 10) {
     count++;
     if (count === 5) continue;
@@ -802,12 +809,10 @@ do {
     console.log(count)
   }
   ```
-
+  
   
 
-
-
-## JavaScript 函数
+## 函数
 
 - ==函数==其实就是某段代码的==封装==，这段代码帮助我们完成某一个功能
 - 在 JavaScript 中，函数也是对象，也可以为函数添加属性
@@ -818,7 +823,7 @@ do {
 
   ```js
   function 函数名() {
-    ...封装的代码...
+    /* ...封装的代码... */
   }
   ```
 
@@ -827,13 +832,14 @@ do {
 
 - 调用函数：通过 `函数名()` 即可，比如 `test()`
 
-```js
-function say() {
-  console.log('Hello World!')
-}
-say(); // Hello World!
-```
+  ```js
+  function say() {
+    console.log('Hello World!')
+  }
+  say(); // Hello World!
+  ```
 
+  
 
 
 ### 函数的参数
@@ -901,11 +907,12 @@ console.log(pow(5, 3)); // 125
   - 全局变量 在任何函数中都是可访问的
   - 通过 var 声明的全局变量会添加为 window 对象的属性
 - 在函数中，访问变量的顺序
-  - 优先访问自己函数中的变量，没有找到时，从外部中访问
+  - 优先访问自己函数中的变量，没有找到时，从外部访问
 
 
 
 ### 函数表达式
+
 - 在 JavaScript 中，函数是一种特殊的值，将函数赋值给变量就叫做函数表达式
 
 - 函数表达式允许省略函数名
@@ -927,7 +934,7 @@ console.log(pow(5, 3)); // 125
 
 ### 回调函数
 
-- 回调函数：将函数作为参数传递给另一个函数，在某个时刻调用这个传递的函数，这个被作为参数的函数叫做回调函数
+- 回调函数：将函数==作为参数==传递给另一个函数，在某个时刻调用这个传递的函数，这个被作为参数的函数叫做回调函数
 
 - 匿名函数：如果在传入一个函数时，我们没有指定这个函数的名字，那么这个函数称之为匿名函数
 
@@ -949,7 +956,7 @@ console.log(pow(5, 3)); // 125
 
   - 一个函数定义完后被立即执行
 
-- 作用：会创建一个独立的==作用域==，可以避免外界访问或修改内部的变量，也避免了对内部变量的修改
+- 作用：会创建一个独立的==作用域==，可以避免外界访问或修改内部的变量，也避免了外部对内部变量的修改
 
   ```js
   const btnList = document.querySelectorAll('button');
@@ -977,15 +984,14 @@ console.log(pow(5, 3)); // 125
 
 
 
-
 ### 箭头函数
 
 - 箭头函数是 ES6 之后增加的一种编写函数的方法，并且它比函数表达式要更加简洁
 
   - 箭头函数不会绑定 this、arguments 属性
-  - 箭头函数不能作为构造函数来使用 （无显示原型，不能和 new 一起来使用，会抛出错误）
+  - 箭头函数不能作为构造函数来使用 （无显示原型，不能和 `new` 一起来使用，会抛出错误）
 
-- 箭头函数编写方式
+- 箭头函数编写方式：`() => {}`
 
   - `()`：函数的参数
   - `{}`：函数的执行体
@@ -1000,7 +1006,7 @@ console.log(pow(5, 3)); // 125
 
   - 如果只有一个参数，可以省略 `()`
   - 如果函数执行体中只有一行代码 , 那么可以省略大括号 `{}`
-    - 并且这行代码的返回值会作为整个函数的返回值
+    - 并且这行代码的==返回值==会作为整个函数的返回值
   - 如果函数执行体返回一个对象，那么需要给这个对象加上 `()`
 
   ```js
@@ -1013,14 +1019,12 @@ console.log(pow(5, 3)); // 125
 
 
 
-
-
-
-## JavaScript 对象
+## 对象
 
 - 对象类型是一种存储==键值对==（key - value）的更复杂的数据类型
   - 其中 key 是==字符串== 或 ==Symbol== 类型
   - 其中 value 可以是任意类型，包括基本数据类型、函数类型、对象类型等
+- 对象类型底层使用==哈希表==进行实现
 
 ### 创建和使用对象
 
@@ -1097,8 +1101,6 @@ console.log(pow(5, 3)); // 125
 
   - `Object.keys()` 方法会返回一个由一个给定对象的自身==可枚举==属性组成的数组
 
-  - 普通 for 循环遍历
-
     ```js
     const obj = {
       name: 'obj',
@@ -1113,8 +1115,8 @@ console.log(pow(5, 3)); // 125
       console.log(key, value);
     }
     ```
-
-  - for - in 遍历方法
+  
+  - `for...in` 遍历方法
 
     ```js
     const obj = {
@@ -1122,8 +1124,10 @@ console.log(pow(5, 3)); // 125
       age: 18
     }
     
-    for (const key in obj) {
-      console.log(key, obj[key])
+    for (const key in object) {
+      if (Object.hasOwnProperty.call(object, key)) {
+        console.log(key, obj[key]);
+      }
     }
     ```
 
@@ -1174,17 +1178,14 @@ console.log(pow(5, 3)); // 125
 
 - 内存可以划分为两个区域：栈内存和堆内存
 
-  - 原始类型占据的空间是在==栈内存==中分配的
-  - 对象类型占据的空间是在==堆内存==中分配的
+  - ==原始类型==占据的空间是在==栈内存==中分配的
+  - ==引用类型==占据的空间是在==堆内存==中分配的
 
   <img src="images/image-20221029224437536.png" alt="image-20221029224437536" style="zoom: 80%;" />
 
 
 
-
-
-
-## JavaScript 常见内置类
+## 常见内置类
 
 ### 包装类型
 
@@ -1210,12 +1211,13 @@ console.log(num1 === num2); // false
 
 
 ### Number 类
+
 - Number 类型的数据，它有一个对应的数字包装类型 `Number`
 
 - Number 属性
 
   - `Number.MAX_SAFE_INTEGER`：JavaScript 中最大的安全整数 `2^53 - 1`
-  - `Number.MIN_SAFE_INTEGER` JavaScript 中最小的安全整数 `-(2^53 - 1)`
+  - `Number.MIN_SAFE_INTEGER`：JavaScript 中最小的安全整数 `-(2^53 - 1)`
 
 - Number 实例方法
 
@@ -1223,7 +1225,7 @@ console.log(num1 === num2); // false
 
     - base 的范围可以从 2 到 36 之间，默认情况下是 10
 
-    - 如果是直接对一个数字操作，需要使用`..`运算符
+    - 如果是直接对一个数字操作，需要使用 `..` 运算符
 
       ```js
       console.log(2..toString()); // '2'
@@ -1248,7 +1250,8 @@ console.log(num1 === num2); // false
 
 
 ### Math 对象
-- 在除了 Number 类可以对数字进行处理之外，JavaScript 还提供了一个 `Math` ==对象==
+
+- 除了 Number 类可以对数字进行处理之外，JavaScript 还提供了一个 `Math` ==对象==
 
 - Math 常见的属性
 
@@ -1274,18 +1277,16 @@ console.log(num1 === num2); // false
 
 ### String 类
 
-- String 类型的数据，它有一个对应的数字包装类型 `String`
+- String 类型的数据，它有一个对应的包装类型 `String`
 
-- 字符串的不可变性
-
-  - 字符串在定义后是==不可修改==的
+- 字符串的不可变性：字符串在定义后是==不可修改==的
 
   ```js
   const str = 'str';
   str[0] = 'd';
   console.log(str); // 'str'
   ```
-
+  
 - String 常见的属性
   - `length`：获取字符串的长度
 
@@ -1376,10 +1377,10 @@ console.log(str.toLowerCase()); // 'hello world!'
 
 - 字符串截取
 
-  | 方法                  | 选择方式                      | 负数参数  |
-  | --------------------- | ----------------------------- | --------- |
-  | slice(start, end)     | 从 start 到 end（不包含 end） | 允许      |
-  | substring(start, end) | 从 start 到 end（不包含 end） | 负值代表0 |
+  | 方法                  | 选择方式                      | 负数参数   |
+  | --------------------- | ----------------------------- | ---------- |
+  | slice(start, end)     | 从 start 到 end（不包含 end） | 允许       |
+  | substring(start, end) | 从 start 到 end（不包含 end） | 负值代表 0 |
 
   ```js
   const str = 'Hello World!';
@@ -1419,14 +1420,14 @@ console.log(str.toLowerCase()); // 'hello world!'
 - 对象允许存储键值集合，属性值没有固定的顺序
 
   - 某些情况需要一种==有序的集合==，里面的元素是按照某一个顺序来排列
-
   - 这个有序的集合，我们可以通过==索引==来获取到它，这个集合就是==数组==
+  - 数组元素的索引从 `0` 开始编号
 
-  - 数组是一种特殊的==对象==类型
+- 数组是一种特殊的==对象==类型
 
-    ```js
-    console.log(typeof []); // 'object'
-    ```
+  ```js
+  console.log(typeof []); // 'object'
+  ```
 
 #### 数组的创建方式
 
@@ -1442,8 +1443,6 @@ console.log(str.toLowerCase()); // 'hello world!'
   const arr = new Array('1', '2');
   ```
 
-- 数组元素的索引从 0 开始编号
-
 
 
 #### 基本操作
@@ -1452,7 +1451,7 @@ console.log(str.toLowerCase()); // 'hello world!'
 
   - 通过 `[]` 进行访问
 
-  - 通过`arr.at()` 进行访问，支持==负数==索引
+  - 通过 `arr.at()` 进行访问，支持==负数==索引
 
   ```js
   const arr = [1, 2, 3];
@@ -1484,37 +1483,38 @@ console.log(str.toLowerCase()); // 'hello world!'
   - ==删除==：需要给 `splice()` 传入==2==个参数
     - 第一个参数 (**必选**)：开始删除的索引
     - 第二个参数 (**可选**)：删除的个数，不选则删除到尾
+    
+    ```js
+    const arr = [1, 2, 3, 4]
+    console.log(arr.splice(1)) // [2, 3, 4]
+    console.log(arr) // [1]
+    ```
 
-  ```javascript
-  const arr = [1, 2, 3, 4]
-  console.log(arr.splice(1)) // [2, 3, 4]
-  console.log(arr) // [1]
-  ```
-
-  - ==插入==：需要传入 ==3== 个参数
+  - ==插入==：需要传入==3==个参数
+    
     - 第一个参数：开始的位置
     - 第二个参数：==0==（要删除的元素个数）
     - 第三个参数（可以是任意个）：要插入的元素
-
-  ```javascript
-  const arr = [1, 2, 3, 4]
-  console.log(arr.splice(1, 0, 8, 8)) // []
-  console.log(arr) // [1, 8, 8, 2, 3, 4]
-  ```
-
-  - ==替换==：需要传入 ==3== 个参数
+    
+    ```js
+    const arr = [1, 2, 3, 4]
+    console.log(arr.splice(1, 0, 8, 8)) // []
+    console.log(arr) // [1, 8, 8, 2, 3, 4]
+    ```
+  
+  - ==替换==：需要传入==3==个参数
+    
     - 第一个参数：开始的位置
     - 第二个参数：要删除(替换)的元素的个数
     - 第三个参数（可以是任意个）：要插入的元素
-
-  ```javascript
-  const arr = [1, 2, 3, 4]
-  console.log(arr.splice(1, 2, 8, 8, 8)) // [2, 3]
-  console.log(arr) // [1, 8, 8, 8, 4]
-  ```
-
+    
+    ```js
+    const arr = [1, 2, 3, 4]
+    console.log(arr.splice(1, 2, 8, 8, 8)) // [2, 3]
+    console.log(arr) // [1, 8, 8, 8, 4]
+    ```
+  
   - ==返回值==：返回一个数组，包含从数组中被删除的元素（没有删除元素则返回一个==空数组==）
-
 
 
 
@@ -1623,7 +1623,7 @@ console.log(str.toLowerCase()); // 'hello world!'
 
 #### 排序
 
-- `sort()`：用于对数组进行排序，并且生成一个排序后的新数组，同时原变量也已修改
+- `sort()`：用于对数组进行排序，并且生成一个排序后的新数组，同时原数组也已同步修改
 
   ```js
   const arr = [1, 3, 2];
@@ -1631,7 +1631,7 @@ console.log(str.toLowerCase()); // 'hello world!'
   console.log(arr);
   ```
 
-- `reverse()`：将数组中元素的位置逆序，并返回该数组，同时原变量也已修改
+- `reverse()`：将数组中元素的位置逆序，并返回该数组，同时原数组也已同步修改
 
   ```js
   const arr = [1, 2, 3];
@@ -1641,7 +1641,7 @@ console.log(str.toLowerCase()); // 'hello world!'
 
 
 
-#### 高阶方法
+#### 高阶函数
 
 - `arr.forEach(cb)`：遍历数组
 
@@ -1698,17 +1698,18 @@ console.log(str.toLowerCase()); // 'hello world!'
 - 最初，人们是通过观察太阳的位置来决定时间
   - 这种方式有一个最大的弊端就是不同区域位置大家使用的时间是不一致的
   - 相互之间没有办法通过一个统一的时间来沟通、交流
-- 之后，人们开始制定的标准时间是英国伦敦的皇家格林威治天文台的标准时间 （刚好在本初子午线经过的地方），这个时
-  间也称之为 ==GMT==
-  - 其他时区根据标准时间来确定自己的时间，往东的时区（GMT+ hh:mm），往西的时区（GMT+ hh:mm）
-- 但是，根据公转有一定的误差，也会造成 GMT 的时间会造成一定的误差，于是就提出了根据==原子钟==计算的标准时间 ==UTC==
+- 之后，人们开始制定的标准时间是英国伦敦的皇家格林威治天文台的标准时间 （刚好在本初子午线经过的地方）
+  - 这个时间也称之为 ==GMT==
+  - 其他时区根据标准时间来确定自己的时间，往东的时区（GMT+ hh:mm），往西的时区（GMT- hh:mm）
+  
+- 但是公转有一定的误差，也会造成 GMT 的时间会造成一定的误差，于是就提出了根据==原子钟==计算的标准时间 ==UTC==
 - 目前 GMT 依然在使用，主要表示的是某个时区中的时间，而 ==UTC 是 标准时间==
 
 <img src="images/image-20221030175555046.png" alt="image-20221030175555046" style="zoom:67%;" />
 
 
 
-#### 创建Date 对象
+#### 创建 Date 对象
 
 使用 `Date` 构造函数来创建时间对象
 
@@ -1788,25 +1789,23 @@ console.log(date4); // Wed Nov 30 2022 18:06:22 GMT+0800 (中国标准时间)
 
 
 
-
-
-## JavaScript 错误处理
+## 错误处理
 
 ### throw 关键字
 
-- `throw` 关键字用于抛出一个用户自定义的异常
+`throw` 关键字用于抛出一个用户自定义的异常
 
-  - 会终止发生异常代码的执行，并向上抛出一个错误
-  - `throw` 后面可以跟上一个表达式来表示具体的异常信息
-  - 发生异常后，如果没有捕获异常，异常会一层层向上抛，到达顶层作用域后依然没有捕获，则会终止代码执行
+- 会终止发生异常代码的执行，并向上抛出一个错误
+- `throw` 后面可以跟上一个表达式来表示具体的异常信息
+- 发生异常后，如果没有捕获异常，异常会一层层向上抛，到达顶层作用域后依然没有捕获，则会终止代码执行
 
-  ```js
-  function foo() {
-    throw 'Error';
-  }
-  
-  foo();
-  ```
+```js
+function foo() {
+  throw 'Error';
+}
+
+foo();
+```
 
 
 
@@ -1875,12 +1874,9 @@ console.log(date4); // Wed Nov 30 2022 18:06:22 GMT+0800 (中国标准时间)
   console.log(foo()); // 'finally'
   ```
 
-  
 
 
-
-
-## JavaScript DOM 操作
+## DOM 操作
 
 ### 认识 DOM
 
@@ -1922,8 +1918,8 @@ console.log(date4); // Wed Nov 30 2022 18:06:22 GMT+0800 (中国标准时间)
 
 - Document 节点表示的整个载入的网页，它的实例是全局的 `document` 对象
   - 对 DOM 的所有操作都是 从 document 对象开始的
-  - 它是 DOM 的 入口点，可以从 document 开始去访问任何节点元素
-- 对于最顶层的 html、head、body 元素，我们可以直接在 document 对象中获取到
+  - 它是 DOM 的入口点，可以从 document 开始去访问任何节点元素
+- 对于最顶层的 html、head、body 元素，可以直接从 document 对象中获取到
   - html 元素：`document.documentElement`
   - body 元素：`document.body`
   - head 元素：`document.head`
@@ -1964,6 +1960,7 @@ console.log(date4); // Wed Nov 30 2022 18:06:22 GMT+0800 (中国标准时间)
 
 
 #### 表单元素的导航
+
 - `form` 元素可以直接通过 document 来获取：`document.forms`
 
 - form 元素中的内容可以通过 elements 来获取：`form.elements`
@@ -2012,7 +2009,7 @@ console.log(date4); // Wed Nov 30 2022 18:06:22 GMT+0800 (中国标准时间)
 
   - 它是一个数值型值
 
-- 常见的[节点类型](https://developer.mozilla.org/zh-CN/docs/Web/API/Node/nodeType)有如下
+- 常见的 [节点类型](https://developer.mozilla.org/zh-CN/docs/Web/API/Node/nodeType) 有如下
 
   | 常量               | 值   | 描述                         |
   | ------------------ | ---- | ---------------------------- |
@@ -2123,7 +2120,9 @@ console.log(date4); // Wed Nov 30 2022 18:06:22 GMT+0800 (中国标准时间)
 
 
 ### 元素的 class、style
+
 #### className 和 classList
+
 - 元素的 `class` attribute，对应的 property 并非叫 class，而是 `className`
 
   - 这是因为 JavaScript 早期是不允许使用 class 这种关键字来作为对象的属性，所以 DOM 规范使用了 className
@@ -2153,6 +2152,7 @@ console.log(date4); // Wed Nov 30 2022 18:06:22 GMT+0800 (中国标准时间)
 
 
 #### 元素的 style 属性
+
 - 单独修改某一个 CSS 属性，可以通过 `style` 来操作
 
   - 对于多词属性，使用==驼峰式==
@@ -2175,7 +2175,7 @@ console.log(date4); // Wed Nov 30 2022 18:06:22 GMT+0800 (中国标准时间)
 
 #### 读取元素样式
 
-- 对于内联样式，可以通过 style.* 的方式读取到
+- 对于内联样式，可以通过 `style.*` 的方式读取到
 
 - 对于 style 标签、css 文件中的样式，需要借助全局函数 `getComputedStyle` 获取
 
@@ -2190,15 +2190,15 @@ console.log(date4); // Wed Nov 30 2022 18:06:22 GMT+0800 (中国标准时间)
 
 #### 创建元素
 
-- `document.createElement(tagName)`：创建元素
+`document.createElement(tagName)`：创建元素
 
-  ```js
-  const div = document.createElement('div');
-  div.className = 'box';
-  document.body.append(div);
-  ```
+```js
+const div = document.createElement('div');
+div.className = 'box';
+document.body.append(div);
+```
 
-  
+
 
 #### 插入元素
 
@@ -2225,7 +2225,7 @@ console.log(date4); // Wed Nov 30 2022 18:06:22 GMT+0800 (中国标准时间)
 
 - `clientWidth`：contentWith + padding（不包含滚动条）
 - `clientHeight`：contentHeight + padding
-- `clientTop/clientLeft `：border-top/left 的宽度
+- `clientTop/clientLeft`：border-top/left 的宽度
 - `offsetWidth/offsetHeight`：元素完整的宽度/高度
 - `offsetLeft/offsetTop`：距离最近的父定位元素左上角的距离 x/y
 - `scrollHeight`：整个可滚动的区域高度
@@ -2236,6 +2236,7 @@ console.log(date4); // Wed Nov 30 2022 18:06:22 GMT+0800 (中国标准时间)
 
 
 ### window 的大小和滚动
+
 - window 的 width 和 height
   - `innerWidth/innerHeight`：获取 window 窗口的宽度和高度（包含滚动条）
   - `outerWidth/outerHeight`：获取 window 窗口的整个宽度和高度（包括调试工具、工具栏）
@@ -2248,9 +2249,7 @@ console.log(date4); // Wed Nov 30 2022 18:06:22 GMT+0800 (中国标准时间)
 
 
 
-
-
-## JavaScript 事件处理
+## 事件处理
 
 ### 认识事件
 
@@ -2286,7 +2285,7 @@ console.log(date4); // Wed Nov 30 2022 18:06:22 GMT+0800 (中国标准时间)
 
 ### 事件流
 
-- 事件流：当一个元素触发事件时（比如点击），不仅仅是这个元素本身，因为HTML 元素是存在父子元素叠加层级
+- 事件流：当一个元素触发事件时（比如点击），不仅仅是这个元素本身，因为 HTML 元素是存在父子元素叠加层级
 - 两种事件流
   - 早期浏览器开发时，IE 和 Netscape 公司都发现了事件流的形成
   - IE 采用了事件冒泡的方式，Netscape 采用了事件捕获的方式
@@ -2382,30 +2381,28 @@ console.log(date4); // Wed Nov 30 2022 18:06:22 GMT+0800 (中国标准时间)
 
 ### 事件委托
 
-- 事件委托
+- 当子元素触发事件时，父元素可以通过冒泡可以监听到子元素的事件触发
+- 并且可以通过 `event.target` 获取到当前监听的元素
+- 因此当多个子元素都需要监听同一个事件时，可以将事件处理==委托==给父元素
 
-  - 当子元素触发事件时，父元素可以通过冒泡可以监听到子元素的事件触发
-  - 并且可以通过 `event.target` 获取到当前监听的元素
-  - 因此当多个子元素都需要监听同一个事件时，可以将事件处理==委托==给父元素
+```html
+<div id="box">
+  <button data-index="1">按钮1</button>
+  <button data-index="2">按钮2</button>
+  <button data-index="3">按钮3</button>
+  <button data-index="4">按钮4</button>
+</div>
 
-  ```html
-  <div id="box">
-    <button data-index="1">按钮1</button>
-    <button data-index="2">按钮2</button>
-    <button data-index="3">按钮3</button>
-    <button data-index="4">按钮4</button>
-  </div>
-  
-  <script>
-    const box = document.getElementById('box');
-    box.addEventListener('click', function(e) {
-      const { index } = e.target.dataset;
-      console.log(`第${index}个按钮被点击`);
-    })
-  </script>
-  ```
+<script>
+  const box = document.getElementById('box');
+  box.addEventListener('click', function(e) {
+    const { index } = e.target.dataset;
+    console.log(`第${index}个按钮被点击`);
+  })
+</script>
+```
 
-  
+
 
 ### 常见事件
 
@@ -2446,9 +2443,7 @@ console.log(date4); // Wed Nov 30 2022 18:06:22 GMT+0800 (中国标准时间)
 
 
 
-
-
-## JavaScript BOM 操作
+## BOM 操作
 
 ### 认识 BOM
 
@@ -2469,7 +2464,6 @@ console.log(date4); // Wed Nov 30 2022 18:06:22 GMT+0800 (中国标准时间)
   - `history`：操作浏览器的历史
   - `navigator`：用户代理（浏览器）的状态和标识
   - `screen`：屏幕窗口信息
-
 
 
 
@@ -2510,7 +2504,7 @@ console.log(date4); // Wed Nov 30 2022 18:06:22 GMT+0800 (中国标准时间)
     }
     ```
 
-  - 包含 从 EventTarget 继承过来的方法 addEventListener、removeEventListener、dispatchEvent 方法
+  - 包含从 EventTarget 继承过来的 addEventListener、removeEventListener、dispatchEvent 方法
 
     ```js
     window.addEventListener('click', (event) => {
@@ -2521,11 +2515,12 @@ console.log(date4); // Wed Nov 30 2022 18:06:22 GMT+0800 (中国标准时间)
 
 
 ### location 对象
+
 - `location` 对象用于表示 window 上当前链接到的 URL 信息
 
-- 常见属性
-
   - location 其实是 URL 的一个抽象实现
+
+- 常见属性
 
   <img src="images/image-20221104002515118.png" alt="image-20221104002515118" style="zoom:80%;" />
 
@@ -2589,6 +2584,7 @@ console.log(date4); // Wed Nov 30 2022 18:06:22 GMT+0800 (中国标准时间)
 
 
 ### navigator、screen 对象
+
 - `navigator` 对象表示用户代理的状态和标识等信息
 
   <img src="images/image-20221104004626743.png" alt="image-20221104004626743" style="zoom:80%;" />
