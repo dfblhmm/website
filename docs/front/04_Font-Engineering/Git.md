@@ -19,8 +19,8 @@ title: Git
 - 版本控制在程序开发中的功能
   - 不同版本的存储管理
   - 重大版本的备份维护
-  - 回退到之前的项目版本
-  - 记录项目的历史记录
+  - 回退到之前的版本
+  - 记录历史提交记录
   - 多人开发的代码合并
 
 
@@ -46,7 +46,7 @@ title: Git
 
 ### 集中式版本控制
 
-- CVS 和 SVN 都是是属于==集中式版本控制系统==（Centralized Version Control Systems）
+- CVS 和 SVN 都属于集中式版本控制系统（Centralized Version Control Systems）
 
   - 它们的主要特点是==单一的集中管理的服务器==，保存所有文件的修订版本
   - 协同开发人员通过客户端，连接到这台服务器取出最新的文件或者提交更新
@@ -61,19 +61,17 @@ title: Git
 
 ### 分布式版本控制
 
-- Git 属于分布式版本控制系统（Distributed Version Control System）
+Git 属于分布式版本控制系统（Distributed Version Control System）
 
-  - 客户端并不只提取最新版本的文件快照，而是把代码仓库完整的镜像下来，包括完整的历史记录
-  - 任何一处协同工作用的服务器发生故障，事后都可以用任何一个镜像出来的本地仓库恢复
-  - 每一次的克隆操作，实际上都是一次对代码仓库的完整备份
+- 客户端并不只提取最新版本的文件快照，而是把代码仓库完整的镜像下来，包括完整的历史记录
+- 任何一处协同工作用的服务器发生故障，事后都可以用任何一个镜像出来的本地仓库恢复
+- 每一次的克隆操作，实际上都是一次对代码仓库的==完整备份==
 
-  <img src="./images/image-20230309000738263.png" alt="image-20230309000738263" style="zoom: 67%;" />
-
-
+<img src="./images/image-20230309000738263.png" alt="image-20230309000738263" style="zoom: 67%;" />
 
 
 
-## Git 配置选项
+## 配置选项
 
 ### 配置分类
 
@@ -120,6 +118,12 @@ Git 自带一个 `git config` 的工具来帮助设置控制 Git 外观和行为
   git config --global user.email "name@gmail.com"
   ```
 
+- 严格区分文件名大小写
+
+  ```bash
+  git config --global core.ignorecase false
+  ```
+
 - 查看配置
 
   ```shell
@@ -148,8 +152,9 @@ Git 自带一个 `git config` 的工具来帮助设置控制 Git 外观和行为
 
 
 
-
 ### 设置代理
+
+#### http 代理
 
 ```shell
 # 设置http代理
@@ -167,9 +172,23 @@ git config --global --unset https.proxy
 
 
 
+#### ssh 代理
+
+配置 `~/.ssh/config` 文件，比如配置 Github 的 ssh 连接
+
+```
+Host github.com
+  Hostname ssh.github.com
+  Port 443
+  User git
+  IdentityFile  私钥路径(~/.ssh/id_ed25519) 
+  IdentitiesOnly yes
+  ProxyCommand connect -H 主机(127.0.0.1:7890) %h %p
+```
 
 
-## Git 获取仓库
+
+## 获取仓库
 
 - 使用 Git 来管理源代码，那么本地也需要有一个 Git 仓库
 
@@ -177,10 +196,10 @@ git config --global --unset https.proxy
 
   - ==初始化==一个 Git 仓库，并且可以将当前项目的文件都添加到 Git 仓库中
 
-    - 该命令将创建一个名为 `.git` 的子目录，这个子目录含有初始化的 Git 仓库中所有的必须文件，这些文件是 Git 仓库的核心
-    - 这个时候仅仅是做了一个初始化的操作，项目里的文件还没有被跟踪
-
-    ```shell
+    - 该命令将创建一个名为 `.git` 的子目录，其包含初始化的 Git 仓库中所有的必须文件，这些文件是 Git 仓库的核心
+  
+    ```bash
+    # 这个时候仅仅是做了一个初始化的操作，项目里的文件还没有被跟踪
     git init
     ```
 
@@ -190,11 +209,9 @@ git config --global --unset https.proxy
     git clone https://github.com/facebook/react.git
     ```
 
-    
 
 
-
-## Git 记录文件变化
+## 记录文件变化
 
 ### 文件的状态
 
@@ -238,6 +255,7 @@ git config --global --unset https.proxy
 
 
 ### 添加到暂存区 — git add
+
 - `git add 文件名`：添加文件到暂存区
 
   - 跟踪新的文件
@@ -250,7 +268,7 @@ git config --global --unset https.proxy
 
 
 
-### Git 忽略文件
+### 忽略文件
 
 - 有些文件无需纳入 Git 的管理，也不希望总出现在未跟踪文件列表
 
@@ -262,11 +280,12 @@ git config --global --unset https.proxy
   /demo.js
   ```
 
-- 这个文件通常不需要手动创建，必要时添加需要忽略内容即可，有一些现成的[模板](https://github.com/github/gitignore)
+- 这个文件通常不需要手动创建，必要时添加需要忽略内容即可，有一些现成的 [模板](https://github.com/github/gitignore)
 
 
 
 ### 文件更新提交 — git commit
+
 - `git commit -m "提交信息"`：将暂存区中的文件进行提交
 
   <img src="./images/image-20230311002714113.png" alt="image-20230311002714113" style="zoom:80%;" />
@@ -280,7 +299,8 @@ git config --global --unset https.proxy
 
   
 
-### Git 校验和（CommitId）
+### 校验和（CommitId）
+
 - Git 中所有的数据在存储前都计算其==校验和（Commit Id）==，然后以校验和来引用
   - Git 中计算校验和的机制叫做 SHA-1 散列
   - 这是一个由 40 位十六进制字符组成的字符串，基于 Git 中文件的内容或目录结构计算出来
@@ -329,8 +349,9 @@ git config --global --unset https.proxy
 
 ### 版本回退 — git reset
 
-- `git reset --hard`：进行版本回退，需要先知道目前处于哪一个版本。Git 通过 `HEAD` 指针记录当前版本
+- `git reset --hard`：进行版本回退，需要先知道目前处于哪一个版本
 
+  - Git 通过 `HEAD` 指针记录当前版本
   - `HEAD` 是当前分支引用的指针，它总是指向该分支上的==最后一次提交==
   - 可以将它看做该分支上的最后一次提交的快照
 
@@ -350,7 +371,7 @@ git config --global --unset https.proxy
     git reset --hard HEAD~5
     ```
 
-  - 可以指定某一个 commit id
+  - 可以指定某一个 commitId
 
     ```shell
     git reset --hard b0a02e1e74ae71512a6b4ac6d4b6c694daab7990
@@ -360,19 +381,18 @@ git config --global --unset https.proxy
 
 ### 暂时保存更改 — git stash
 
+- 一个==栈==结构的临时存储
+
 - `git stash`：暂时提取分支上所有的改动并存储，通常用于分支临时切换
 - `git stash pop`：恢复暂时保存的内容
 
 
 
-
-
-
-## Git 远程仓库和验证
+## 远程仓库和验证
 
 ### 认识远程仓库
 
-- 远程仓库（Remote Repository ）
+- 远程仓库（Remote Repository）
 
   - 只将代码存放在本地仓库中，意味着只是在进行本地操作
   - 在真实开发中，通常是多人开发的，所以需要将管理的代码共享到远程仓库中
@@ -400,14 +420,14 @@ git config --global --unset https.proxy
   - 默认所有都不缓存。每一次连接都会询问用户名和密码
   - **cache**  模式会将凭证存放在内存中一段时间。 密码不会被存储在磁盘中，并且在 15 分钟后从内存中清除
   - **store**  模式会将凭证用明文的形式存放在磁盘中，并且永不过期
-  - 使用的是 Mac， Git 还有一种 “osxkeychain ” 模式，将凭证缓存到系统用户的钥匙串中（加密）
-  - 使用的是 Windows ，在 Git 安装时会默认安装一个叫做 "Git Credential Manager for Windows” 的辅助工具来记住凭证
+  - 对于 Mac 版本， Git 还有一种 “osxkeychain ” 模式，将凭证缓存到系统用户的钥匙串中（加密）
+  - 对于 Windows 版本，在 Git 安装时会默认安装一个叫做 "Git Credential Manager for Windows” 的辅助工具来记住凭证
 
 
 
 #### SSH 密钥
 
-- **Secure Shell**（SSH ）是一种==加密的网络传输协议==，可在不安全的网络中为网络服务提供安全的传输环境
+- **Secure Shell**（SSH）是一种==加密的网络传输协议==，可在不安全的网络中为网络服务提供安全的传输环境
 
 - SSH 以==非对称加密==实现身份验证
 
@@ -439,7 +459,7 @@ git config --global --unset https.proxy
 
   <img src="./images/image-20230311190921882.png" alt="image-20230311190921882" style="zoom:80%;" />
 
-- `git remote rename <oldName> <newName>`
+- `git remote rename <oldName> <newName>`：重命名远程仓库
 
   ```shell
   git remote rename origin remote
@@ -504,9 +524,7 @@ git config --global --unset https.proxy
 
 
 
-
-
-## Git 标签 tag
+## 标签 tag
 
 ### 创建 tag
 
@@ -565,9 +583,7 @@ git config --global --unset https.proxy
 
 
 
-
-
-## Git 分支 branch
+## 分支 branch
 
 ### 认识分支
 
@@ -631,11 +647,11 @@ git config --global --unset https.proxy
 
 #### 合并分支
 
-- `git merge <branchName>`：合并目标分支到当前分支
+`git merge <branchName>`：合并目标分支到当前分支
 
-  ```shell
-  git merge develop
-  ```
+```shell
+git merge develop
+```
 
 
 
@@ -671,11 +687,11 @@ git config --global --unset https.proxy
 
 - 在 Git 中整合来自不同分支的修改主要有两种方法
 
-  - merge
+  - `merge`
 
     <img src="./images/image-20230312162346286.png" alt="image-20230312162346286" style="zoom:80%;" />
 
-  - rebase
+  - `rebase`
 
     <img src="./images/image-20230312162901719.png" alt="image-20230312162901719" style="zoom:80%;" />
 
@@ -718,30 +734,28 @@ git config --global --unset https.proxy
 
 ### git cherry-pick 
 
-- `git cherry-pick`：有选择的合并其他分支的 commit
+`git cherry-pick`：有选择的合并其他分支的 commit
 
-  ```shell
-  # 合并指定分支最后依次提交
-  git cherry-pick <branch>
-  
-  # 合并某次提交
-  git cherry-pick <hash>
-  
-  # 合并e和f，尖括号内为e和f两次commit对应的hash值
-  git cherry-pick <hash of e> <hash of f>
-  
-  # 合并e到f所有commit，不包含e
-  git cherry-pick e..f
-  
-  # 合并e到f所有commit，包含e
-  git cherry-pick e^..f
-  ```
+```shell
+# 合并指定分支最后依次提交
+git cherry-pick <branch>
 
-  
+# 合并某次提交
+git cherry-pick <hash>
+
+# 合并e和f，尖括号内为e和f两次commit对应的hash值
+git cherry-pick <hash of e> <hash of f>
+
+# 合并e到f所有commit，不包含e
+git cherry-pick e..f
+
+# 合并e到f所有commit，包含e
+git cherry-pick e^..f
+```
 
 
 
-## Git 提交规范
+## 提交规范
 
 - `feat`：增加新功能
 - `fix`：修复问题/BUG
@@ -760,8 +774,6 @@ git config --global --unset https.proxy
 
 
 
-
-
-## Git 命令速查表
+## 命令速查表
 
 <img src="./images/image-20230309235319447.png" alt="image-20230309235319447"  />
