@@ -39,6 +39,8 @@ title: Express
   });
   ```
 
+
+
 ## 路由
 
 ### 认识路由
@@ -58,6 +60,8 @@ title: Express
   - `METHOD` 是小写的 HTTP 请求方法
   - `PATH` 是服务器上的路径
   - `HANDLER` 是路由匹配时执行的函数，可传递多个函数（中间件）
+
+
 
 ### 路由方法
 
@@ -85,6 +89,8 @@ title: Express
   });
   ```
 
+
+
 ### 路由路径
 
 - 路由路径定义了可以发出请求的端点
@@ -100,6 +106,8 @@ title: Express
   ```
 
 - ==查询字符串==不是路由路径的一部分，不参与匹配
+
+
 
 ### 响应请求
 
@@ -118,6 +126,8 @@ title: Express
 | [res.sendFile()](https://expressjs.com/en/4x/api.html#res.sendFile) | 将文件作为字节流发送                               |
 | [res.sendStatus()](https://expressjs.com/en/4x/api.html#res.sendStatus) | 设置响应状态码并将其字符串表示形式作为响应正文发送 |
 
+
+
 ### 路由参数
 
 - 路由参数是命名的 URL 段用于捕获在 URL 中的位置指定的值，也可称作==动态路由==
@@ -129,6 +139,8 @@ title: Express
     const { userId, followId } = req.params;
   });
   ```
+
+
 
 ### 模块化路由实例
 
@@ -162,6 +174,8 @@ title: Express
     // 第一个参数为注册路由的根路径
     app.use('/user', userRouter);
     ```
+
+
 
 ## 中间件
 
@@ -199,6 +213,8 @@ title: Express
     res.send('Hello World!');
   });
   ```
+
+
 
 ### 中间件应用
 
@@ -240,6 +256,8 @@ title: Express
   });
   ```
 
+
+
 #### 静态资源服务
 
 - 使用 Express 内置的中间件可以提供静态资源服务
@@ -249,6 +267,8 @@ title: Express
   ```
 
 - 为获得最佳效果，使用==反向代理==（如 nginx）缓存以提高服务静态资产的性能，同时可以释放 Express 来执行专门的应用程序任务
+
+
 
 #### 文件上传
 
@@ -349,6 +369,8 @@ title: Express
   });
   ```
 
+
+
 #### 文件下载
 
 - 服务端实现
@@ -425,9 +447,11 @@ title: Express
   </script>
   ```
 
+
+
 ### 错误处理
 
-- 捕获错误：给 `next` 函数传递参数
+- 传递错误：给 `next` 函数传递参数
 
   ```js
   app.get('/:id', (req, res, next) => {

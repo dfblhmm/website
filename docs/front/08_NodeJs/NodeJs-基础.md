@@ -14,7 +14,7 @@ title: 基础
   Node.js® is an open-source, cross-platform JavaScript runtime environment.
   ```
 
-- **Node.js** 基于 ==V8== 引擎来执行 JavaScript 的代码，但是不仅包含 V8 引擎
+- **Node.js** 基于 ==V8== 引擎来执行 JavaScript 代码，但是不仅包含 V8 引擎
 
   - V8 可以嵌入到任何 C++ 应用程序 中，无论是 Chrome 还是 Node.js，都是嵌入了 V8 引擎来执行 JavaScript 代码
   - 在 Chrome 浏览器中，还需要解析、渲染 HTML、CSS 等，另外还需要提供支持浏览器操作的 API、浏览器自己的事件循环等
@@ -33,7 +33,7 @@ title: 基础
   <img src="./images/image-20230219223543038.png" alt="image-20230219223543038" style="zoom: 67%;" />
 
   - JavaScript 代码会经过 V8 引擎，再通过 Node.js 的 Bindings，将任务放到 Libuv 的事件循环中
-  - **Libuv** 是 使用 ==C 语言==编写的库（https://libuv.org/）
+  - [**Libuv**](https://libuv.org) 是 使用 ==C 语言==编写的库
   - Libuv 提供了事件循环、文件系统读写、网络 IO、线程池 等内容
 
 
@@ -44,8 +44,8 @@ title: 基础
 
   <img src="./images/image-20231210155341531.png" alt="image-20231210155341531" style="zoom:50%;" />
 
-  - ==LTS== 版本：相对稳定一些，推荐线上环境使用该版本
-  - ==Current== 版本：最新的版本，包含很多新特性，相对不稳定，API 可能随时发生变更
+  - ==LTS== 版本：使用==偶数==版本号，相对稳定一些，推荐线上环境使用该版本
+  - ==Current== 版本：使用==奇数==版本号，最新的版本，包含很多新特性，相对不稳定，API 可能随时发生变更
 
 - *LTS* 版本状态是“长期支持”，通常保证关键错误将在总共 30 个月内得到修复
 
@@ -74,8 +74,6 @@ title: 基础
 - ==SSR== 需要借助 Node.js 完成前后端渲染
 - 编写脚本工具（command.js）
 - 使用 Electron 来开发桌面应用程序（基于 Node.js）
-
-
 
 
 
@@ -130,8 +128,6 @@ title: 基础
    */
   console.log(process.argv);
   ```
-
-
 
 
 
@@ -537,7 +533,7 @@ title: 基础
   writer.end("World!");
   ```
 
-- `reader.pipe()`：将 *Writable* 流绑定到 *readable*，使其自动切换到流动模式并将其所有数据推送到绑定的 *Writable*
+- `reader.pipe()`：将 *Writable* 流绑定到 *Readable*，使其自动切换到流动模式并将其所有数据推送到绑定的 *Writable*
 
   ```js
   const { createReadStream, createWriteStream } = require("fs");
@@ -557,8 +553,6 @@ title: 基础
    */
   reader.pipe(writer);
   ```
-
-
 
 
 
@@ -672,7 +666,6 @@ title: 基础
 - `Connection: Keep-Alive`：*HTTP* 是否保持连接
 
   - 在 Node.js 中，默认的保持连接时间为 ==5s==
-
 
   ```
   HTTP/1.1 200 OK
@@ -855,20 +848,18 @@ request.end(JSON.stringify({ id: 111 }));
 
 
 
-
-
 ## 跨域 — CORS
 
 ### 跨域的产生原因
 
--  ==同源策略==是一个重要的安全策略，它用于限制一个 **origin** 的文档或者它加载的脚本如何能与另一个源的资源进行交互
+- ==同源策略==是一个重要的安全策略，它用于限制一个 **origin** 的文档或者它加载的脚本如何能与另一个源的资源进行交互
   - 它能帮助阻隔恶意文档，减少可能被攻击的媒介
   - 如果两个 *URL* 的 ==协议==(protocol)、==主机==(host)==端口==(port) 都相同，则这两个 URL 是同源
   - 两个==不满足同源策略==的 *URL* 进行资源访问，就会产生==跨域==
 
 - 跨域的产生与==前后端架构分离==有很大关系
   - 早期的服务器端渲染没有跨域问题
-  - 随着前后端分离，前端部署的==静态资源==和服务器开发的 ==API接口== 往往是部署在不同的服务器端口或者不同的服务器上
+  - 随着前后端分离，前端部署的==静态资源==和服务器开发的 ==API 接口== 往往是部署在不同的服务器端口或者不同的服务器上
 
 - 静态资源服务器和 API 服务器是同一台服务器的相同端口是不会产生跨域
   - 即服务器同时提供 API 服务和 静态资源服务
@@ -877,7 +868,7 @@ request.end(JSON.stringify({ id: 111 }));
 
 ### 跨域的常见解决方式
 
--  方案一：静态资源和 API 服务器部署在==同一个==服务器中
+- 方案一：静态资源和 API 服务器部署在==同一个==服务器中
 
     ```js
     const express = require("express");
