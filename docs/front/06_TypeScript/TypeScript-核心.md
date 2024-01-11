@@ -29,7 +29,7 @@ title: 核心
   
   
 
-### TypeScript 定义和特点
+### 定义和特点
 
 > 定义
 
@@ -58,9 +58,9 @@ title: 核心
   
   
 
-### TypeScript 运行环境
+### 运行环境
 
-- 方案一：使用 `ts-node` 工具（Node.js 环境）
+- 方式一：使用 `ts-node` 工具（Node.js 环境）
 
   ```shell
   # 对于 ts-node 工具包，全局安装即可
@@ -69,7 +69,7 @@ title: 核心
   ts-node index.ts
   ```
 
-- 方案二：使用 `webpack` 搭建环境（浏览器环境）
+- 方式二：使用 `webpack` 搭建环境（浏览器环境）
 
   ```typescript
   import { resolve } from "path";
@@ -107,8 +107,6 @@ title: 核心
 
 
 
-
-
 ## 变量声明
 
 ### 类型注解
@@ -117,7 +115,7 @@ title: 核心
 
 - 在 TypeScript 中定义变量需要指定标识符的==类型==
 
-  - 声明了类型后 TypeScript 就会进行==类型检测==，声明的类型可以称之为==类型注解==
+  - 声明类型后就会开启 ==类型检测==，声明的类型可以称之为==类型注解==
 
   - 完整的声明格式
 
@@ -127,7 +125,7 @@ title: 核心
 
   - TSLint 不推荐使用 `var` 来声明变量
 
-- 在 TypeScript 中的数据类型与 JavaScript 中数据的包装类型是两个不同的概念
+- 在 TypeScript 中的类型声明与 JavaScript 中数据的包装类型是两个不同的概念
 
   ```typescript
   /*
@@ -171,8 +169,6 @@ title: 核心
 
 
 
-
-
 ## 数据类型
 
 ### JavaScript 类型
@@ -197,7 +193,7 @@ title: 核心
 
 #### bigint
 
-- `bigint` 用于表示绝对值大于或等于 2^53^ 的数字
+- `bigint` 用于表示绝对值大于或等于 2^53 的数字
 
   ```typescript
   const number: bigint = 12345678900000001n;
@@ -309,7 +305,7 @@ const info = {
 
 
 
-### TypeScript 类型
+### TypeScript 扩展类型
 
 #### any
 
@@ -524,8 +520,6 @@ const info = {
   console.log(Direction[left]); // "LEFT"
   ```
 
-  
-
 
 
 ## 类型系统
@@ -534,12 +528,12 @@ const info = {
 
 > 类型别名 type
 
-- 类型别名使用 `type` 关键字，可以对需要复用的类型进行抽取
+类型别名使用 `type` 关键字，可以对需要复用的类型进行抽取
 
-  ```typescript
-  type IDType = string | number;
-  const variable: IDType = 11;
-  ```
+```typescript
+type IDType = string | number;
+const variable: IDType = 11;
+```
 
 
 
@@ -840,6 +834,7 @@ function action(direction: 'left' | 'right') {
 ```typescript
 function validateJson(json: string) {
   try {
+    JSON.parse(json);
     return true;
   } catch (error) {
     return error as Error;
@@ -882,8 +877,6 @@ function action(person: Teacher | Student) {
   }
 }
 ```
-
-
 
 
 
@@ -1072,7 +1065,7 @@ fn(Dog);
   navigate('/home', { replace: true });
   ```
 
-- 在可能的情况下，如果联合类型能够实现，尽量使用联合类型来实现函数的多种调用形式
+- 在可能的情况下，如果联合类型能够实现，尽量使用==联合类型==来实现函数的多种调用形式
 
 
 
@@ -1187,9 +1180,6 @@ fn(Dog);
   product.order.call(product.data);
   product.share.call(product.data);
   ```
-
-
-
 
 
 
@@ -1382,7 +1372,7 @@ console.log(p); // { name: 'Avril', age: 17 }
   console.log(circle.getArea()); // 314.1592653589793
   ```
 
--  抽象类的特点
+- 抽象类的特点
 
   - 抽象类是不能被==实例化==
   - 抽象类可以没有抽象方法，也可以拥有具体实现的方法
@@ -1396,7 +1386,7 @@ console.log(p); // { name: 'Avril', age: 17 }
 
 
 
-### 接口补充
+### 接口扩展
 
 #### 索引签名
 
@@ -1557,9 +1547,6 @@ runTask({
 
 
 
-
-
-
 ## 泛型编程
 
 ### 泛型定义
@@ -1663,7 +1650,7 @@ runTask({
 
   - 在映射时，会遍历每一个属性键名生成一个新的类型
   - 映射类型只能使用 `type` 完成，无法使用 `interface`
-  - 大部分内置类型工具都是通过映射类型来实现的 
+  - 大部分内置类型工具都是通过映射类型来实现的
 
   ```typescript
   type CopyType<T> = {
@@ -1786,7 +1773,7 @@ runTask({
 
 ### 内置类型工具
 
->Partial< Type >
+>Partial\<Type>
 
 用于构造一个 Type 下面的所有属性都设置为==可选==的类型，转换过程是==浅层==的
 
@@ -1818,7 +1805,7 @@ const p: MyPartial<IPerson> = { name: 'Avril' };
 
 
 
->Required< Type >
+>Required\<Type>
 
 用于构造一个 Type 下面的所有属性都设置为==必选==的类型，转换过程是==浅层==的
 
@@ -1853,7 +1840,7 @@ const p: T = {
 
 
 
->Readonly< Type >
+>Readonly\<Type>
 
 用于构造一个 Type 下面的所有属性全都设置为==只读==的类型，转换过程是==浅层==的
 
@@ -2008,7 +1995,7 @@ const p: A = { name: 'Avril' };
 
 
 
->NonNullable< Type >
+>NonNullable\<Type>
 
 用于构造一个类型，这个类型从 Type 中排除了 `null/undefined` 的类型
 
@@ -2025,7 +2012,7 @@ const a: A = "Hello World";
 
 
 
-> Parameters< Type >
+> Parameters\<Type>
 
 用于构造一个函数的==参数列表==的类型
 
@@ -2041,7 +2028,7 @@ type A = MyParameters<typeof String.prototype.substring>;
 
 
 
->ReturnType< Type >
+>ReturnType\<Type>
 
 用于构造一个函数的==返回值==的类型
 
@@ -2057,9 +2044,7 @@ type A = MyReturnType<typeof String.prototype.split>;
 
 
 
-
-
-## 补充知识
+## 扩展知识
 
 ### 模块化
 
