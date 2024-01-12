@@ -10,7 +10,7 @@ title: 进阶
 
 - 浏览器环境：指向 `window`
 - NodeJS 环境
-  - 指向一个==空对象== `{}` 
+  - 指向一个==空对象== `{}`
   - 执行 js 文件，会当作一个模块进行加载 -> 编译 -> 放入一个函数 `compiledWrapper.call({})`，使用 `call` 调用该函数同时绑定了一个==空对象==
 
 - this 绑定特点
@@ -18,7 +18,6 @@ title: 进阶
   - this 的绑定和定义的位置没有关系
   - this 的绑定和==调用方式==以及调用的==位置==有关
   - this 是在==运行时==被==动态绑定==的
-
 
 
 
@@ -42,7 +41,7 @@ title: 进阶
   }
   foo(); // window
   
-  // 创建一个对象，对象中的属性指向foo
+  // 创建一个对象，对象中的属性指向 foo
   const obj = {
     foo: function() {
       console.log(this);
@@ -133,7 +132,6 @@ title: 进阶
   bar(3, 4); // String {'aaa'} 1 2 3 4
   ```
 
-
 - 需要注意的是，一个函数通过 `bind` 绑定 `this` 只能绑定一次，多次调用 `bind` 不能覆盖前面的绑定
 
   ```js
@@ -147,29 +145,29 @@ title: 进阶
 
   
 
-### 绑定规则四：new 绑定 
+### 绑定规则四：new 绑定
 
-- 使用 `new` 关键字调用函数时，会执行以下操作
+使用 `new` 关键字调用函数时，会执行以下操作
 
-  - 创建一个新的对象，this 指向这个创建的对象
-  - 这个新对象会被执行 `prototype` 连接
-  - 这个新对象会==绑定==到函数调用的的 `this` 上
-  - 如果函数没有 `return` ==非空对象==，表达式会返回这个生成的新对象
+- 创建一个新的对象，this 指向这个创建的对象
+- 这个新对象会被执行 `prototype` 连接
+- 这个新对象会==绑定==到函数调用的的 `this` 上
+- 如果函数没有 `return` ==非空对象==，表达式会返回这个生成的新对象
 
-  ```js
-  function Person(name) {
-    this.name = name;
-    this.say = function () {
-      console.log(this.name);
-    }
+```js
+function Person(name) {
+  this.name = name;
+  this.say = function () {
+    console.log(this.name);
   }
-  
-  const p = new Person('why');
-  console.log(p); // Person {name: 'why', say: ƒ}
-  p.say(); // why
-  ```
+}
 
-  
+const p = new Person('why');
+console.log(p); // Person {name: 'why', say: ƒ}
+p.say(); // why
+```
+
+
 
 ### 内置函数的 this 绑定
 
@@ -192,7 +190,7 @@ title: 进阶
     }, 1000);
     ```
 
-- 浏览器事件监听函数，如 `onClick`、`addEventListener`——指向绑定事件的元素
+- 浏览器事件监听函数，如 `onClick`、`addEventListener` — 指向绑定事件的元素
 
 - 数组的遍历方法 `forEach/map/find/filter`
 
@@ -222,7 +220,6 @@ title: 进阶
     }, 'aaa');
     ```
 
-    
 
 
 ### 绑定规则优先级
@@ -311,7 +308,7 @@ title: 进阶
   
   const obj2 = { name: 'obj2' };
   
-  // 赋值语句返回foo函数
+  // 赋值语句返回 foo 函数
   (obj2.foo = obj1.foo)(); // 指向全局对象
   ```
 
@@ -336,11 +333,10 @@ title: 进阶
     }
   };
   
-  obj.foo1(); // undefined，全局对象上不存在message属性
+  obj.foo1(); // undefined，全局对象上不存在  message 属性
   obj.foo2()(); // obj
   obj.foo2.call({ message: 'obj2' })(); // 上层作用域 foo2 函数内部绑定 obj2
   ```
-  
   
 
 
@@ -354,15 +350,15 @@ title: 进阶
   Function.prototype.customCall = function(thisArg, ...argArray) {
     // 获取要调用的函数
     const fn = this;
-    // 判断thisArg的类型
+    // 判断 thisArg 的类型
     const newThisArg = (thisArg !== undefined && thisArg !== null) ? Object(thisArg) : globalThis;
-    // 将传递的thisArg绑定在调用的函数上
+    // 将传递的 thisArg 绑定在调用的函数上
     const key = Symbol();
-    // 使用Symbol值作为key，防止覆盖newThisArg上的属性
+    // 使用 Symbol 值作为 key，防止覆盖 newThisArg 上的属性
     newThisArg[key] = fn;
     // 调用函数
     const result = newThisArg[key](...argArray);
-    // 删除fn属性
+    // 删除 fn 属性
     delete newThisArg[key];
     // 返回函数执行的结果
     return result;
@@ -389,15 +385,15 @@ title: 进阶
   Function.prototype.customApply = function(thisArg, argArray = []) {
     // 获取要调用的函数
     const fn = this;
-    // 判断thisArg的类型
+    // 判断 thisArg 的类型
     const newThisArg = (thisArg !== undefined && thisArg !== null) ? Object(thisArg) : globalThis;
-    // 将传递的thisArg绑定在调用的函数上
+    // 将传递的 thisArg 绑定在调用的函数上
     const key = Symbol();
-    // 使用Symbol值作为key，防止覆盖newThisArg上的属性
+    // 使用 Symbol 值作为 key，防止覆盖 newThisArg 上的属性
     newThisArg[key] = fn;
     // 调用函数
     const result = newThisArg[key](...argArray);
-    // 删除fn属性
+    // 删除 fn 属性
     delete newThisArg[key];
     // 将函数调用结果返回
     return result;
@@ -421,16 +417,16 @@ title: 进阶
   Function.prototype.customBind = function(thisArg, ...argArray) {
     // 获取要调用的函数
     const fn = this;
-    // 判断thisArg的类型
+    // 判断 thisArg 的类型
     const newThisArg = (thisArg !== undefined && thisArg!== null) ? Object(thisArg) : globalThis;
     return function(...args) {
-      // 将传递的thisArg绑定在生成的函数上
+      // 将传递的 thisArg 绑定在生成的函数上
       const key = Symbol();
-    	// 使用Symbol值作为key，防止覆盖newThisArg上的属性
-    	newThisArg[key] = fn;
+      // 使用 Symbol 值作为 key，防止覆盖 newThisArg 上的属性
+      newThisArg[key] = fn;
       // 调用函数
       const result = newThisArg[key](...argArray, ...args);
-      // 删除fn属性
+      // 删除 fn 属性
       delete newThisArg[key];
       // 将函数调用结果返回
       return result; 
@@ -448,8 +444,6 @@ title: 进阶
   foo.customBind('111')(); // String {'111', [Symbol()]: ƒ}
   sum.customBind({}, 10, 20)(30, 40, 50); // {[Symbol()]: ƒ} [10, 20, 30, 40, 50]
   ```
-
-  
 
 
 
@@ -479,9 +473,9 @@ title: 进阶
 
 ### 渲染页面的流程
 
-- 渲染页面更详细的[流程](https://web.dev/howbrowserswork/)
+渲染页面更详细的 [流程](https://web.dev/howbrowserswork/)
 
-  ![WebKit main flow.](./images/S9TJhnMX1cu1vrYuQRqM-1667748759307-4.png)
+![WebKit main flow.](./images/S9TJhnMX1cu1vrYuQRqM-1667748759307-4.png)
 
 
 
@@ -584,8 +578,6 @@ img { float: right; }
 
 
 
-
-
 ### Composite 合成
 
 - 绘制的过程，可以将布局后的元素绘制到多个==合成图层==中，这是浏览器的一种优化手段
@@ -630,6 +622,7 @@ img { float: right; }
 
 
 ### script 元素和页面解析
+
 - 浏览器在解析 HTML 的过程中，遇到了 script 元素是不能继续构建 DOM 树的
 
   - 它会停止继续构建，首先下载 JavaScript 代码，并且执行 JavaScript 的脚本
@@ -668,10 +661,10 @@ img { float: right; }
   - 浏览器不会因 async 脚本而阻塞解析（与 defer 类似）
   - async 脚本不能保证顺序，它是独立下载、独立运行，不会等待其他脚本
   - async 脚本不能保证在 `DOMContentLoaded` 之前或之后执行
-- **defer** 通常用于需要在文档解析后操作 DOM 的 JavaScript 代码，并且对多个 script 文件有顺序要求
-- **async** 通常用于独立的脚本，对其他脚本，甚至 DOM 没有依赖
+- 区别
 
-
+  - **defer** 通常用于需要在文档解析后操作 DOM 的 JavaScript 代码，并且对多个 script 文件有顺序要求
+  - **async** 通常用于独立的脚本，对其他脚本，甚至 DOM 没有依赖
 
 
 
@@ -682,7 +675,7 @@ img { float: right; }
 
 - JavaScript 引擎作用
   - ==高级编程语言==都是需要转义成最终的==机器指令==来执行
-  - 编写的 JavaScript 无论交给==浏览器==或 ==Node== 执行，最后都是需要被 ==CPU 执行==的
+  - 编写的 JavaScript 无论交给==浏览器==或 ==Node.js== 执行，最后都是需要被 ==CPU 执行==的
   - CPU只认识自己的指令集（机器语言），才能被CPU所执行
   - 所以我们需要 ==JavaScript 引擎==帮助我们将 ==JavaScript 代码==翻译成 ==CPU 指令==来执行；
 - 常见 JavaScript 引擎
@@ -700,7 +693,7 @@ img { float: right; }
 
 #### V8 引擎执行 JavaScript
 
-- 官方对于V8的定义
+- 官方对于 V8 的定义
 
   - V8 是用 ==C ++== 编写的 Google ==开源==高性能 JavaScript 和 WebAssembly 引擎，它用于 Chrome 和 Node.js 等
   - V8 可以==独立==运行，也可以嵌入到任何 C ++ 应用程序中
@@ -737,7 +730,6 @@ img { float: right; }
   sum('1', '2');
   ```
 
-
   <img src="./images/image-20221109002515116.png" alt="image-20221109002515116" style="zoom:88%;" />
 
 
@@ -768,9 +760,7 @@ img { float: right; }
     outer();
     ```
 
-- 生成AST树后，会被 ==Ignition== 转成字节码（bytecode），之后开始执行代码
-
-
+- 生成 AST 树后，会被 ==Ignition== 转成字节码（bytecode），之后开始执行代码
 
 
 
@@ -791,7 +781,7 @@ console.log(res); // 30
 
 - js 引擎在==执行代码之前==，会在==堆内存==中创建一个==全局对象==：Global Object（GO）
 - 该对象可以被所有的作用域访问，同时该对象会包含 Date、Array、setTimeout 等全局属性和方法
-- 其中还有一个属性 `globalThis` （比如浏览器环境下的 window）指向自己
+- 其中还有一个属性 `this/globalThis` （比如浏览器环境下的 window）指向自己
 
 <img src="./images/image-20221115000407037.png" alt="image-20221115000407037" style="zoom:80%;" />
 
@@ -830,25 +820,23 @@ console.log(res); // 30
 - 执行代码前所有的准备工作已做好，开始一行行执行代码
 
   ```js
-  // 打印message变量，查找当前VO中的变量message，取值为undefined
+  // 打印 message 变量，查找当前 VO 中的变量 message，取值为 undefined
   console.log(message); // undefined
-  // 将VO中的message变量赋值为 'code'
+  // 将 VO 中的 message 变量赋值为 'code'
   var message = 'code';
-  // 将VO中的n1变量赋值为 10
+  // 将 VO 中的 n1 变量赋值为 10
   var n1 = 10;
-  // 将VO中的n2变量赋值为 20
+  // 将 VO 中的 n2 变量赋值为 20
   var n2 = 20;
-  // 将VO中的res变量赋值为 10 + 20 = 30
+  // 将 VO 中的 res 变量赋值为 10 + 20 = 30
   var res = n1 + n2;
-  // 打印res，为30
+  // 打印 res，为 30
   console.log(res); // 30
   ```
 
 - 全局代码执行完后，对应的内存结构
 
   <img src="./images/image-20221115002930684.png" alt="image-20221115002930684" style="zoom:80%;" />
-
-
 
 
 
@@ -893,6 +881,7 @@ console.log('11');
 
 
 ### 作用域和作用域链
+
 - 当进入到一个执行上下文时，执行上下文也会关联一个==作用域链==（Scope Chain）
 
   - 作用域链是一个对象列表，用于变量标识符的求值
@@ -940,7 +929,6 @@ console.log('11');
     <img src="./images/image-20221118010258658.png" alt="image-20221118010258658" style="zoom:80%;" />
 
     <img src="./images/image-20221118012310434.png" alt="image-20221118012310434" style="zoom:80%;" />
-
 
   - `foo()` 执行完毕，foo 的函数执行上下文从栈顶弹出，将定义的 `bar` 函数返回，由全局的 bar 变量进行接收
 
@@ -1046,8 +1034,6 @@ console.log(x); // 10
 
 
 
-
-
 ## 内存管理和闭包
 
 ### 认识内存管理
@@ -1121,8 +1107,6 @@ console.log(x); // 10
 
 
 
-
-
 ### 闭包的定义
 
 - 计算机科学中对闭包的定义（维基百科）
@@ -1156,9 +1140,9 @@ bar();
 
 <img src="./images/image-20221119182756830.png" alt="image-20221119182756830" style="zoom:80%;" />
 
-- `bar` 函数引用了外层 `foo` 函数 AO 对象中的 `num` 变量，形成了闭包
+`bar` 函数引用了外层 `foo` 函数 AO 对象中的 `num` 变量，形成了闭包
 
-  <img src="./images/image-20221119183101800.png" alt="image-20221119183101800" style="zoom:80%;" />
+<img src="./images/image-20221119183101800.png" alt="image-20221119183101800" style="zoom:80%;" />
 
 
 
@@ -1172,7 +1156,7 @@ bar();
 
   - `bar` 变量引用 `bar` 函数对象
   - `bar` 函数对象的作用域链中有对 `foo` 函数 AO 的引用，所以 `foo` 函数的 AO 对象不会被销毁，无法回收
-  - `foo` 函数已执行完成，但其 AO 对象无法被销毁，造成了==内存泄漏==
+  - `foo` 函数已执行完成，但其 AO 对象无法被销毁，称为==内存泄漏==
 
 - 解决内存泄漏的方法
 
@@ -1212,7 +1196,7 @@ bar();
     var age = 20;
     function bar() {
       debugger;
-      // console.log(num);
+      console.log(num);
     }
     return bar;
   }
@@ -1221,8 +1205,6 @@ bar();
   ```
 
   <img src="./images/image-20221119183101800-1676101534354-10.png" alt="image-20221119183101800" style="zoom:80%;" />
-
-
 
 
 
@@ -1329,8 +1311,6 @@ bar();
 
 
 
-
-
 ### 纯函数
 
 - ==纯函数==是函数式编程中一个非常重要的概念，JavaScript 符合函数式编程的范式，所以也有纯函数的概念
@@ -1386,8 +1366,6 @@ bar();
   - 编写时候保证了函数的纯度，不需要关心传入的内容是如何获得，或者依赖其他的外部变量是否已经发生了修改
   - 在使用纯函数时，确定的输入内容不会被任意篡改，并且确定的输入一定会有确定的输出
   - React 中要求无论是函数组件还是类组件，这个组件都必须像纯函数一样保护它们的 `props` ==不被修改==
-
-
 
 
 
@@ -1458,36 +1436,34 @@ bar();
 
 #### 自动柯里化函数
 
-- ==实现自动柯里化函数==：传递一个函数，使其任意柯里化
+==实现自动柯里化函数==：传递一个函数，使其任意柯里化
 
-  ```js
-  function sum(a, b, c, d) {
-    return a + b + c + d;
-  }
-  
-  // 取函数的参数长度 -> fn.length
-  function currying(fn) {
-    function curried(...args) {
-      // 获取当前已接收的参数长度，达到参数个数后调用原函数返回结果
-      if (args.length >= fn.length) {
-        return fn.apply(this, args);
-      } else {
-        // 递归调用，将当前已传递的所有参数进行合并
-        return curried.bind(this, ...args);
-      }
+```js
+function sum(a, b, c, d) {
+  return a + b + c + d;
+}
+
+// 取函数的参数长度 -> fn.length
+function currying(fn) {
+  function curried(...args) {
+    // 获取当前已接收的参数长度，达到参数个数后调用原函数返回结果
+    if (args.length >= fn.length) {
+      return fn.apply(this, args);
+    } else {
+      // 递归调用，将当前已传递的所有参数进行合并
+      return curried.bind(this, ...args);
     }
-    return curried;
   }
-  
-  const newSum = currying(sum);
-  
-  console.log(newSum(10, 20, 30, 40)); // 100
-  console.log(newSum(10, 20)(30, 40)); // 100
-  console.log(newSum(10, 20, 30)(40)); // 100
-  console.log(newSum(10)(20)(30)(40)); // 100
-  ```
+  return curried;
+}
 
+const newSum = currying(sum);
 
+console.log(newSum(10, 20, 30, 40)); // 100
+console.log(newSum(10, 20)(30, 40)); // 100
+console.log(newSum(10, 20, 30)(40)); // 100
+console.log(newSum(10)(20)(30)(40)); // 100
+```
 
 
 
@@ -1550,8 +1526,6 @@ bar();
   console.log(composeFn(5)); // 144
   ```
   
-  
-
 
 
 ## 面向对象
@@ -1581,7 +1555,6 @@ bar();
   | :------------: | :----------: | :--------: | :---: | :------: | :--: | :--: |
   | 数据属性描述符 |      ✅       |     ✅      |   ✅   |    ✅     |  ❌   |  ❌   |
   | 存取属性描述符 |      ✅       |     ✅      |   ❌   |    ❌     |  ✅   |  ✅   |
-
 
 - `[[Configurable]]`：表示属性是否可以通过 `delete` 删除属性；是否可以修改它的特性；或者是否可以重新定义属性描述符
 
@@ -1770,9 +1743,6 @@ bar();
   
 
 
-
-
-
 ### 原型
 
 #### 对象的原型
@@ -1838,13 +1808,11 @@ bar();
 
 
 
-
-
 ### 构造函数
 
 - 在 JavaScript 中，构造函数从表现形式上与普通函数没有区别，当一个普通函数使用 `new` 操作符进行调用，就成为了构造函数
 
-- ==new== 操作符调用函数后的操作
+- `new` 操作符调用函数后的操作
 
   1. 在内存中创建一个==新==的空==对象 `{}`==
   2. 这个对象内部的 `[[prototype]]` 属性会被==赋值==为该构造函数的 `prototype` 属性
@@ -1869,7 +1837,6 @@ bar();
 - 创建对象的内存表现
 
   <img src="./images/image-20221203011842294.png" alt="image-20221203011842294" style="zoom:80%;" />
-  
   
   
 
@@ -1961,7 +1928,7 @@ bar();
 
 #### 借用构造函数继承
 
-- 为解决原型链继承的弊端，JavaScript社区提出了一种==借用构造函数==的方式
+- 为解决原型链继承的弊端，JavaScript 社区提出了一种==借用构造函数==的方式
   - 在子类构造函数的内部调用父类构造函数
   - 通过 `Person.call(this, ...args)` 处理参数
 
@@ -2110,9 +2077,6 @@ bar();
 
 
 
-
-
-
 ### 对象原型方法
 
 - `hasOwnProperty(PropertyKey)`：判断对象上是否存在某一属性（不包括原型上的属性）
@@ -2193,8 +2157,6 @@ const p = new Person();
 
 
 
-
-
 ### ES6 类 (class)
 
 #### class 类的定义
@@ -2240,7 +2202,7 @@ const p = new Person();
   p.hello(); // Hello World!
   ```
 
-- 类的访问器方法：使用 `get` 和 `set` 
+- 类的访问器方法：使用 `get` 和 `set`
 
   ```js
   class Person {
@@ -2325,16 +2287,12 @@ const p = new Person();
 
 
 
-
-
 ## ES6 - ES13 新特性
 
 ### ES6
 
 #### let / const
 
->
->
 >基本使用
 
 - `let`：用于声明一个变量，赋值后可以再次修改
@@ -2358,8 +2316,6 @@ const p = new Person();
 
 
 
->
->
 >作用域提升
 
 - `var` 声明的变量存在==作用域提升==，变量在词法解析时已经被创建出来，在变量声明前就可以进行访问，只不过值为 ==undefined==
@@ -2385,8 +2341,6 @@ const p = new Person();
 
 
 
->
->
 >全局对象添加属性
 
 <img src="./images/image-20221210172700563.png" alt="image-20221210172700563" style="zoom:80%;" />
@@ -2398,8 +2352,6 @@ const p = new Person();
 
 
 
->
->
 >块级作用域
 
 - 在 ES6 之前，只会形成两个作用域：全局作用域和函数作用域
@@ -2630,8 +2582,6 @@ ES6 中新增了一个从数组或对象中方便获取数据的方法，称之�
 
 #### Set / WeakSet
 
->
->
 >Set
 
 - `Set` 是ES6中新增的一种数据结构，代表==集合==
@@ -2645,7 +2595,7 @@ ES6 中新增了一个从数组或对象中方便获取数据的方法，称之�
     const newArr = [...new Set(arr)]; // [1, 2]
     ```
 
-- Set 的API
+- Set 的 API
 
   - `size`：返回集合中元素的个数
   - `add(value)`：向集合中添加元素
@@ -2682,8 +2632,6 @@ ES6 中新增了一个从数组或对象中方便获取数据的方法，称之�
 
 
 
->
->
 >WeakSet
 
 - 与 Set 类似，同样是内部元素不可重复的集合，与 Set 的区别
@@ -2720,13 +2668,11 @@ ES6 中新增了一个从数组或对象中方便获取数据的方法，称之�
 
 #### Map / WeakMap
 
->
->
 >Map
 
-- `Map` 是ES6中新增的一种数据结构，用于存储==映射==关系
+- `Map` 是 ES6 中新增的一种数据结构，用于存储==映射==关系
 
-- 使用对象存储 key-value 时，只能使用==字符串==或 `Symbol` 作为key，而在Map中，可以使用对象来作为 key 值
+- 使用对象存储 key-value 时，只能使用==字符串==或 `Symbol` 作为 key，而在 Map 中，可以使用对象来作为 key 值
 
 - Map 的相关API
 
@@ -2757,8 +2703,6 @@ ES6 中新增了一个从数组或对象中方便获取数据的方法，称之�
 
 
 
->
->
 >WeakMap
 
 - `WeakMap`与 Map 相似，也是以键值对的形式存在，与 Map 的区别
@@ -2774,53 +2718,51 @@ ES6 中新增了一个从数组或对象中方便获取数据的方法，称之�
 
 
 
-
-
 ### ES8
 
 #### Object values
 
-- `Object.values(obj)` 用于获取对象所有的可枚举属性值
+`Object.values(obj)` 用于获取对象所有的可枚举属性值
 
-  ```js
-  const obj = {
-    name: 'Avril',
-    age: 18
-  }
-  
-  Object.defineProperty(obj, 'address', {
-    enumerable: false,
-    configurable: true,
-    value: 'Canada',
-    writable: true
-  })
-  
-  console.log(Object.values(obj)); // ['Avril', 18]
-  ```
+```js
+const obj = {
+  name: 'Avril',
+  age: 18
+}
+
+Object.defineProperty(obj, 'address', {
+  enumerable: false,
+  configurable: true,
+  value: 'Canada',
+  writable: true
+})
+
+console.log(Object.values(obj)); // ['Avril', 18]
+```
 
 
 
 #### Object entries
 
-- `Object.entries(obj)` 可以获取到一个数组，数组中会存放可枚举属性的键值对数组
+`Object.entries(obj)` 可以获取到一个数组，数组中会存放可枚举属性的键值对数组
 
-  ```js
-  const obj = {
-    name: 'Avril',
-    age: 18
-  }
-  
-  Object.defineProperty(obj, 'address', {
-    enumerable: false,
-    configurable: true,
-    value: 'Canada',
-    writable: true
-  })
-  
-  console.log(Object.entries(obj)); // [ [ 'name', 'Avril' ], [ 'age', 18 ] ]
-  ```
+```js
+const obj = {
+  name: 'Avril',
+  age: 18
+}
 
-  
+Object.defineProperty(obj, 'address', {
+  enumerable: false,
+  configurable: true,
+  value: 'Canada',
+  writable: true
+})
+
+console.log(Object.entries(obj)); // [ [ 'name', 'Avril' ], [ 'age', 18 ] ]
+```
+
+
 
 #### String Padding
 
@@ -2834,13 +2776,11 @@ console.log(str.padStart(15, '!').padEnd(20, '*')); // !!!!Hello World*****
 
 
 
-
-
 ### ES10
 
 #### flat / flatMap
 
-- `flat(deepth)`：根据指定深度对数组进行==降维==，默认深度为==1==，深度为 `Infinity` 时可实现全部降维，返回降维后的新数组
+- `flat(depth)`：根据指定深度对数组进行==降维==，默认深度为==1==，深度为 `Infinity` 时可实现全部降维，返回降维后的新数组
 
   ```js
   const arr1 = [[[1], 2]];
@@ -2865,17 +2805,17 @@ console.log(str.padStart(15, '!').padEnd(20, '*')); // !!!!Hello World*****
 
 #### Object fromEntries
 
-- `Object.fromEntries(obj)`：将 entries 数组转化为对象类型
+`Object.fromEntries(obj)`：将 entries 数组转化为对象类型
 
-  ```js
-  const entries = [['name', 'why'], ['age', 18]];
-  console.log(Object.fromEntries(entries)); // { name: 'why', age: 18 }
-  
-  // 案例：将queryString转化为对象类型
-  const queryString = 'name=why&age=18';
-  const params = new URLSearchParams(queryString);
-  console.log(Object.fromEntries(params)); // { name: 'why', age: '18' }
-  ```
+```js
+const entries = [['name', 'why'], ['age', 18]];
+console.log(Object.fromEntries(entries)); // { name: 'why', age: 18 }
+
+// 案例：将 queryString 转化为对象类型
+const queryString = 'name=why&age=18';
+const params = new URLSearchParams(queryString);
+console.log(Object.fromEntries(params)); // { name: 'why', age: '18' }
+```
 
 
 
@@ -2887,8 +2827,6 @@ console.log(message.trim()); // 'Hello World!'
 console.log(message.trimStart()); // 'Hello World!  '
 console.log(message.trimEnd()); // '  Hello World!'
 ```
-
-
 
 
 
@@ -2910,34 +2848,34 @@ console.log(num + BigInt(100)); // 9007199254741093n
 
 #### Nullish coalescing operator
 
-- 空值合并运算符 `??`，只有当运算符左边为 ==null== 或 ==undefined== 时，才会取右边的值
+空值合并运算符 `??`，只有当运算符左边为 ==null== 或 ==undefined== 时，才会取右边的值
 
-  ```js
-  console.log(0 || 10); // 10
-  console.log(0 ?? 10); // 0
-  console.log(undefined ?? 10); // 10
-  ```
+```js
+console.log(0 || 10); // 10
+console.log(0 ?? 10); // 0
+console.log(undefined ?? 10); // 10
+```
 
-  
+
 
 #### Optional chaining
 
-- 可选链 `?`：防止从空值上取值报错
+可选链 `?`：防止从空值上取值报错
 
-  ```js
-  const obj = {
-    name: 'obj',
-    // children: {
-    //   name: '11'
-    // }
-  }
-  console.log(obj.children?.name); // undefined
-  
-  const arr = [null];
-  console.log(arr[0]?.name); // undefined
-  ```
+```js
+const obj = {
+  name: 'obj',
+  // children: {
+  //   name: '11'
+  // }
+}
+console.log(obj.children?.name); // undefined
 
-  
+const arr = [null];
+console.log(arr[0]?.name); // undefined
+```
+
+
 
 #### GlobalThis
 
@@ -2954,30 +2892,28 @@ console.log(num + BigInt(100)); // 9007199254741093n
 
 
 
-
-
 ### ES12
 
 #### FinalizationRegistry
 
-- `FinalizationRegistry` 可以监听对象的销毁（被GC回收）
+`FinalizationRegistry` 可以监听对象的销毁（被 GC 回收）
 
-  ```js
-  let obj = { name: 'obj' };
-  let info = { name: 'info' };
-  
-  const f = new FinalizationRegistry((key) => {
-    // info被回收
-    // obj被回收
-    console.log(`${key}被回收`);
-  });
-  
-  f.register(obj, 'obj');
-  f.register(info, 'info');
-  
-  obj = null;
-  info = null;
-  ```
+```js
+let obj = { name: 'obj' };
+let info = { name: 'info' };
+
+const f = new FinalizationRegistry((key) => {
+  // info被回收
+  // obj被回收
+  console.log(`${key}被回收`);
+});
+
+f.register(obj, 'obj');
+f.register(info, 'info');
+
+obj = null;
+info = null;
+```
 
 
 
@@ -3001,18 +2937,16 @@ obj = null; // // info对{ name: 'obj' }是弱引用，obj对象会被回收
 
 
 
-
-
 ### ES13
 
 #### Array.prototype.at()
 
-- `at()` 方法接收一个整数值并返回该索引对应的元素，允许正数和负数
+`at()` 方法接收一个整数值并返回该索引对应的元素，允许正数和==负数==
 
-  ```js
-  const arr = [1, 2, 3];
-  console.log(arr.at(-1)); // 3
-  ```
+```js
+const arr = [1, 2, 3];
+console.log(arr.at(-1)); // 3
+```
 
 
 
@@ -3066,6 +3000,7 @@ obj = null; // // info对{ name: 'obj' }是弱引用，obj对象会被回收
   ```js
   class Person {
     #address = '湖北'
+    
     static hello() {
       console.log('Hello World');
     }
@@ -3088,8 +3023,6 @@ obj = null; // // info对{ name: 'obj' }是弱引用，obj对象会被回收
   }
   ```
 
-  
-
 
 
 ## Proxy - Reflect
@@ -3098,7 +3031,7 @@ obj = null; // // info对{ name: 'obj' }是弱引用，obj对象会被回收
 
 #### 监听对象操作
 
-- 在ES6之前，对于监听对象的操作，可以通过 `Object.defineProperty` 的==存取属性==描述符来实现，但这种方式存在缺点
+- 在 ES6 之前，对于监听对象的操作，可以通过 `Object.defineProperty` 的==存取属性==描述符来实现，但这种方式存在缺点
 
   - `Object.defineProperty` 设计初衷是为了定义属性描述符，并非用于监听对象属性变化
   - `Object.defineProperty` 无法监听对象属性的增加、删除等操作
@@ -3123,11 +3056,11 @@ obj = null; // // info对{ name: 'obj' }是弱引用，obj对象会被回收
     })
   });
   
-  console.log(obj.name); // obj对象的属性name被获取 obj
+  console.log(obj.name); // obj对象的属性 name 被获取 obj
   obj.height = 1.88; // 新增属性无法监听到
   ```
 
-- 在ES6中，新增了一个 `Proxy` 类，用于创建一个代理，对原始对象的操作都可以通过代理对象来完成
+- 在 ES6 中，新增了一个 `Proxy` 类，用于创建一个代理，对原始对象的操作都可以通过代理对象来完成
 
   ```js
   const obj = {
@@ -3155,70 +3088,70 @@ obj = null; // // info对{ name: 'obj' }是弱引用，obj对象会被回收
 
 #### Proxy 的捕获器
 
-- `Proxy` 有 13 种 [捕获器](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy#handler_%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%96%B9%E6%B3%95)，可以监听对象的操作
+`Proxy` 有 13 种 [捕获器](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy#handler_%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%96%B9%E6%B3%95)，可以监听对象的操作
 
-  |       捕获器       |          说明           |
-  | :----------------: | :---------------------: |
-  |      ==get==       |  属性读取操作的捕获器   |
-  |      ==set==       |  属性设置操作的捕获器   |
-  |      ==has==       |   `in` 操作符的捕获器   |
-  | ==deleteProperty== | `delete` 操作符的捕获器 |
-  |       apply        |  函数调用操作的捕获器   |
-  |     construct      |  `new` 操作符的捕获器   |
-  |       ......       |         .......         |
+|       捕获器       |          说明           |
+| :----------------: | :---------------------: |
+|      ==get==       |  属性读取操作的捕获器   |
+|      ==set==       |  属性设置操作的捕获器   |
+|      ==has==       |   `in` 操作符的捕获器   |
+| ==deleteProperty== | `delete` 操作符的捕获器 |
+|       apply        |  函数调用操作的捕获器   |
+|     construct      |  `new` 操作符的捕获器   |
+|       ......       |         .......         |
 
-  ```js
-  const obj = {
-    name: 'obj',
-    age: 10
+```js
+const obj = {
+  name: 'obj',
+  age: 10
+}
+
+const proxy = new Proxy(obj, {
+  has(target, key) {
+    return key in target;
+  },
+  get(target, key, receiver) {
+    return target[key];
+  },
+  set(target, key, value, receiver) {
+    target[key] = value;
+    return value;
+  },
+  deleteProperty(target, key) {
+    return delete target[key];
   }
-  
-  const proxy = new Proxy(obj, {
-    has(target, key) {
-      return key in target;
-    },
-    get(target, key, receiver) {
-      return target[key];
-    },
-    set(target, key, value, receiver) {
-      target[key] = value;
-      return value;
-    },
-    deleteProperty(target, key) {
-      return delete target[key];
-    }
-  });
-  
-  
-  function foo(...args) {
-    console.log(this, args);
-  }
-  
-  const fooProxy = new Proxy(foo, {
-    apply(target, thisArg, argArray) {
-      return target.apply(thisArg, argArray);
-    },
-    construct(target, argArray) {
-      return new target(...argArray);
-    }
-  });
-  
-  fooProxy(1, 2, 3); // window [1, 2, 3]
-  fooProxy.apply({ name: 'obj' }, [1, 2]); // { name: 'obj' } [ 1, 2 ]
-  const f = new fooProxy(1, 2); // foo {} [1, 2]
-  ```
+});
 
-  
+
+function foo(...args) {
+  console.log(this, args);
+}
+
+const fooProxy = new Proxy(foo, {
+  apply(target, thisArg, argArray) {
+    return target.apply(thisArg, argArray);
+  },
+  construct(target, argArray) {
+    return new target(...argArray);
+  }
+});
+
+fooProxy(1, 2, 3); // window [1, 2, 3]
+fooProxy.apply({ name: 'obj' }, [1, 2]); // { name: 'obj' } [ 1, 2 ]
+const f = new fooProxy(1, 2); // foo {} [1, 2]
+```
+
+
 
 ### Reflect
 
 #### 认识 Reflect
 
-- `Reflect`（反射）是ES6新增的一个API，它是一个==对象==
+- `Reflect`（反射）是 ES6 新增的一个 API，它是一个==对象==
 - 作用：主要提供了许多==操作对象的方法==，类似于 ==Object 中操作对象的方法==
 - `Object` 对象上含有操作对象的一系列方法，为什么还需要新增Reflect对象？
   - 在早期 ECMA 规范中没有考虑到==对象操作设计==的规范，将这些 API 都放在了 Object 上面，然而 Object 本身作为一个构造函数，附加这些 API 不合理
-  - 在ES6中新增了 Reflect，将这些操作都集中在了 Reflect 对象上
+  - 在 ES6 中新增了 Reflect，将这些操作都集中在了 Reflect 对象上
   - 另外在使用 Reflect 结合 Proxy 时，可以做到==不操作原对象==
 - Object 和 Reflect 对象并非一一对应，[区别](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Reflect/Comparing_Reflect_and_Object_methods)
 
@@ -3226,40 +3159,39 @@ obj = null; // // info对{ name: 'obj' }是弱引用，obj对象会被回收
 
 #### Reflect 常见方法
 
-- `Reflect` 中的常见 API 与 `Proxy` 一一对应
+`Reflect` 中的常见 API 与 `Proxy` 一一对应
 
-  |        方法        |                             描述                             |
-  | :----------------: | :----------------------------------------------------------: |
-  |      ==get==       |         获取对象上某个属性的值，类似于 `target[key]`         |
-  |      ==set==       |                      设置对象某个属性值                      |
-  |      ==has==       |       判断一个对象是否存在某个属性，等同于 `in` 操作符       |
-  | ==deleteProperty== |                 相当于 `delete target[key]`                  |
-  |      ownKeys       | 返回一个包含所有自身属性（不包括继承属性）的数组，类似于Object.keys()，但不受 ==enumerable== 的影响，且包括 ==Symbol== key |
-  |     construct      | 对构造函数进行 `new` 操作，相当于执行 `new target(...args)`  |
-  |       ......       |                            ......                            |
+|        方法        |                             描述                             |
+| :----------------: | :----------------------------------------------------------: |
+|      ==get==       |         获取对象上某个属性的值，类似于 `target[key]`         |
+|      ==set==       |                      设置对象某个属性值                      |
+|      ==has==       |       判断一个对象是否存在某个属性，等同于 `in` 操作符       |
+| ==deleteProperty== |                 相当于 `delete target[key]`                  |
+|      ownKeys       | 返回一个包含所有自身属性（不包括继承属性）的数组，类似于Object.keys()，但不受 ==enumerable== 的影响，且包括 ==Symbol== key |
+|     construct      | 对构造函数进行 `new` 操作，相当于执行 `new target(...args)`  |
+|       ......       |                            ......                            |
 
-  ```js
-  const obj = {
-    name: 'Avril',
-    age: 18
-  };
-  
-  const proxy = new Proxy(obj, {
-    has(target, key) {
-      return Reflect.has(target, key);
-    },
-    deleteProperty(target, key) {
-      return Reflect.deleteProperty(target, key);
-    },
-    get(target, key, receiver) {
-      return Reflect.get(target, key, receiver);
-    },
-    set(target, key, newValue, receiver) {
-      return Reflect.set(target, key, newValue, receiver);
-    }
-  });
-  ```
+```js
+const obj = {
+  name: 'Avril',
+  age: 18
+};
 
+const proxy = new Proxy(obj, {
+  has(target, key) {
+    return Reflect.has(target, key);
+  },
+  deleteProperty(target, key) {
+    return Reflect.deleteProperty(target, key);
+  },
+  get(target, key, receiver) {
+    return Reflect.get(target, key, receiver);
+  },
+  set(target, key, newValue, receiver) {
+    return Reflect.set(target, key, newValue, receiver);
+  }
+});
+```
 
 
 
@@ -3322,141 +3254,25 @@ obj = null; // // info对{ name: 'obj' }是弱引用，obj对象会被回收
   console.log(proxy.name); // obj
   ```
 
-  
 
 
 #### Reflect.construct
 
-- 作用：可以执行 A 类的构造函数，但创建出来的对象类型可以指向 B 类。该方法在 babel 转换 ES6 类继承时有用到
-
-  ```js
-  function Student(name, age) {
-    this.name = name;
-    this.age = age;
-  }
-  
-  function Teacher() {}
-  
-  const teacher = Reflect.construct(Student, ['json', 18], Teacher);
-  console.log(teacher); // Teacher { name: 'json', age: 18 }
-  console.log(Reflect.getPrototypeOf(teacher) === Teacher.prototype); // true
-  ```
-
-  
-
-
-
-### 模拟响应式
+- 作用：可以执行 A 类的构造函数，但创建出来的对象类型可以指向 B 类
+- 该方法在 babel 转换 ES6 类继承时有用到
 
 ```js
-const weakMap = new WeakMap();
-let activeFn = null;
-
-/**
- * 该类用于存储需要响应式的函数
- */
-class Depend {
-  constructor() {
-    this.depends = new Set();
-  }
-
-  collect() {
-    if (typeof activeFn === 'function') {
-      this.depends.add(activeFn);
-    }
-  }
-
-  update() {
-    this.depends.forEach(method => method());
-  }
+function Student(name, age) {
+  this.name = name;
+  this.age = age;
 }
 
-/**
- * 收集依赖
- * 创建一个WeakMap，首先存储各个响应式对象，以每个响应式对象作为key, value也是一个map
- * 再以每个对象的属性key作为map的key，以每个依赖该属性值的函数数组作为value
- * 取值逻辑: 根据响应式对象作为key从weakMap(响应式对象 - map)中取出一个map(该响应式对象的key - methods的集合)
- * @param {*} obj data对象
- * @param {*} key key
- */
-function getDepend(obj, key) {
-  let objMap = weakMap.get(obj);
-  if (!objMap) {
-    objMap = new Map();
-    weakMap.set(obj, objMap);
-  }
+function Teacher() {}
 
-  let depend = objMap.get(key);
-  if (!depend) {
-    depend = new Depend();
-    objMap.set(key, depend);
-  }
-
-  return depend;
-}
-
-/**
- * 创建一个响应式对象
- * @param {*} obj 原始对象
- */
-function reactive(obj) {
-  return new Proxy(obj, {
-    get(target, key, receiver) {
-      // 收集依赖函数
-      const depend = getDepend(obj, key);
-      depend.collect();
-      return Reflect.get(target, key, receiver);
-    },
-    set(target, key, value, receiver) {
-      Reflect.set(target, key, value, receiver);
-      // 更新数据，重新执行依赖函数
-      const depend = getDepend(obj, key);
-      depend.update();
-    }
-  });
-}
-
-/**
- * template中需要响应的函数执行
- */
-function render(template) {
-  Object.values(template).forEach(fn => {
-    activeFn = fn;
-    fn();
-    activeFn = null;
-  });
-}
-
-// data
-const obj = reactive({
-  name: 'obj',
-  way: '测试'
-});
-
-const info = reactive({
-  username: 'jack',
-  age: 18
-});
-
-// template
-const template = {
-  foo() {
-    console.log(obj.name, info.username);
-  },
-  bar() {
-    console.log(info.age);
-  }
-}
-
-// 注册要render的template模板
-render(template);
-
-// 更新数据，自动更新template
-obj.name = 'obj1';
-info.age = 20;
+const teacher = Reflect.construct(Student, ['json', 18], Teacher);
+console.log(teacher); // Teacher { name: 'json', age: 18 }
+console.log(Reflect.getPrototypeOf(teacher) === Teacher.prototype); // true
 ```
-
-
 
 
 
@@ -3530,6 +3346,7 @@ info.age = 20;
     console.log('err', err);
   });
   ```
+
 - 传入一个 `Promise`，那么当前 Promise 的状态会由==传入的 Promise 的状态决定==，相当于==状态移交==
 
   ```js
@@ -3543,6 +3360,7 @@ info.age = 20;
     console.log('err', err); // err 11
   });
   ```
+
 - 传入一个实现了 `then` 方法的==对象==，那么会==执行==该对象的 then 方法，同时传入成功和失败的回调，后续的状态由该 then 方法决定
 
   ````js
@@ -3665,7 +3483,6 @@ info.age = 20;
 
   - 当 Promise 的状态变成 reject 的时候，这些回调函数都会被执行
 
-
   ```js
   const promise = new Promise((resolve, reject) => {
     reject(11);
@@ -3708,21 +3525,17 @@ info.age = 20;
 
 
 
-
 #### finally
 
-- `finally` 是在 ES9 中新增的一个特性：表示 无论 Promise 对象无论变成 fulfilled 还是 rejected 状态，最终都会被执行
-  的代码
+`finally` 是在 ES9 中新增的一个特性：表示 无论 Promise 对象无论变成 fulfilled 还是 rejected 状态，最终都会被执行的代码
 
-  ```js
-  new Promise((resolve, reject) => {
-    resolve(11)
-  }).finally(() => { 
-    console.log('finally'); // finally
-  });
-  ```
-
-
+```js
+new Promise((resolve, reject) => {
+  resolve(11)
+}).finally(() => { 
+  console.log('finally'); // finally
+});
+```
 
 
 
@@ -3740,7 +3553,7 @@ info.age = 20;
   ```js
   Promise
     .resolve(11) // 等价于 new Promise(resolve => resolve(11))
-  	.then(res => console.log('res', res)); // res 11
+    .then(res => console.log('res', res)); // res 11
   ```
 
 - `Promise.reject()` 相当于 new Promise，并且自动执行==reject==
@@ -3761,7 +3574,6 @@ info.age = 20;
 - 所有的 Promise 都变成 ==fulfilled== 时再调用 `then` 的回调
   
 - 若其中有一个变成 ==rejected==，则会在 `catch` 中捕获到第一个失败的结果
-
 
   ```js
   const p1 = new Promise((resolve, reject) => {
@@ -4174,8 +3986,6 @@ class CustomPromise {
 
 
 
-
-
 ## 迭代器 生成器
 
 ### 迭代器
@@ -4303,40 +4113,38 @@ class CustomPromise {
 
 #### 迭代器的中断
 
-- 迭代器在某些情况下会在没有完全迭代的情况下中断，可以使用 `return` 方法监听迭代中断
+迭代器在某些情况下会在没有完全迭代的情况下中断，可以使用 `return` 方法监听迭代中断
 
-  - 比如遍历的过程中通过 `break`、`return`、`throw` 中断了循环操作
-  - 比如在解构的时候，没有解构所有的值
+- 比如遍历的过程中通过 `break`、`return`、`throw` 中断了循环操作
+- 比如在解构的时候，没有解构所有的值
 
-  ```js
-  class Demo {
-    constructor(data) {
-      this.data = data;
-    }
-  
-    [Symbol.iterator]() {
-      let index = 0;
-      return {
-        next: () => {
-          if (index < this.data.length) {
-            return { done: false, value: this.data[index++] };
-          }
-          return { done: true, value: undefined };
-        },
-        return: () => {
-          console.log('迭代器提前终止', index);
-          return { done: true };
+```js
+class Demo {
+  constructor(data) {
+    this.data = data;
+  }
+
+  [Symbol.iterator]() {
+    let index = 0;
+    return {
+      next: () => {
+        if (index < this.data.length) {
+          return { done: false, value: this.data[index++] };
         }
+        return { done: true, value: undefined };
+      },
+      return: () => {
+        console.log('迭代器提前终止', index);
+        return { done: true };
       }
     }
   }
-  
-  const d = new Demo([1, 4]);
-  const [a] = d; // 迭代器提前终止 1
-  console.log(a); // 1
-  ```
+}
 
-  
+const d = new Demo([1, 4]);
+const [a] = d; // 迭代器提前终止 1
+console.log(a); // 1
+```
 
 
 
@@ -4377,7 +4185,7 @@ class CustomPromise {
 
   - 每调用一次就会执行一段代码，在遇到 `yield` 便会==暂停==执行，遇到 `return` 时会==停止==执行
 
-  -  `yield` 和 `return` 关键字后面表达式的值会作为调用生成器 `next` 方法返回的对象的 ==value== 值
+  - `yield` 和 `return` 关键字后面表达式的值会作为调用生成器 `next` 方法返回的对象的 ==value== 值
   
   ```js
   function* foo() {
@@ -4632,8 +4440,6 @@ co(getData);
 
 
 
-
-
 ## 事件循环
 
 ### 进程和线程
@@ -4683,7 +4489,6 @@ co(getData);
   - 优先级
     - 编写的顶层 script 代码优先执行
     - ==在执行任何宏任务前，必须保证微任务队列已经被清空==
-
 
 - 案例
 
@@ -4888,8 +4693,6 @@ co(getData);
 
 
 
-
-
 ## JSON 和数据存储
 
 ### JSON
@@ -4932,8 +4735,6 @@ co(getData);
 
 #### JSON 序列化
 
->
->
 >JSON.stringify(value, replacer?, space?)
 
 - 作用：将 JavaScript 值转换为 JSON 字符串
@@ -5026,8 +4827,6 @@ co(getData);
 
 
 
->
->
 >JSON.parse(jsonString, reviver?)
 
 - 作用：将 JSON 对象转换为 JavaScript 值
@@ -5039,7 +4838,7 @@ co(getData);
     console.log(JSON.parse(obj)); // { name: 'obj' }
     ```
 
-  - 传递 **receiver** 参数，可以对 value 值处理
+  - 传递 **receiver** 函数，可以对 value 值处理
 
     ```js
     const obj = '{"name":"obj","age":18}';
@@ -5065,7 +4864,6 @@ co(getData);
   
   const copyObj = JSON.parse(JSON.stringify(obj));
   ```
-
 
 
 
@@ -5168,8 +4966,6 @@ co(getData);
   ```js
   document.cookie='name="";max-age=0';
   ```
-
-
 
 
 
@@ -5511,8 +5307,6 @@ co(getData);
 
 
 
-
-
 ## 模块化
 
 ### 认识模块化
@@ -5615,7 +5409,7 @@ co(getData);
 
 - 模块在被==第一次引入==时，模块中的代码会被执行一次
 
-- 模块被多次引入时，会==缓存==，最终==只运行一次== —— 每一个 **Module 实例**都有一个属性 `loaded`，被加载后会自动置为 ==true==
+- 模块被多次引入时，会==缓存==，最终==只运行一次== —— 每一个 **Module 实例** 都有一个属性 `loaded`，被加载后会自动置为 ==true==
 
 - 如果有==循环引用==，加载顺序采用==深度优先==算法
 
@@ -5629,9 +5423,9 @@ co(getData);
 
 ### ES Module
 
-- 在ES6中，JavaScript 正式推出了模块化标准
-  - 采用 `export` 和 `import` 来实现模块的导入导出
-  - 使用 ES Module 将自动开启==严格模式==
+在ES6中，JavaScript 正式推出了模块化标准
+- 采用 `export` 和 `import` 来实现模块的导入导出
+- 使用 ES Module 将自动开启==严格模式==
 
 
 
@@ -5682,7 +5476,6 @@ co(getData);
   // 方式2
   export default num;
   ```
-
 
 
 
@@ -5817,8 +5610,6 @@ import { render } from './display.js'
 
 
 
-
-
 ## 网络编程
 
 ### 认识前后端分离
@@ -5858,7 +5649,7 @@ import { render } from './display.js'
 
 - HTTP 是一个客户端和服务端之间请求和响应的标准
 
-  - 通过使用网页浏览器、网络爬虫或其它工具，客户端发起一个 HTTP 请求到服务器上指定端口（默认端口为 80），这个客户端称为==用户代理程序==（User Agent）
+  - 通过使用网页浏览器、网络爬虫或其它工具，客户端发起一个 HTTP 请求到服务器上指定端口（默认端口为 ==80==），这个客户端称为==用户代理程序==（User Agent）
   - 响应的服务器上存储着一些资源，比如 HTML 文件和图像，这个响应服务器为==源服务器==（Origin Server）
 
   <img src="./images/image-20230207234151923.png" alt="image-20230207234151923" style="zoom:80%;" />
@@ -5974,8 +5765,6 @@ import { render } from './display.js'
 
 
 
-
-
 ### XMLHttpRequest
 
 #### 创建 AJAX 请求
@@ -6081,7 +5870,7 @@ import { render } from './display.js'
   xhr.open('POST', 'http://localhost:3000/test');
   xhr.setRequestHeader('Content-Type', 'application/json');
   xhr.send(JSON.stringify(data));
-
+  ```
 
 
 #### 响应数据和响应类型
@@ -6114,7 +5903,6 @@ import { render } from './display.js'
 
 
 
-
 #### 超时时间和取消请求
 
 - 在网络请求的过程中，为了避免长时间的服务器无响应，通常会为请求设置一个==超时时间== `timeout`
@@ -6127,9 +5915,6 @@ import { render } from './display.js'
   ```
 
 - 也可以通过 `xhr.abort()` 方法强制取消请求
-
-
-
 
 
 
@@ -6213,6 +5998,7 @@ import { render } from './display.js'
 
 
 #### Fetch 数据的响应
+
 - Fetch 的数据响应主要分为两个阶段
 
 - 阶段一：当服务器返回了响应
@@ -6251,11 +6037,9 @@ import { render } from './display.js'
   }
   ```
 
-  
 
 
-
-## 补充知识
+## 扩展知识
 
 ### 严格模式
 
@@ -6368,14 +6152,10 @@ import { render } from './display.js'
   strict.call("11"); // '11'
   ```
 
-  
-
 
 
 ### 防抖和节流
 
->
->
 >防抖
 
 - 防抖（debounce）过程
@@ -6433,8 +6213,6 @@ function debounce(fn, delay, immediate = false, cb) {
 
 
 
->
->
 >节流
 
 - 节流（throttle）过程
@@ -6581,6 +6359,3 @@ function throttle(fn, interval, options = { lending: true, trailing: false }, cb
     return newObj;
   }
   ```
-
-
-
