@@ -50,13 +50,11 @@ title: 路由
 
 
 
-
-
 ### 前端路由的两种模式
 
 #### hash 模式
 
-- URL 的 hash 也就是==锚点== (`#`)，本质上是改变 `window.location` 的 `href` 属性
+- URL 的 hash 也就是==锚点== `#`，本质上是改变 `window.location` 的 `href` 属性
 
   - 直接赋值 `location.hash`，页面不会发生刷新
   - 监听 `hashchange` 事件，不同的 `hash` 渲染不同的内容
@@ -67,7 +65,8 @@ title: 路由
   <div id="router-view"></div>
   
   <script>
-    const routerView = document.querySelector('#router-view')
+    const routerView = document.querySelector('#router-view');
+    
     window.addEventListener('hashchange', () => {
       console.log('location', location.hash)
       switch(location.hash) {
@@ -85,12 +84,13 @@ title: 路由
   ```
 
 - `hash` 模式的优缺点
+  
   - 优点：浏览器兼容性好
   - 缺点：路径上多了 `#`，不像一个真实的路径
 
 
 
-#### HTML5 模式
+#### history 模式
 
 - `history` 接口是 HTML5 新增的，通过匹配 `location.pathname` 来渲染不同内容
 
@@ -141,11 +141,7 @@ title: 路由
 
 
 
-
-
-## Vue Router
-
-### 认识 Vue Router
+## 认识 Vue Router
 
 - Vue Router 是 Vue.js 的官方路由，与 Vue.js 核心深度集成
 - Vue Router 是基于路由和组件的
@@ -154,7 +150,7 @@ title: 路由
 
 
 
-### 注册路由
+## 注册路由
 
 - 安装路由
 
@@ -212,9 +208,9 @@ title: 路由
 
 
 
-### 路由内置组件
+## 路由内置组件
 
-#### RouterLink
+### RouterLink
 
 - 用来渲染一个链接的组件，该链接在被点击时会触发导航
 
@@ -231,19 +227,19 @@ title: 路由
 
 
 
-#### RouterView
+### RouterView
 
-- 用于显示用户当前所处路由的组件，相当于一个==占位符==
+用于显示用户当前所处路由的组件，相当于一个==占位符==
 
-  ```html
-  <RouterView />
-  ```
+```html
+<RouterView />
+```
 
-  
 
-### 路由对象的配置
 
-#### 重定向
+## 路由对象的配置
+
+### 重定向
 
 通过 `redirect` 属性可以对路由进行重定向到其他路径
 
@@ -280,66 +276,64 @@ title: 路由
 
   
 
-#### 懒加载
+### 懒加载
 
-- 懒加载：使用 `import()` 使路由组件进行==异步加载==
+懒加载：使用 `import()` 使路由组件进行==异步加载==
 
-  ```js
-  import Test from '../components/Test.vue';
-  
-  const routes = [
-    { path: '/test', component: () => import('../components/Test.vue') }
-  ];
-  ```
+```js
+import Test from '../components/Test.vue';
 
-
-
-#### 命名路由
-
-- 路由配置可以传入一个 `name` 属性，对路由进行命名
-
-  ```js
-  const routers = [{ path: '/', redirect: '/home', name: 'home' }];
-  ```
+const routes = [
+  { path: '/test', component: () => import('../components/Test.vue') }
+];
+```
 
 
 
-#### 路由元信息
+### 命名路由
 
-- 通过 `meta` 属性可以为每个路由存储一些自定义数据，用于后续的获取
+路由配置可以传入一个 `name` 属性，对路由进行命名
 
-  ```js
-  const routers = [
-    { 
-    	path: '/',
-      // 只有经过身份验证的用户才能访问
-      meta: { requiresAuth: true }
-  	}
-  ];
-  ```
+```js
+const routers = [{ path: '/', redirect: '/home', name: 'home' }];
+```
 
 
 
-#### 404
+### 路由元信息
 
-- 为所有的未定义路由进行拦截，导航到固定组件
+通过 `meta` 属性可以为每个路由存储一些自定义数据，用于后续的获取
 
-  ```js
-  const routes = [
-    // 将匹配所有内容并将其放在 `$route.params.pathMatch` 下
-    { 
-      path: '/:pathMatch(.*)*', 
-      name: 'NotFound',
-      component: NotFound
-    }
-  ];
-  ```
-
+```js
+const routers = [
+  { 
+    path: '/',
+    // 只有经过身份验证的用户才能访问
+    meta: { requiresAuth: true }
+  }
+];
+```
 
 
 
+### 404
 
-### 动态路由
+为所有的==未定义路由==进行拦截，导航到固定组件
+
+```js
+const routes = [
+  // 将匹配所有内容并将其放在 `$route.params.pathMatch` 下
+  { 
+    path: '/:pathMatch(.*)*', 
+    name: 'NotFound',
+    component: NotFound
+  }
+];
+```
+
+
+
+## 动态路由
 
 - 动态路由：将给定匹配模式的路由映射到同一个组件
 
@@ -360,7 +354,7 @@ title: 路由
 
 - 获取动态路由参数
 
-  ```vue
+  ```html
   <script setup>
   import { useRoute } from 'vue-router';
   
@@ -389,7 +383,7 @@ title: 路由
 
 
 
-### 路由嵌套
+## 路由嵌套
 
 路由嵌套用于配置==子路由==
 
@@ -418,7 +412,7 @@ const routes = [
 
 
 
-### 编程式路由导航
+## 编程式路由导航
 
 - 借助 router 的实例方法，通过编写代码来实现页面的跳转
 
@@ -450,7 +444,7 @@ const routes = [
 
 
 
-### 路由传参
+## 路由传参
 
 - `params` 参数（动态路由）
 
@@ -505,7 +499,7 @@ const routes = [
 
     
 
-### 动态管理路由
+## 动态管理路由
 
 - 某些情况下，可能需要动态的来添加路由
 
@@ -542,7 +536,7 @@ const routes = [
 
 
 
-### 导航守卫
+## 导航守卫
 
 - 导航守卫主要用来通过跳转或取消的方式守卫导航
 - 完整的导航解析流程
@@ -561,8 +555,6 @@ const routes = [
 
 
 
->
->
 >全局的前置守卫
 
 全局的前置守卫 `beforeEach` 是在导航触发时会被回调的
@@ -596,5 +588,3 @@ const routes = [
   });
   </script>
   ```
-
-  

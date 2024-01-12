@@ -44,6 +44,11 @@
     vertical-align: unset;
   }
 
+  // 多行代码片段
+  pre:has(code) {
+    margin-top: 0.5rem;
+  }
+
   // ==key==强调
   mark {
     padding: 0 4px;
