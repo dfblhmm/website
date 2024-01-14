@@ -56,7 +56,21 @@ const sidebars: SidebarsConfig = {
         // 包管理工具
         "front/Font-Engineering/package-management-tool",
         // Git
-        "front/Font-Engineering/Git"
+        "front/Font-Engineering/Git",
+
+        // 构建工具
+        {
+          type: "category",
+          label: "构建工具",
+          link: {
+            type: "doc",
+            id: "front/Font-Engineering/build-tools/index"
+          },
+          items: [
+            // Webpack
+            "front/Font-Engineering/build-tools/webpack"
+          ]
+        }
       ]
     },
 
