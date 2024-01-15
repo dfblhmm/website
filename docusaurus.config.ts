@@ -31,7 +31,7 @@ const classicPresetConfig: Preset.Options = {
 const themeConfig: Preset.ThemeConfig = {
   tableOfContents: {
     minHeadingLevel: 2,
-    maxHeadingLevel: 4
+    maxHeadingLevel: 5
   },
 
   navbar: {

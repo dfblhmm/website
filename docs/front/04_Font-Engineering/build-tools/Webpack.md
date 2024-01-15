@@ -61,6 +61,7 @@ webpack is a static module bundler for modern JavaScript applications.
   
 
 
+
 ## 基本设置
 
 ### 打包命令
@@ -214,22 +215,26 @@ webpack is a static module bundler for modern JavaScript applications.
 
   <Tabs>
     <TabItem value="./webpack.config.js" label="./webpack.config.js">
-      ```js
-      module.exports = {
-        entry: './src/index.jsx',
-      };
-      ```
+
+    ```js
+    module.exports = {
+      entry: './src/index.jsx',
+    };
+    ```
+
     </TabItem>
 
     <TabItem value="./src/index.jsx" label="./src/index.jsx">
-      ```js
-      import React from 'react';
-      import ReactDOM from 'react-dom';
 
-      import('./app.jsx').then((App) => {
-        ReactDOM.render(<App />, root);
-      });
-      ```
+    ```js
+    import React from 'react';
+    import ReactDOM from 'react-dom';
+  
+    import('./app.jsx').then((App) => {
+      ReactDOM.render(<App />, root);
+    });
+    ```
+
     </TabItem>
   </Tabs>
 
@@ -351,7 +356,7 @@ webpack is a static module bundler for modern JavaScript applications.
 
 - `clean`：在生成文件之前对输出目录做一些清理操作，该属性可以替代插件 **clean-webpack-plugin**
 
-- `chunkFilename`：指定 **non-initial** chunk 文件的名称
+- `chunkFilename`：指定 **non-initial** chunk 文件的名称，默认使用 `[id].js`
 
 - `filename`：指定每个输出 bundle 的名称，这些 bundle 将写入到 `output.path` 选项指定的目录下
 
@@ -644,6 +649,26 @@ module.exports = {
     ```
 
   - 这时可以通过 http://localhost:8080/web/a.txt 访问该文件
+
+
+
+#### 模块 id 生成算法
+
+`optimization.chunkIds` 告知 webpack 当生成==模块 id== 时使用哪种生成算法
+
+- 对于 **开发环境**，会被设置成 `'named'`
+
+- 对于 **生产环境**，会被设置成 `'deterministic'`
+
+- 如果上述的条件都不符合，会被默认设置为 `'natural'`
+
+| 选项值            | 描述                                                         |
+| :---------------- | :----------------------------------------------------------- |
+| natural           | 按使用顺序的数字 id（不利于缓存）                            |
+| **named**         | 对调试更友好的可读的 id — 使用模块所在的路径作为产物名称     |
+| **deterministic** | 在不同的编译中不变的短数字 id，有益于长期缓存。在==生产模式==中会默认开启 |
+| size              | 让初始下载包大小更小的数字 id                                |
+| total-size        | 让总下载包大小更小的数字 id                                  |
 
 
 
@@ -1248,13 +1273,11 @@ module.exports = {
   const { resolve } = require('path');
   const HtmlWebpackPlugin = require('html-webpack-plugin');
   
-  const getPath = path => resolve(process.cwd(), path);
-  
   module.exports = {
     entry: "./src/index.js",
     output: {
       filename: "bundle.js",
-      path: getPath("./build")
+      path: resolve(__dirname, "./build")
     },
     module: {
       rules: [
@@ -1271,14 +1294,14 @@ module.exports = {
     },
     plugins: [
       new HtmlWebpackPlugin({
-        template: getPath("./index.html")
+        template: resolve(__dirname, "./index.html")
       })
     ],
     resolve: {
       extensions: [".jsx", "..."]
     }
   };
-
+  
 - 开发环境配置信息
 
   ```js title="webpack.dev.js"
@@ -1352,13 +1375,17 @@ module.exports = {
 
 ### js 分离
 
->入口起点 —— Entry Points
+#### Entry Points — 入口起点
 
-- 使用`entry`配置手动分离代码
+- 使用 `entry` 指定入口，可以手动分离代码
+
+- 配置示例
 
   - 配置信息
 
     ```js
+    const { resolve } = require('path');
+    
     module.exports = {
       entry: {
         index: './src/index.js',
@@ -1366,7 +1393,7 @@ module.exports = {
       },
       output: {
         filename: '[name].bundle.js',
-        path: getPath('./build')
+        path: resolve(__dirname, 'build')
       } 
     }
     ```
@@ -1375,70 +1402,125 @@ module.exports = {
 
      ![image-20210904170253391](./images/image-20210922001440283.png)
 
->防止重复 —— Prevent Duplication
 
-- 使用`Entry Dependencies`（不推荐使用）或者`SplitChunksPlugin`去重和分离代码
 
-- 配置使用`optimization.splitChunks`
+#### Prevent Duplication — 防止重复
 
-  ```js
-  module.exports = {
-    optimization: {
-      splitChunks: {
-        // 默认值：'async'——异步导入的包进行分包（使用import()函数引入的模块），另外在webpack中，只要是import()   函数进行导入的模块一定会进行分包
-        // 'inital' —— 同步导入的包会进行分包（使用import直接进行导入）
-        // 'all'：同步引入和异步引入的包均会分包
-        chunks: 'all',
-        // minSize: 最小尺寸（大于minSize的包才会被进行拆分）
-        minSize: 20000 //(默认值，单位是字节),
-        // maxSize: 将大于maxSize的包拆分成不小于minSize的包
-        maxSize: 20000, // (默认值0，单位字节)
-        // minChunks: 引入的包至少被导入了几次才进行分包
-        minChunks: 1 //(默认值),
-        // name：拆分 chunk 的名称,设为 false 将保持 chunk 的相同名称，因此不会不必要地更改名称
-        name: false, // 默认为false，也是生产环境的默认值
-        cacheGroups: {
-          // 配置第三方的包打包到vendors.js中
-          defaultVendors: {
-            test: /[\\/]node_modules[\\/]/,
-            filename: '[id]_vendors.js', // filename: 仅在inital-chunk 时才允许覆盖文件名
-            priority: -10, // 优先级,当一个模块同时满足时会根据优先级来选择分离配置进行打包
-            reuseExistingChunk: true // 对于已经打包过的模块，再次用到时直接进行引用（默认为true）
-          },
-          // 配置被引入次数>=2次时会被打包进common_[id].js中
-          default: {
-            minChunks: 2,
-            filename: 'common_[id].js',
-            priority: -20
-          }
+使用 **Entry Dependencies**（配置繁琐，不推荐使用）或 **SplitChunksPlugin** 去重和分离代码
+
+配置 `optimization.splitChunks`
+
+- `chunks`：指定哪些 chunk 需要进行分包
+  - 默认为 `async`，即==异步导入==的包进行分包
+  - 在 webpack 中，只要是 `import()` 异步导入的模块一定会进行分包
+  - 设置为 `all`，则同步引入和异步引入的包均会参与分包
+
+- `minSize`：最小尺寸，即大于此大小的包才会被进行拆分
+- `maxSize`：将大于 **maxSize** 的包拆分成不小于 **minSize** 的包
+- `cacheGroups`：配置缓存组，用于对拆分的包进行分组
+
+```js
+module.exports = {
+  optimization: {
+    splitChunks: {
+      // 'inital' —— 同步导入的包会进行分包（使用import直接进行导入）
+      // 'all'：同步引入和异步引入的包均会分包
+      chunks: 'all',
+      
+      // 默认值，单位字节
+      minSize: 20000,
+      
+      // 默认值 0，单位字节
+      maxSize: 20000,
+      
+      // minChunks: 引入的包至少被导入了几次才进行分包
+      minChunks: 1, // (默认值)
+      
+      // 指定拆分 chunk 的名称，默认为 false，也是生产环境的默认值
+      // name: false,
+      
+      cacheGroups: {
+        // 配置第三方的包打包到 vendors.js 中
+        defaultVendors: {
+          test: /[\\/]node_modules[\\/]/,
+      
+          // 仅在inital-chunk 时才允许覆盖文件名
+          filename: '[id]_vendors.js',
+      
+          // 优先级，当一个模块同时满足多个缓存组时，会根据优先级来选择分离配置进行打包
+          priority: -10,
+      
+          // 对于已经打包过的模块，再次用到时直接进行引用(默认为 true)
+          reuseExistingChunk: true
+        },
+    
+        // 配置被引入次数 >=2 次时会被提取进 common_[id].js 中
+        default: {
+          minChunks: 2,
+          filename: 'common_[id].js',
+          priority: 10
         }
       }
     }
   }
+}
+```
 
->动态导入 —— Dynamic Imports
 
-- 通过`import()`函数引入的函数，打包时都会进行分包
 
-- `optimization.chunkIds`：告知 webpack 当选择模块 id 时需要使用哪种算法
+#### Dynamic Imports — 动态导入
 
-  - 如果环境是开发环境，那么 `optimization.chunkIds` 会被设置成 `'named'`, 但当在生产环境中时，它会被设置成 `'deterministic'`
+##### 应用场景
 
-  - 如果上述的条件都不符合, `optimization.chunkIds` 会被默认设置为 `'natural'`
+- 动态导入使用最多的一个场景是==懒加载==（比如路由懒加载）
 
-    | 选项值            | 描述                                                         |
-    | :---------------- | :----------------------------------------------------------- |
-    | `'natural'`       | 按使用顺序的数字 id（不利于缓存）                            |
-    | `'named'`         | 对调试更友好的可读的 id —— 使用包所在的目录作为打包之后的包名 |
-    | `'deterministic'` | 在不同的编译中不变的短数字 id。有益于长期缓存。在==生产模式==中会默认开启。 |
-    | `'size'`          | 专注于让初始下载包大小更小的数字 id。                        |
-    | `'total-size'`    | 专注于让总下载包大小更小的数字 id。                          |
+  <Tabs>
+    <TabItem value="component.js" label="component.js">
 
-- 动态导入的文件命名
+    ```js
+    const div = document.createElement('div');
+    div.innerHTML = 'Dynamic Import';
+    
+    export default div;
+    ```
 
-  - 默认情况下，如果没有设置`output.chunkFilename`时，会取`output.filename`设置的名称
+    </TabItem>
 
-    - 配置信息
+    <TabItem value="./src/index.js" label="./src/index.js">
+
+    ```js
+    const button = document.createElement('button');
+    button.innerHTML = '加载组件';
+    
+    // 页面初始化时不会下载 component.js 文件，当按钮被点击时才去下载并解析
+    button.addEventListener('click', () => {
+      import(./component').then(module => {
+        document.body.appendChild(module.default);
+      })
+    })
+    
+    document.body.append(button);
+    ```
+
+    </TabItem>
+  </Tabs>
+
+- 通过 `import()` 函数引入的模块，打包时都会进行分包
+
+
+
+##### 异步文件命名
+
+- 默认情况下，如果没有设置 `output.chunkFilename` ，则会从 `output.filename` 推断值
+
+  - `[name]` 会被预先替换为 `[id]` 或 `[id].`
+
+  - 采取如下配置的打包输出结果
+
+    ![image-20220812005423966](./images/image-20220812005423966.png)
+
+    <Tabs>
+      <TabItem value="webpack.config.js" label="webpack.config.js">
 
       ```js
       module.exports = {
@@ -1446,9 +1528,8 @@ module.exports = {
         entry: './src/index.js',
         output: {
           path: resolve(__dirname, 'dist'),
-          // 该 [name]占位符默认取optimization.chunkIds设置的算法规则的id计算值
-          filename: '[name].bundle.js',
-          clean: true,
+          // 此时 [name] 占位符使用了 chunkIds: named 算法计算得到的值
+          filename: '[name].bundle.js'
         },
         optimization: {
           chunkIds: 'named'
@@ -1456,20 +1537,31 @@ module.exports = {
       }
       ```
 
-    - `./src/index.js`
+      </TabItem>
+
+      <TabItem value="./src/index.js" label="./src/index.js">
 
       ```js
       import('./foo').then(module => {});
       import('./bar').then(module => {});
       ```
 
-    - 打包输出结果，此时`[name]`占位符使用了`chunkIds: named`算法计算得到的值
+      </TabItem>
+    </Tabs>
 
-      ![image-20220812005423966](./images/image-20220812005423966.png)
+- 一般来说，对于动态导入的模块，使用 `ouput.chunkFilename` 指定输出文件名
+  
+  - 可以使用 [Magic Comments](https://webpack.js.org/api/module-methods/#magic-comments) 指定 chunk 的名称
+  
+  - 采取如下配置的打包输出结果
 
-  - 通常情况下，对于动态导入的模块，使用`ouput.chunkFilename`指定输出文件名
+    - **foo** 文件使用了自定义的名称
+    - **bar** 文件使用了自动生成的 id
 
-    - 配置信息
+    <img src="./images/image-20240115172531468.png" alt="image-20240115172531468" style="zoom:90%;" />
+
+    <Tabs>
+      <TabItem value="webpack.config.js" label="webpack.config.js">
 
       ```js
       module.exports = {
@@ -1477,7 +1569,7 @@ module.exports = {
         entry: './src/index.js',
         output: {
           path: resolve(__dirname, 'dist'),
-          filename: '[name].bundle.js', // 该name占位符默认取optimization.chunkIds设置的算法规则的id计算值
+          filename: '[name].bundle.js',
           chunkFilename: '[name].chunk.js',
           clean: true,
         },
@@ -1487,113 +1579,84 @@ module.exports = {
       }
       ```
 
-    - 在通过`import`导入模块时可以使用==magic comments==指定chunk的名称。`./src/index.js`
+      </TabItem>
+
+      <TabItem value="./src/index.js" label="./src/index.js">
 
       ```js
-      import(/* webpackChunkName: "foo" */'./foo').then(module => {});
-      import(/* webpackChunkName: "bar" */'./bar').then(module => {});
+      import(/* webpackChunkName: "foo" */ "./foo").then((module) => {});
+      import("./bar").then((module) => {});
       ```
 
-    - 打包输出结果，此时`[name]`占位符使用了指定的==webpackChunkName==名称
+      </TabItem>
+    </Tabs>
 
-      ![image-20220812010352620](./images/image-20220812010352620.png)
 
-### import懒加载
 
-- 动态import使用最多的一个场景是懒加载（比如路由懒加载）
+##### 预获取/预加载模块
 
-  - 封装一个*component.js*
+- 用于控制==动态加载==模块的加载，使用 [Magic Comments](https://webpack.js.org/api/module-methods/#magic-comments) 进行标记
 
-    ```js
-    const div = document.createElement('div');
-    div.innerHTML = 'Dynamic Import';
-    
-    export default div;
-    ```
+- prefetch — 预获取：将来某些导航下可能需要的资源
 
-  - 在*index.js*中懒加载。页面初始化时不会下载*component.js*，当按钮被点击时才去==下载并解析==
+  - 在浏览器==空闲==的时候下载指定的动态模块
+  - 等到用到时再去进行==加载==
 
-    ```js
-    const button = document.createElement('button');
-    button.innerHTML = '加载组件';
-    button.addEventListener('click', () => {
-      import(/* webpackChunkName: "component" */'./component').then(module => {
-        document.body.appendChild(module.default);
-      })
-    })
-    
-    document.body.appendChild(button);
-    ```
+  ```js
+  import(
+    /* webpackPrefetch: true */
+    './component'
+  ).then(module => {})
+  ```
 
-- ==预获取/预加载（prefetch/preload）==：可以控制动态加载模块的加载
+- preload — 预加载：当前导航下可能需要资源
 
-  - `prefetch`：在浏览器==空闲==的时候下载指定的动态模块，在当前页面所有资源下载完后才会加载
+  - 跟随它的==父 chunk== 并行下载，具有中等优先级并立即下载
 
-    - 修改*index.js*代码，增加`webpackPrefetch`的magic comments
+  ```js
+  import(
+    /* webpackPreload: true */
+    './component'
+  ).then(module => {})
+  ```
 
-      ```js
-      ...
-      import(
-        /* webpackChunkName: "component" */
-        /* webpackPrefetch: true */
-        './component'
-      ).then(module => {
-        document.body.appendChild(module.default);
-      })
-      ...
-      ```
 
-    - 此时浏览器会在空闲的时候自动下载*component.js*文件，等到按钮点击的时候，直接去加载这个模块
 
-  - `preload`：跟随它的父chunk (*index.js*)并行下载，具有中等优先级并立即下载
+### runtime 抽取
 
-    - 修改*index.js*代码，增加`webpackPreload`的magic comments
+- `optimization.runtimeChunk` 可以将 runtime 相关代码进行抽取
+  - 默认值是 `false`：每个入口 chunk 中直接嵌入 runtime 相关代码
+  - runtime 相关的代码指的是在运行环境中，对模块进行解析、加载、模块信息相关的代码
+  - 抽离出来后，有利于==浏览器缓存==策略（不受业务代码的改变而变化）
 
-      ```js
-      ...
-      import(
-        /* webpackChunkName: "component" */
-        /* webpackPreload: true */
-        './component'
-      ).then(module => {
-        document.body.appendChild(module.default);
-      })
-      ...
-      ```
+- 配置选项
+  - `true/multiple`：针对每个入口抽取一个 runtime 文件
+  - `single`：创建一个在所有生成 chunk 之间共享的运行时文件
 
-### optimization.runtimeChunk
-
-- 配置runtime相关的代码是否抽取到一个单独的chunk中
-  - runtime相关的代码指的是在运行环境中，对模块进行解析、加载、模块信息相关的代码
-  - 比如我们的*component.js*通过import函数相关的代码加载（模块解析和模块化的代码），就是通过runtime代码完成的
-- 抽离出来后，有利于浏览器缓存的策略
-  - 比如我们修改了业务代码（index），那么runtime和component的chunk是不需要重新加载的
-  - 比如我们修改了component代码，那么index中的代码是不需要重新加载的
-- 设置的值
-  - `true/multiple`：针对每个入口打包一个runtime文件
-  - `single`：将所有的runtime代码打包一个runtime文件
-  - 对象：name属性决定runtimeChunk的名称
-
-```js
-module.exports = {
-  optimization: {
-    runtimeChunk: 'single'
+  ```js
+  module.exports = {
+    optimization: {
+      runtimeChunk: 'single'
+    }
   }
-}
-```
+  ```
+
+
 
 ### CSS 分离
 
->CSS文件抽取分离
+使用 `mini-css-extract-plugin`，可对 CSS 文件进行分离
 
-- 安装`mini-css-extract-plugin`，配置`loader`和`plugins`
+- 为了提高编译速度，一般在生产环境下才需要进行 CSS 分离
+- 在开发环境下，使用 **style-loader** 创建内部样式即可
 
 ```js
 const MinCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = function(env) {
   const isProduction = env.production === true;
- return {
+  
+  return {
     module: {
       rules: [
         {
@@ -1606,91 +1669,136 @@ module.exports = function(env) {
       ]
     },
     plugins: [
-      // 生产模式
-      new MinCssExtractPlugin({
+      isProduction && new MinCssExtractPlugin({
         filename: 'css/[name].[contenthash].css',
         chunkFilename: 'css/[name].[contenthash].css'
       })
-    ]
+    ].filter(Boolean)
   }
 }
 ```
+
+
 
 ## 打包优化
 
 ### CDN
 
->认识CDN
+#### 认识 CDN
 
-- CDN称之为内容分发网络（Content Delivery Network或Content Distribution Network，缩写：CDN）
-  - 它是指通过相互连接的网络系统，利用最靠近每个用户的服务器
-  - 更快、更可靠地将音乐、图片、视频、应用程序及其他文件发送给用户
-  - 来提供高性能、可扩展性及低成本的网络内容传递给用户
+![image-20240115235330697](./images/image-20240115235330697.png)
 
->使用CDN
+CDN 称之为==内容分发网络==（Content Distribution Network，缩写：CDN）
 
-使用CDN分为两种方式
+- 它是指通过相互连接的网络系统，利用最靠近每个用户的服务器（==边缘计算==）
+- 更快、更可靠地将音乐、图片、视频、应用程序及其他文件发送给用户
+- 提供高性能、可扩展性及低成本的网络内容传递给用户
 
-- 方式1：打包所有的静态资源，放到CDN服务器（需购买），用户所有资源都是通过CDN服务器加载
 
-  - 修改`output.publicPath`，指向CDN服务器，用户访问时资源从CDN服务器上加载
+
+#### 使用 CDN
+
+- 方式一：打包所有的静态资源，放到 ==CDN 服务器==，用户所有资源通过 CDN 服务器加载
+
+  - 修改 `output.publicPath`，指向 CDN 服务器
 
     ```js
-    output: {
+    module.exports = {
+      output: {
         path: resolve(__dirname, 'dist'),
         filename: '[name].bundle.js',
         chunkFilename: '[name].chunk.js',
         publicPath: 'https://example.com/cdn/'
-      },
+      }
+    }
     ```
 
-- 方式2：一些第三方资源通过CDN加载
+- 方式二：一些==第三方资源==通过 CDN 加载
 
-  - 通常一些比较出名的开源框架都会将打包后的源码放到一些比较出名的、免费的CDN服务器上
+  - 一些开源框架一般会提供 CDN 版本，存放在一些公共的 CDN 服务器上
 
-    - 国际上使用比较多的是unpkg、JSDelivr、cdnjs
-    - 国内也有一个比较好用的CDN是bootcdn
+    - 国际上使用比较多的是 [unpkg](https://unpkg.com)、[JSDelivr](https://www.jsdelivr.com)
+    - 国内比较好用是 [bootcdn](https://www.bootcdn.cn)
 
-  - 配置方式
+  - 配置方式：排除第三方库，不参与打包
 
-    1. 通过`externals`排除某些库（比如React、lodash）不参与打包
+    - 通过 `externals` 排除某些库（比如 React、lodash）不参与打包
 
-       ```js
-       module.exports = {
-         externals: {
-           // key为第三方库的名字，value为第三方库CDN的js中暴露出来的全局对象
-           'react': 'React',
-           'react-dom': 'ReactDOM'
-         }
-       }
-       ```
+      ```js
+      module.exports = {
+        externals: {
+          /**
+           * key 为第三方库的名字
+           * value 为第三方库 CDN 的 js 中暴露出来的全局对象
+           */
+          'react': 'React',
+          'react-dom': 'ReactDOM'
+        }
+      }
+      ```
 
-    2. 在html模块中，加入CDN服务器地址，引入外部的第三方库
+    - 在 html 模块中，通过 CDN 引入外部的第三方库
 
-       ```html
-       <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
-       <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
-       ```
+      ```html
+      <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+      <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+      ```
 
-### Hash比较
 
-- 在我们给打包的文件进行命名的时候，会使用Template strings，其中有几个属性比较相似
-  - `fullhash`、`chunkhash`、`contenthash`
-  - hash本身是通过MD4的散列函数处理后，生成一个128位的hash值（32个十六进制）
+
+### Hash 占位符
+
+- hash 本身是通过 **MD4** 散列函数处理后，生成一个 128 位的 hash 值（32 个十六进制）
+  
   - ==**注意**==
     - 在使用hash的Template strings时，尽量不要截取hash长度（类似`[contenthash:8]`）
-    - 否则打包时经过babel/Terser处理后，可能得到无效的`chunkId`或`moduleId`
     - \<https://github.com/webpack/webpack/issues/13398>
+  
+- 我们通过实际的打包测试来说明 3 种 **Hash 占位符** 的区别，初次使用 `fullhash`
 
-- 搭建测试配置
+  - 测试配置
+  
+    <Tabs>
+      <TabItem value="webpack.config.js" label="webpack.config.js">
 
-  - 文件目录及引用关系
+      ```js
+      const { resolve } = require('path');
+      const HTMLWebpackPlugin = require('html-webpack-plugin');
+      const MinCssExtractPlugin = require('mini-css-extract-plugin');
+      
+      module.exports = {
+        mode: 'production',
+        entry: {
+          index: './src/index.js',
+          main: './src/main.js'
+        },
+        output: {
+          path: resolve(__dirname, 'dist'),
+          filename: '[name].[fullhash].js'
+        },
+        module: {
+          rules: [
+            {
+              test: /\.css$/,
+              use: [MinCssExtractPlugin.loader, 'css-loader']
+            }
+          ]
+        },
+        optimization: {
+          runtimeChunk: 'single'
+        },
+        plugins: [
+          new HTMLWebpackPlugin(),
+          new MinCssExtractPlugin({
+            filename: '[name].[fullhash].css'
+          })
+        ]
+      };
+      ```
 
-    - 文件目录
+      </TabItem>
 
-      <img src="./images/image-20220814230737144.png" alt="image-20220814230737144" style="zoom:80%;" />
-
-    - `./src/index.js`
+      <TabItem value="./src/index.js" label="./src/index.js">
 
       ```js
       import { sum } from './js/math';
@@ -1698,141 +1806,148 @@ module.exports = function(env) {
       console.log(sum(1, 2));
       ```
 
-    - `./src/main.js`
+      </TabItem>
+
+      <TabItem value="./src/main.js" label="./src/main.js">
 
       ```js
       import { dateFormat } from './js/format';
       console.log(dateFormat(new Date()));
       ```
 
-  - 配置
+      </TabItem>
 
-    ```js
-    const { resolve } = require('path');
-    const HTMLWebpackPlugin = require('html-webpack-plugin');
-    const MinCssExtractPlugin = require('mini-css-extract-plugin');
-    
-    module.exports = {
-      mode: 'production',
-      entry: {
-        index: './src/index.js',
-        main: './src/main.js'
-      },
-      output: {
-        path: resolve(__dirname, 'dist'),
-        filename: '[name].[fullhash].js'
-      },
-      module: {
-        rules: [
-          {
-            test: /\.css$/,
-            use: [MinCssExtractPlugin.loader, 'css-loader']
-          }
-        ]
-      },
-      optimization: {
-        runtimeChunk: 'single'
-      },
-      plugins: [
-        new HTMLWebpackPlugin(),
-        new MinCssExtractPlugin({
-          filename: '[name].[fullhash].css'
-        })
-      ]
-    };
-    ```
+      <TabItem value="./src/js/format.js" label="./src/js/format.js">
 
-  - 输出结果（使用fullhash的地方hash都相同）
+      ```js
+      export const dateFormat = (date) => date.toUTCString();
+      ```
 
+      </TabItem>
+
+      <TabItem value="./src/js/math.js" label="./src/js/math.js">
+
+      ```js
+      export const sum = (n1, n2) => n1 + n2;
+      ```
+
+      </TabItem>
+
+      <TabItem value="./src/style.css" label="./src/style.css">
+
+      ```css
+      html, body {
+        height: 100%;
+        margin: 0;
+      }
+      ```
+
+      </TabItem>
+    </Tabs>
+
+  - 输出结果
+  
     <img src="./images/image-20220814231913858.png" alt="image-20220814231913858" style="zoom:80%;" />
 
->fullhash
 
-- `fullhash`
 
-  - webpack4之前为*hash*，webpack5中==Module.hash==已经被废弃
+#### fullhash
 
-  - fullhash值的生成和整个项目有关系，一旦一个模块变化，所有地方的fullhash都会变化
+- webpack 4 之前使用 **hash**，webpack 5 中==Module.hash==已经被废弃
 
-  - 修改`style.css`文件，再次打包，所有的hash都发生了变化，极不利于浏览器==缓存==
+- `fullhash` 值的生成和整个项目有关系
 
-    <img src="./images/image-20220814232113121.png" alt="image-20220814232113121" style="zoom:80%;" />
+  - 一旦一个模块变化，所有用到 fullhash 的文件名都会变化
 
->chunkhash
+  - 这极不利于生产环境下浏览器缓存策略
 
-- `chunkhash`根据不同的==入口==进行解析来生成hash值
+- 比如修改 **style.css** 文件再次打包，所有文件名都发生了变化
 
-  - 上述测试结果中 *index.js* 中引入了 *style.css*，在 *style.css* 发生变化时，另一个入口`main.js`输出的文件名也发生了变化
+  <img src="./images/image-20220814232113121.png" alt="image-20220814232113121" style="zoom:80%;" />
 
-  - 修改配置
 
-    - 使用`chunkhash`
 
-      ```js
-      module.exports = {
-        ...
-        output: {
-          path: resolve(__dirname, 'dist'),
-          filename: '[name].[chunkhash].js'
-        },
-        plugins: [
-          ...
-          new MinCssExtractPlugin({
-            filename: '[name].[chunkhash].css' // 使用chunkhash
-          })
-        ]
-        ...
-      }
-      ```
+#### chunkhash
 
-    - 输出结果，从输出结果可以看出，*index.js* 和 *style.css*共用了同一个hash值
+`chunkhash` 根据不同的==入口==进行解析来生成 hash 值
 
-      <img src="./images/image-20220814232927367.png" alt="image-20220814232927367" style="zoom:80%;" />
+- 修改配置，使用 **chunkhash**
 
-  - 再次修改*style.css*，输出结果，可以看到 *style.css* 和 *index.js* 的hash值都发生了变化，而`main.js`的hash值并没有变化
+  ```js
+  module.exports = {
+    // ...
+    output: {
+      path: resolve(__dirname, 'dist'),
+      filename: '[name].[chunkhash].js'
+    },
+    plugins: [
+      // ...
+      new MinCssExtractPlugin({
+        filename: '[name].[chunkhash].css'
+      })
+    ]
+    // ...
+  }
+  ```
 
-    <img src="./images/image-20220814233343507.png" alt="image-20220814233343507" style="zoom:80%;" />
+- 从输出结果可以看出，*index.js* 和 *style.css* 共用了同一个 hash 值
 
->contenthash
+  <img src="./images/image-20220814232927367.png" alt="image-20220814232927367" style="zoom:80%;" />
 
-- `contenthash`：contenthash表示生成的文件hash名称，只和内容有关系
+- 再次修改 *style.css*
 
-  - 上述测试结果中，当 *style.css* 的内容发生变化，*index.js*的hash值也发生了变化，使用`contenthash`可以避免这种改变
+  - *style.css* 和 *index.js* 的输出 hash 都发生了变化
+  - **main.js** 的 hash 值并没有变化
 
-  - 修改配置
+  <img src="./images/image-20220814233343507.png" alt="image-20220814233343507" style="zoom:80%;" />
 
-    - 使用`contenthash`
 
-      ```js
-      module.exports = {
-        ...
-        output: {
-          path: resolve(__dirname, 'dist'),
-          filename: '[name].[contenthash].js'
-        },
-        plugins: [
-          ...
-          new MinCssExtractPlugin({
-            filename: '[name].[contenthash].css' // 使用chunkhash
-          })
-        ]
-        ...
-      }
-      ```
 
-    - 输出结果
+#### contenthash
 
-      <img src="./images/image-20220814234355644.png" alt="image-20220814234355644" style="zoom:80%;" />
+`contenthash` 表示生成的文件 hash，只和==文件内容==有关系
 
-  - 再次修改 *style.css*文件，输出结果
+- 上述测试结果中
 
-    - 通过结果我们可以看到 *style.css*生成的hash值发生了变化，而 *index.js*生成的hash值仍然==保持不变==
+  - 当 *style.css* 的内容发生变化，*index.js* 的输出文件名也发生了变化
 
-    <img src="./images/image-20220814234511846.png" alt="image-20220814234511846" style="zoom:80%;" />
+  - 使用 **contenthash** 可以避免这种改变
+
+- 修改配置
+
+  ```js
+  module.exports = {
+    // ...
+    output: {
+      path: resolve(__dirname, 'dist'),
+      filename: '[name].[contenthash].js'
+    },
+    plugins: [
+      // ...
+      new MinCssExtractPlugin({
+        filename: '[name].[contenthash].css'
+      })
+    ]
+    // ...
+  }
+  ```
+
+- 输出结果
+
+  <img src="./images/image-20220814234355644.png" alt="image-20220814234355644" style="zoom:80%;" />
+
+- 再次修改 *style.css* 文件
+
+  - 通过输出结果可以看到 *style.css* 输出 hash 发生变化
+  - 而 **index.js** 输出 hash 值仍然==保持不变==
+
+  <img src="./images/image-20220814234511846.png" alt="image-20220814234511846" style="zoom:80%;" />
+
+
 
 ### Terser
 
->介绍
+#### 认识 Terser
 
 - Terser是一个JavaScript的解释(Parser)、丑化、压缩的工具集
 - 早期使用uglify-js来压缩、丑化js代码，但目前这个库已经不再维护，并且不支持ES6+语法
@@ -1847,7 +1962,7 @@ module.exports = function(env) {
     - `keep_fnames`：默认值是`false`，是否保持原来的函数名称
   - `toplevel`：默认为`false`，开启后会对==顶级作用域==中的代码进行处理
 
->webpack中进行配置
+#### webpack中进行配置
 
 - 在webpack中有一个`minimizer`属性，在production模式下，默认就是使用TerserPlugin来处理我们的代码的
 
@@ -1880,6 +1995,8 @@ module.exports = function(env) {
     }
     ```
 
+
+
 ### CSS 压缩
 
 - CSS压缩
@@ -1899,6 +2016,8 @@ module.exports = function(env) {
     ]
   }
   ```
+
+
 
 ### Scope Hoisting
 
@@ -1924,9 +2043,11 @@ module.exports = function(env) {
     }
     ```
 
+
+
 ### Tree shaking
 
->认识Tree shaking
+#### 认识Tree shaking
 
 - Tree Shaking 的定义
 
@@ -1949,7 +2070,9 @@ module.exports = function(env) {
 
     \<https://github.com/webpack/changelog-v5#commonjs-tree-shaking>
 
->webpack中支持Tree Shaking
+
+
+#### 配置 Tree Shaking
 
 - webpack实现Tree Shaking采用了两种不同的方案
   - usedExports：通过标记某些函数是否被使用，之后通过Terser来进行优化的
@@ -2056,7 +2179,7 @@ module.exports = function(env) {
 
 
 
->CSS的Tree Shaking
+#### CSS 的 Tree Shaking
 
 - 目的：对没有用到的css代码进行删除，比如声明一个类选择器，在编码时从未用到该类名，则可以删除掉
 
@@ -2081,9 +2204,11 @@ module.exports = function(env) {
   }
   ```
 
+
+
 ### HTTP压缩
 
->介绍
+#### 认识 HTTP 压缩
 
 - HTTP压缩是一种内置在服务器和客户端之间的，以改进传输速度和带宽利用率的方式
 
@@ -2104,7 +2229,9 @@ module.exports = function(env) {
   - ==gzip== – GNU zip格式（定义于RFC 1952），是目前使用比较广泛的压缩算法
   - pbr – 一种新的开源压缩算法，专为HTTP内容的编码而设计；压缩的包更小，但存在浏览器兼容问题
 
->webpack压缩文件
+
+
+#### webpack压缩文件
 
 - 使用`compression-webpack-plugin`
 
@@ -2126,6 +2253,8 @@ module.exports = function(env) {
     ]
   }
   ```
+
+
 
 ### HTML文件压缩
 
@@ -2264,6 +2393,8 @@ module.exports = webpackConfig;
     ;
     ```
 
+
+
 ### normal/pitch Loader
 
 - **normal** loader：通过`module.exports`==默认导出==的函数就是 *normal loader*，大多数loader都是基于 *normal loader* 编写的
@@ -2281,6 +2412,8 @@ module.exports = webpackConfig;
     console.log('pitch loader');
   };
   ```
+
+
 
 ### Loader 执行顺序和 Rule.enforce
 
@@ -2364,6 +2497,8 @@ module.exports = webpackConfig;
       normal-loader01
       ```
 
+
+
 ### 同步/异步 Loader
 
 - 同步Loader
@@ -2395,7 +2530,9 @@ module.exports = webpackConfig;
   }
   ```
 
-### 传入/获取参数
+
+
+### 配置参数
 
 - 传入参数：在`use`中传入参数
 
@@ -2445,6 +2582,8 @@ module.exports = webpackConfig;
     return content;
   }
   ```
+
+
 
 ### 自定义 Loader 示例
 
@@ -2707,7 +2846,7 @@ module.exports = webpackConfig;
 
   - `defaults`（默认值）：`>0.5%, last 2 versions, Firefox ESR, not dead`
   - `5%`：该==百分比==表示浏览器的==市场占有率==。`>=`、`<`、`<=`
-  - `dead`：24月内没有官方支持或更新的浏览器
+  - `dead`：24 月内没有官方支持或更新的浏览器
   - `last 2 versions`：每个浏览器的==最新==两个大版本
 
 - 编写规则二
