@@ -1643,7 +1643,7 @@ module.exports = {
 
 
 
-### CSS 分离
+### css 分离
 
 使用 `mini-css-extract-plugin`，可对 CSS 文件进行分离
 
@@ -1713,9 +1713,9 @@ CDN 称之为==内容分发网络==（Content Distribution Network，缩写：CD
     }
     ```
 
-- 方式二：一些==第三方资源==通过 CDN 加载
+- 方式二：让一些==第三方库==使用 CDN 加载
 
-  - 一些开源框架一般会提供 CDN 版本，存放在一些公共的 CDN 服务器上
+  - 一些开源框架会提供 CDN 版本，存放在一些公共的 CDN 服务器上
 
     - 国际上使用比较多的是 [unpkg](https://unpkg.com)、[JSDelivr](https://www.jsdelivr.com)
     - 国内比较好用是 [bootcdn](https://www.bootcdn.cn)
@@ -1749,10 +1749,6 @@ CDN 称之为==内容分发网络==（Content Distribution Network，缩写：CD
 ### Hash 占位符
 
 - hash 本身是通过 **MD4** 散列函数处理后，生成一个 128 位的 hash 值（32 个十六进制）
-  
-  - ==**注意**==
-    - 在使用hash的Template strings时，尽量不要截取hash长度（类似`[contenthash:8]`）
-    - \<https://github.com/webpack/webpack/issues/13398>
   
 - 我们通过实际的打包测试来说明 3 种 **Hash 占位符** 的区别，初次使用 `fullhash`
 
@@ -1907,6 +1903,9 @@ CDN 称之为==内容分发网络==（Content Distribution Network，缩写：CD
 
 `contenthash` 表示生成的文件 hash，只和==文件内容==有关系
 
+- 在使用 **contenthash** 时，尽量不要截取长度（类似 `[contenthash:8]`）
+  - 这可能会导致生成 [无效的模块 id](https://github.com/webpack/webpack/issues/13398)
+
 - 上述测试结果中
 
   - 当 *style.css* 的内容发生变化，*index.js* 的输出文件名也发生了变化
@@ -1945,48 +1944,64 @@ CDN 称之为==内容分发网络==（Content Distribution Network，缩写：CD
 
 
 
-### Terser
+### 文件压缩
 
-#### 认识 Terser
+#### html 压缩
 
-- Terser是一个JavaScript的解释(Parser)、丑化、压缩的工具集
-- 早期使用uglify-js来压缩、丑化js代码，但目前这个库已经不再维护，并且不支持ES6+语法
-- Terser是从uglify-es **fork** 过来的，并且保留它原来的大部分API
-- 相关配置
-  - `compress`：压缩相关的配置
-    - `arrows`：默认为`true`，class或者object中的函数，转换成箭头函数
-    - `dead_code`：默认为`true`，删除不可达(永远不会使用到的)的代码（tree shaking）
-    - `drop_console`：默认为`false`，移除控制台输出
-  - `mangle`：丑化相关的配置
-    - `keep_classnames`：默认值是`false`，是否保持依赖的类(Class)名称
-    - `keep_fnames`：默认值是`false`，是否保持原来的函数名称
-  - `toplevel`：默认为`false`，开启后会对==顶级作用域==中的代码进行处理
+**html-webpack-plugin**  插件可以完成对 HTML 模板的配置， `minify` 属性可以对 html 文件压缩
 
-#### webpack中进行配置
+```js
+const HTMLWebpackPlugin = require('html-webpack-plugin');
 
-- 在webpack中有一个`minimizer`属性，在production模式下，默认就是使用TerserPlugin来处理我们的代码的
+module.exports = {
+  plugins: [
+    new HTMLWebpackPlugin({
+      minify: {
+        // 是否要移除注释
+        removeComments: false,
+        // 是否移除一些空属性，比如空的类名
+        removeEmptyAttributes: true,
+        // 折叠空行
+        collapseWhitespace: false,
+      }
+    })
+  ]
+}
+```
 
-- 如果我们对默认的配置不满意，也可以自己来创建TerserPlugin的实例，并且覆盖相关的配置
 
-  - 首先，我们需要设置`minimize`为true，让其对我们的代码进行压缩（默认production模式下打开）
 
-  - 其次，我们可以在minimizer创建一个TerserPlugin：
+#### js 压缩
 
-    - `extractComments`：默认值为`true`，表示会将注释抽取到一个单独的文件中
-    - `terserOptions`：设置我们的terser相关的配置
+- **Terser** 是一个 JavaScript 的解释、混淆、压缩的工具集
+  - 在 webpack 5 中，生产环境下默认启用此工具集来对 js 代码进行优化处理
+
+- 相关配置属性
+  - `compress`：压缩
+  - `mangle`：混淆
+  - `toplevel`：开启后会对 **顶级作用域** 中的代码进行处理
+
+- 如果默认的配置不满足我们的需求，可以配置 `optimization.minimizer` 来自定义配置
+
+  - 首先需要设置 `optimization.minimize=true`，开启优化功能（生产环境下默认开启）
+
+  - 然后通过 **terser-webpack-plugin** 来自定义优化配置
 
     ```js
+    const TerserWebpackPlugin = require('terser-webpack-plugin')
+    
     module.exports = {
       optimization: {
-        minimize: true,
         minimizer: [
           new TerserPlugin({
+            // 是否将许可证注释抽取到一个单独的文件中
             extractComments: false,
+            // 传递给 terser 的配置
             terserOptions: {
               compress: {
+                // 移除 console.* 语句
                 drop_console: true
-              },
-              mangle: true,
+              }
               toplevel: true
             }
           })
@@ -1997,252 +2012,57 @@ CDN 称之为==内容分发网络==（Content Distribution Network，缩写：CD
 
 
 
-### CSS 压缩
+#### css 压缩
 
-- CSS压缩
+CSS 压缩通常是去除无用的==空格和空行==等，因为很难去修改选择器、属性等
 
-  - CSS压缩通常是去除无用的空格等，因为很难去修改选择器、属性的名称、值等
-  - CSS的压缩我们可以使用另外一个插件：*css-minimizer-webpack-plugin*
-  - *css-minimizer-webpack-plugin* 是使用cssnano工具来优化、压缩CSS（也可以单独使用）
+- 使用 **css-minimizer-webpack-plugin** 插件来完成
+- 该插件使用 **cssnano** 工具来优化、压缩 CSS
 
-- 使用
+```js
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
-  ```js
-  const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-  
-  module.exports = {
-    plugins: [
-      new CssMinimizerPlugin()
-    ]
-  }
-  ```
+module.exports = {
+  plugins: [
+    new CssMinimizerPlugin()
+  ]
+}
+```
 
 
 
-### Scope Hoisting
+#### HTTP 压缩
 
-- 作用：是对作用域进行提升，并且让webpack打包后的代码更小、运行更快
+- HTTP 压缩是一种内置在服务器和客户端之间的，以改进传输速度和带宽利用率的方式
 
-  - 默认情况下webpack打包会有很多的函数作用域，包括一些（比如最外层的）IIFE
-  - 无论是从最开始的代码运行，还是加载一个模块，都需要执行一系列的函数和闭包，性能较差；
+- HTTP 压缩流程
 
-- Scope Hoisting可以将函数合并到一个模块中来运行，提升作用域
+  - HTTP 资源在服务器发送前完成压缩，兼容的浏览器向服务器发送请求时，告知服务器自己支持哪些压缩格式
 
-  - 在production模式下，默认这个模块就会启用
-
-  - 在development模式下，我们需要自己来启用该配置
-
-    ```js
-    const webpack = require('webpack')
-    
-    module.exports = {
-      plugins: [
-        // 该插件依赖于ES Module的静态分析
-       new webpack.optimize.ModuleConcatenationPlugin()
-      ]
-    }
-    ```
-
-
-
-### Tree shaking
-
-#### 认识Tree shaking
-
-- Tree Shaking 的定义
-
-  - Tree Shaking是一个术语，在计算机中表示消除死代码（==dead_code==）
-  - 最早的想法起源于==LISP==语言，用于消除未调用的代码（纯函数无副作用，可以放心的删除，这也是为什么要求函数式编程中，尽量使用==纯函数==的原因之一）
-  - 后来Tree Shaking也被应用于其他的语言，比如JavaScript、Dart
-
-- JavaScript的Tree Shaking
-
-  - 对JavaScript进行Tree Shaking是源自打包工具 ==rollup==
-
-  - Tree Shaking依赖于ES Module的==静态语法分析==（不执行任何的代码，就可以明确知道模块的依赖关系）
-
-  - webpack2正式内置支持了ES2015模块，和检测未使用模块的能力
-
-  - 在webpack4正式扩展了这个能力，并且通过package.json的`sideEffects`属性作为标记，告知webpack在编译时，
-    哪里文件可以安全的删除掉
-
-  - webpack5中，也提供了对部分CommonJS的tree shaking的支持
-
-    \<https://github.com/webpack/changelog-v5#commonjs-tree-shaking>
-
-
-
-#### 配置 Tree Shaking
-
-- webpack实现Tree Shaking采用了两种不同的方案
-  - usedExports：通过标记某些函数是否被使用，之后通过Terser来进行优化的
-  - sideEffects：跳过整个模块/文件，直接查看该文件是否有副作用
-
-- `usedExports`：配置该属性后，会自动对某些未用到的标识符进行==标注==，结合==Terser==实现Tree shaking
-
-  - `./src/index.js`
-
-    ```js
-    import { sum } from './js/math';
-    console.log(sum(1, 2));
-    ```
-
-  - `./src/js/math.js`
-
-    ```js
-    export const sum = (n1, n2) => n1 + n2;
-    export const sub = (n1, n2) => n1 - n2;
-    ```
-
-  - 使用`optimization.usedExports`
-
-    ```js
-    module.exports = {
-      mode: 'development',
-      entry: './src/index.js',
-      devtool: false,
-      optimization: {
-        usedExports: true
-      }
-    }
-    ```
-
-  - 执行打包，打包后的代码可以看到有添加一个注释`/* unused harmony export sub */`，表示sub函数被没有被使用
-
-    <img src="./images/image-20220815225413180.png" alt="image-20220815225413180" style="zoom:80%;" />
-
-  - 这时我们将`optimization.minimize`设置为==true==（默认启用Terser进行压缩丑化等优化）
-
-    - 修改配置
-
-      ```js
-      module.exports = {
-        ...
-        optimization: {
-          usedExports: true,
-          minimize: true
-        }
-        ...
-      }
-      ```
-
-    - 输出结果中，已经不再含有`sub`函数相关地代码
-
-      <img src="./images/image-20220815230923529.png" alt="image-20220815230923529" style="zoom: 67%;" />
-
-- `sideEffects`：告知哪些模块是有副作用的，避免被错误地删除
-
-  - 修改*index.js*文件，该导入其实是没有任何意义的（没有使用任何导出的变量）
-
-    ```js
-    import './js/math';
-    ```
-
-  - 保留方案一中的配置，执行打包，输出结果
-
-    <img src="./images/image-20220815232511736.png" alt="image-20220815232511736" style="zoom:67%;" />
-
-  - 虽然在打包后的代码中不含有*sum*、*sub*相关的代码，但是`./src/js/math/js`这个模块对象还存在，没有完全删除
-
-  - 此时借助`sideEffects`，在==package.json==文件中添加属性`sideEffects: false`（表示项目中的所有模块都没有副作用）
-
-  - 再次执行打包，输出结果，可以看到输出结果中已经完全不含有math.js相关的代码了。即使没有方案一的配置，只使用`sideEffects: false`也可以得到相同的结果
-
-    <img src="./images/image-20220815232917724.png" alt="image-20220815232917724" style="zoom:80%;" />
-
-  - 如果项目代码中含有带==副作用==的模块，可以在`sideEffects`中指定，避免误删
-
-    ```json
-    {
-      "sideEffects": ["./src/js/math.js"]
-    }
-    ```
-
-  - 对于CSS文件，可以在Rule规则中使用`sideEffects`告诉所有的css都含有副作用
-
-    ```js
-    module.exports  = {
-      ...
-      module: {
-        rules: [
-          {
-            test: /\.css$/,
-            sideEffects: true, // 指定css含有副作用，避免误删
-            use: [MinCssExtractPlugin.loader, 'css-loader']
-          }
-        ]
-      }
-    };
-    ```
-
-  - ==在实际开发中，尽量不要产生副作用==
-
-
-
-#### CSS 的 Tree Shaking
-
-- 目的：对没有用到的css代码进行删除，比如声明一个类选择器，在编码时从未用到该类名，则可以删除掉
-
-- 使用插件`purgecss-webpack-plugin`
-
-  - `paths`：表示要检测哪些目录下的内容需要被分析，这里我们可以使用glob规则
-  - `safelist`：Purgecss会将我们的html、body标签的样式移除掉，如果我们希望保留，可以添加一个safelist的属性
-
-  ```js
-  const { resolve } = require('path');
-  const glob = require('glob');
-  const getPath = path => resolve(process.cwd(), path);
-  
-  // 生产环境
-  module.exports = {
-    plugins: [
-      new PurgeCssPlugin({
-        paths: glob.sync(`${getPath('./src')}/**/*`, { nodir: true }),
-        safelist: () => ({ standard: ['html', 'body'] })
-      })
-    ]
-  }
-  ```
-
-
-
-### HTTP压缩
-
-#### 认识 HTTP 压缩
-
-- HTTP压缩是一种内置在服务器和客户端之间的，以改进传输速度和带宽利用率的方式
-
-- HTTP压缩流程
-
-  - HTTP数据在服务器发送前就已经被压缩（可以在webpack中完成）
-  - 兼容的浏览器在向服务器发送请求时，会告知服务器自己支持哪些压缩格式
-
-   ![image-20210904170253391](./images/image-20211003224054304.png)
+    ![image-20210904170253391](./images/image-20211003224054304.png)
 
   - 服务器在浏览器支持的压缩格式下，直接返回对应的压缩后的文件，并且在响应头中告知浏览器
 
-   ![image-20211003224201195](./images/image-20211003224201195.png)
+    ![image-20211003224201195](./images/image-20211003224201195.png)
 
-- 目前的压缩格式非常的多
+  - 浏览器下载完成后，自动解压缩文件，然后加载、解析
 
-  - deflate – 基于deflate算法（定义于RFC 1951）的压缩，使用zlib数据格式封装
-  - ==gzip== – GNU zip格式（定义于RFC 1952），是目前使用比较广泛的压缩算法
-  - pbr – 一种新的开源压缩算法，专为HTTP内容的编码而设计；压缩的包更小，但存在浏览器兼容问题
+- 压缩格式有许多种
 
+  - `deflate`：基于 deflate 算法的压缩，使用 zlib 数据格式封装
+  - `gzip`：GNU zip 格式，是目前使用比较广泛的压缩算法
+  - `pbr`：一种新的开源压缩算法，专为 HTTP 内容的编码而设计；压缩的包更小，但存在浏览器兼容问题
 
-
-#### webpack压缩文件
-
-- 使用`compression-webpack-plugin`
+- 在 webpack 中，使用 **compression-webpack-plugin** 来配置 HTTP 压缩
 
   ```js
   const CompressionPlugin = require('compression-webpack-plugin');
   
   module.exports = {
     plugins: [
-      // 生产环境
       new CompressionPlugin({
-        threshold: 0 //(默认值), 设置文件多大时进行压缩(bytes)
+        // 设置文件多大时进行压缩，默认为 0，单位字节
+        threshold: 0,
         // 匹配哪些文件需要压缩
         test: /\.(css|js)$/,
         // 最小的压缩比例（压缩后的文件大小/原文件大小）达到才进行压缩
@@ -2256,29 +2076,182 @@ CDN 称之为==内容分发网络==（Content Distribution Network，缩写：CD
 
 
 
-### HTML文件压缩
+### Tree shaking
 
-- `inject`：设置打包的资源插入的位置
+#### 认识 Tree shaking
 
-  - true、false 、body、head
+- **Tree Shaking** 是一个术语，在计算机中表示消除 dead code（不可达代码）
+  - 最早起源于==LISP==语言，用于消除未调用的代码（纯函数无副作用，可以放心的删除）
+  - 后来在 JavaScript 中也得到了应用
+  
+- 对 JavaScript 进行 Tree Shaking 最早源自打包工具 ==Rollup==
 
-- `minify`：默认会使用一个插件html-minifier-terser
+  - 依赖于 ES Module 的==静态语法分析==（不执行任何代码，就可以明确知道模块之间的依赖关系）
+
+  - webpack 2 正式内置了==检测未使用模块==的功能
+
+  - webpack 4 正式扩展了这个能力
+    - 通过 package.json 的 `sideEffects` 属性作为标记
+  
+    - 告知 webpack 在编译时，哪些文件可以被安全删除
+
+  - webpack5 也提供了对部分 [CommonJS](https://github.com/webpack/changelog-v5#commonjs-tree-shaking) 的 Tree shaking 支持
+
+
+
+#### 处理 js 文件
+
+webpack实现 Tree Shaking 采用了两种不同的方案
+
+- `usedExports`：通过标记标识符是否被使用，之后通过 **Terser** 来进行优化
+- `sideEffects`：跳过整个模块，直接告知该文件是否有副作用
+
+##### usedExports
+
+- 配置该属性后，会自动对==未用到==的标识符进行==标注==
+
+- 测试配置
+
+  <Tabs>
+    <TabItem value="webpack.config.js" label="webpack.config.js">
+
+    ```js
+    module.exports = {
+      mode: 'development',
+      entry: './src/index.js',
+      optimization: {
+        usedExports: true
+      }
+    }
+    ```
+
+    </TabItem>
+
+    <TabItem value="./src/index.js" label="./src/index.js">
+
+    ```js
+    import { sum } from './math';
+    console.log(sum(1, 2));
+    ```
+
+    </TabItem>
+
+    <TabItem value="./src/math.js" label="./src/math.js">
+
+    ```js
+    export const sum = (n1, n2) => n1 + n2;
+    export const sub = (n1, n2) => n1 - n2;
+    ```
+
+    </TabItem>
+  </Tabs>
+
+- 打包后的代码，有添加一个注释 `/* unused harmony export sub */`，表示 sub 函数被没有被使用
+
+  <img src="./images/image-20220815225413180.png" alt="image-20220815225413180" style="zoom:80%;" />
+
+- 这时我们将 `optimization.minimize` 设置为==true==（默认启用 Terser）
+
+  - 更新配置
+
+    ```js
+    module.exports = {
+      mode: 'development',
+      entry: './src/index.js',
+      optimization: {
+        usedExports: true,
+        // 添加这一行配置
+        minimize: true
+      }
+    }
+    ```
+
+  - 输出结果中， `sub` 函数相关的代码已被安全删除
+
+    <img src="./images/image-20220815230923529.png" alt="image-20220815230923529" style="zoom: 67%;" />
+
+
+
+##### sideEffects
+
+- 告知哪些模块是有副作用的，避免被错误地删除
+
+- 通过实际的例子来理解这个属性，修改 **index.js** 文件
+
+  - 直接将整个模块进行引入
+
+    ```js title="./src/index.js"
+    // 没有使用任何导出的变量
+    import './math';
+    ```
+
+  - 输出结果
+
+    - 虽然在打包后的代码中不含有 *sum*、*sub* 相关的代码
+
+    - 但是 `./src/js/math/js` 这个模块对象还存在，没有完全删除
+
+    <img src="./images/image-20220815232511736.png" alt="image-20220815232511736" style="zoom:67%;" />
+
+  - 此时，在==package.json==文件中添加属性 `sideEffects: false`（表示所有模块都没有副作用）
+
+    - 输出结果中已经完全不含有 **math.js** 相关的代码
+
+    <img src="./images/image-20220815232917724.png" alt="image-20220815232917724" style="zoom:80%;" />
+
+- 对于带有副作用的模块，需要显示指定，避免误删
+
+  - 在 `package.json` 中指定
+
+    ```js
+    {
+      "sideEffects": [
+        "./src/js/math.js",
+        "./src/**/*.css"
+      ]
+    }
+    ```
+
+  - 在 Rule 规则中使用 `sideEffects` 指定
+
+    ```js
+    module.exports  = {
+      // ...
+      module: {
+        rules: [
+          {
+            test: /\.css$/,
+            sideEffects: true, // 指定css含有副作用，避免误删
+            use: [MinCssExtractPlugin.loader, 'css-loader']
+          }
+        ]
+      }
+    }
+    ```
+
+
+
+#### 处理 css 文件
+
+- CSS Tree shaking：删除没有用到的 css 代码，比如声明的未被引用的类选择器
+
+- 使用插件 `purgecss-webpack-plugin`
+
+  - `paths`：表示要检测哪些目录下的内容需要被分析
+  - `safelist`：指定需要保留的样式规则列表
 
   ```js
-  const HTMLWebpackPlugin = require('html-webpack-plugin');
+  const { resolve } = require('path');
+  const glob = require('glob');
   
   module.exports = {
     plugins: [
-      new HTMLWebpackPlugin({
-        minify: {
-          removeComments: false, // 是否要移除注释
-          removeEmptyAttributes: true, // 是否移除一些空属性，比如空的类名
-          collapseWhitespace: false, // 折叠空行
-          ...
-        }
+      new PurgeCssPlugin({
+        paths: glob.sync(`${resolve(__dirname, './src')}/**/*`, { nodir: true }),
+        safelist: () => ({ standard: ['html', 'body'] })
       })
     ]
-  };
+  }
   ```
 
 
@@ -2306,7 +2279,7 @@ module.exports = webpackConfig;
 
 ### 产物分析
 
-- webpack 在打包时可以生成==打包信息==文件，通过次文件可以分析打包产物
+- webpack 在打包时可以生成==打包信息==文件，通过该文件可以分析打包产物
 
 - 生成命令
 
@@ -2322,82 +2295,105 @@ module.exports = webpackConfig;
 
 ### 创建自定义 Loader
 
-- Webpack中调用loader时使用 **loader-runner** 库中的`runLoaders`方法
+- **Loader** 本质上是一个导出为==函数==的 JavaScript 模块
 
-- Loader本质上是一个导出为==函数==的JavaScript模块，调用loader时会调用这个函数，然后将上一个loader产生的结果或者资源文件传入进去
+  - 解析资源时，会调用这个函数
+
+  - 然后将上一个 Loader 产生的结果或资源文件传入进去
 
 - 这个函数会接收三个参数
 
-  - content：资源文件的内容
-  - map：sourcemap相关的数据
-  - meta：一些元数据
+  - `content`：资源文件的内容
+  - `map`：source map 相关的数据
+  - `meta`：一些元数据
 
   ```js
   module.exports = function(content, map, meta) {
     console.log('content', content);
-    return content + '\nconsole.log(22)'; // 对源代码拼接自定义字符串
+    return content;
   }
   ```
+  
+- 创建自定义 Loader
 
-- 引入自定义Loader
+  - 引入自定义 Loader
+  
+    <Tabs>
+      <TabItem value="./loaders/loader_test.js" label="./loaders/loader_test.js">
 
-  <img src="./images/image-20220821012451256.png" alt="image-20220821012451256" style="zoom:80%;" />
-
-  - 配置js文件的处理规则，使用我们创建的loader
-
-    ```js
-    const { resolve } = require('path');
-    
-    module.exports = {
-      mode: 'development',
-      entry: './src/index.js',
-      devtool: false,
-      output: {
-        path: resolve(__dirname, 'dist'),
-        filename: '[name].bundle.js'
-      },
-      module: {
-        rules: [
-          {
-            test: /\.js$/,
-            use: [
-              'loader_test01'
-            ]
-          }
-        ]
-      },
-      resolveLoader: {
-        // 配置loader的查找路径，此处中的相对路径是相对于context配置的路径
-        modules: ['./loaders', 'node_modules']
+      ```js
+      module.exports = function(content, map, meta) {
+        // 对源代码拼接自定义字符串
+        return content + '\nconsole.log(22)';
       }
-    }
-    ```
+      ```
 
-  - `index.js`
+      </TabItem>
 
-    ```js
-    console.log(11);
-    ```
+      <TabItem value="webpack.config.js" label="webpack.config.js">
 
-  - 经过loader处理打包后，输出的资源，可以看到输出代码中追加了我们在自定义loader中对 ***content*** 拼接的内容
+      ```js
+      const { resolve } = require('path');
+      
+      module.exports = {
+        mode: 'development',
+        entry: './src/index.js',
+        output: {
+          path: resolve(__dirname, 'dist'),
+          filename: '[name].bundle.js'
+        },
+        module: {
+          rules: [
+            {
+              test: /\.js$/,
+              use: ['loader_test01']
+            }
+          ]
+        },
+        // 配置 loader 的查找路径
+        resolveLoader: {
+          modules: ['./loaders', 'node_modules']
+        }
+      }
+      ```
 
-    ```js
-    /******/ (function() { // webpackBootstrap
-    var __webpack_exports__ = {};
-    /*!**********************!*\
-      !*** ./src/index.js ***!
-      \**********************/
-    console.log(11);
-    console.log(22);
-    /******/ })()
-    ;
-    ```
+      </TabItem>
+    </Tabs>
+
+  - 编译结果
+
+    <Tabs>
+      <TabItem value="./src/index.js(编译前)" label="./src/index.js(编译前)">
+
+      ```js
+      console.log(11);
+      ```
+
+      </TabItem>
+
+      <TabItem value="main.bundle.js(编译后)" label="main.bundle.js(编译后)">
+
+      ```js
+      /******/ (function() { // webpackBootstrap
+      var __webpack_exports__ = {};
+      /*!**********************!*\
+        !*** ./src/index.js ***!
+        \**********************/
+      console.log(11);
+      console.log(22);
+      /******/ })()
+      ```
+
+      </TabItem>
+    </Tabs>
 
 
 
 ### normal/pitch Loader
 
-- **normal** loader：通过`module.exports`==默认导出==的函数就是 *normal loader*，大多数loader都是基于 *normal loader* 编写的
+- Loader 分为两类，大多数 Loader 基于 **normal** Loader 实现
+
+- **normal** Loader：==默认导出==的模块
 
   ```js
   module.exports = function(content) {
@@ -2405,7 +2401,7 @@ module.exports = webpackConfig;
   }
   ```
 
-- **pitch** loader：通过`module.exports.pitch`导出的函数就是 *pitch loader*
+- **pitch** loader：导出 `pitch` 函数的模块
 
   ```js
   module.exports.pitch = function (remainingRequest, precedingRequest, data) {
@@ -2417,11 +2413,11 @@ module.exports = webpackConfig;
 
 ### Loader 执行顺序和 Rule.enforce
 
-- loader的==默认==执行顺序
+- Loader 的==默认==执行顺序
 
   - **pitch** loader 在 **normal** loader 之前执行
 
-  - **pitch** loader 执行顺序：==从前往后==（`loaderContext.loaderIndex++`）
+  - **pitch** loader 执行顺序：==从前往后==`loaderContext.loaderIndex++`
 
     ```js
     function iteratePitchingLoaders(options, loaderContext, callback) {
@@ -2435,7 +2431,7 @@ module.exports = webpackConfig;
     }
     ```
 
-  - **normal** loader 执行顺序：==从后往前==（`loaderContext.loaderIndex--`）
+  - **normal** loader 执行顺序：==从后往前==`loaderContext.loaderIndex--`
 
     ```js
     function iterateNormalLoaders(options, loaderContext, args, callback) {
@@ -2449,77 +2445,74 @@ module.exports = webpackConfig;
     }
     ```
 
-- `enforce`：可选值有：`"pre" | "post"`，可以改变loader的执行顺序
+- `enforce` 可以改变 Loader 的执行顺序
 
-  - 默认所有的loader都是normal，在行内设置的loader是inline（import 'loader1!loader2!./test.js'）
-  - 所有loader在执行时都有两个阶段
-    - **Pitching** 阶段: loader 上的 pitch 方法，按照 ==后置(post)、行内(inline)、普通(normal)、前置(pre)== 的顺序调用
-    - **Normal** 阶段: loader 上的 默认方法，按照 ==前置(pre)、普通(normal)、行内(inline)、后置(post)== 的顺序调用
+  - 可选值有：`"pre"` 和 `"post"`
+  - 所有 Loader 在执行时都有两个阶段
+    - **Pitching** 阶段：执行 Loader 上的 **pitch** 方法，按照 ==后置(post)、行内(inline)、普通(normal)、前置(pre)== 的顺序调用
+    - **Normal** 阶段：执行 Loader 上的 **默认**方法，按照 ==前置(pre)、普通(normal)、行内(inline)、后置(post)== 的顺序调用
 
-  - 如果要使用`enforce`改变loader的执行顺序，需要先将拆分成多个Rule对象
+- 使用 `enforce` 改变 Loader 的执行顺序，需要先将拆分成多个 Rule 对象
 
-    - 配置
+  - 拆分 Rule 配置
 
-      ```js
-      const { resolve } = require('path');
-      
-      module.exports = {
-        ...
-        module: {
-          rules: [
-            {
-              test: /\.js$/,
-              use: 'loader_test01'
-            },
-            {
-              test: /\.js$/,
-              use: 'loader_test02',
-              enforce: 'pre'
-            },
-            {
-              test: /\.js$/,
-              use: 'loader_test03'
-            }
-          ]
-        }
-        ...
+    ```js
+    const { resolve } = require('path');
+    
+    module.exports = {
+      module: {
+        rules: [
+          {
+            test: /\.js$/,
+            use: 'loader_test01'
+          },
+          {
+            test: /\.js$/,
+            use: 'loader_test02',
+            enforce: 'pre'
+          },
+          {
+            test: /\.js$/,
+            use: 'loader_test03'
+          }
+        ]
+      },
+      resolveLoader: {
+        modules: ['./loaders', 'node_modules']
       }
-      ```
+    }
+    ```
 
-    - 执行顺序
+  - 执行顺序
 
-      ```bash
-      pitch-loader01
-      pitch-loader03
-      pitch-loader02
-      normal-loader02
-      normal-loader03
-      normal-loader01
-      ```
+    ```bash
+    pitch-loader01
+    pitch-loader03
+    pitch-loader02
+    normal-loader02
+    normal-loader03
+    normal-loader01
+    ```
 
 
 
 ### 同步/异步 Loader
 
-- 同步Loader
+- 默认创建的 Loader 就是 **同步 Loader**
 
-  - 默认创建的 Loader 就是同步的 Loader
-  - 这个Loader必须通过 `return` 或者 `this.callback` 来返回结果，交给下一个loader来处理
-  - 如果要处理错误，可以使用 this.callback，该回调的参数：
-    - 第一个参数必须是 ==Error== 或 ==null==
-    - 第二个参数是一个 ==string== 或 ==Buffer==
-
+  - 必须通过 `return` 或 `this.callback` 来返回结果，交给下一个 Loader 来处理
+  
   ```js
   module.exports = function(content) {
-    console.log('content', content);
+    // 第一个参数为错误，第二个参数为处理后的内容
     this.callback(null, content);
   }
   ```
+  
+- 如果需要进行一些异步操作，则可以使用 **异步 Loader**
 
-- 异步Loader
-
-  - 进行一些异步的操作，在异步操作完成后，再返回这个loader处理的结果
-  - 在loader函数中调用`this.async()`即可以让这个loader变成==异步==loader
+  - 在异步操作完成后，再回调处理的结果给下一个 Loader
+  - 使用 `this.async()` 即可以让这个 Loader 变成==异步==
 
   ```js
   module.exports = function(content) {
@@ -2532,9 +2525,11 @@ module.exports = webpackConfig;
 
 
 
-### 配置参数
+### 自定义参数
 
-- 传入参数：在`use`中传入参数
+- Loader 可以接收一些自定义参数，以实现自定义编译配置
+
+- 传入参数：在 `use.options` 中传入参数
 
   ```js
   {
@@ -2548,7 +2543,7 @@ module.exports = webpackConfig;
   }
   ```
 
-- 获取参数：在Loader函数内部调用`this.getOptions()`就可以得到传入的参数
+- 获取参数：在 Loader 函数内部通过 `this.getOptions()` 可以获取传入参数
 
   ```js
   module.exports = function(content) {
@@ -2558,14 +2553,14 @@ module.exports = webpackConfig;
   }
   ```
 
-- 校验传入的参数：借助`schema-utils`库提供的`validate`方法
+- 借助 `schema-utils` 库对传入的参数进行校验和提供提示信息，校验不通过则会抛出错误
 
   ```js
   const { validate } = require('schema-utils');
   
   const schema = {
     type: 'object', // 参数类型
-    properties: { // 该对象类型参数的属性
+    properties: {
       size: {
         type: 'number', // size属性的类型
         description: '大小' // 描述
@@ -2575,186 +2570,92 @@ module.exports = webpackConfig;
   
   module.exports = function(content) {
     const options = this.getOptions();
-  
     validate(schema, options);
-  
-    console.log('options', options);
     return content;
   }
   ```
 
 
 
-### 自定义 Loader 示例
+### 简易的 babel-loader
 
-- 实现简易的 *babel-loader*
+```js
+const { validate } = require('schema-utils');
+const { transform } = require('@babel/core');
 
-  ```js
-  const { validate } = require('schema-utils');
-  const { transform } = require('@babel/core');
-  
-  const schema = {
-    type: 'object',
-    properties: {
-      presets: {
-        type: 'array',
-        description: '预设'
-      },
-      plugins: {
-        type: 'array',
-        description: '插件'
-      }
+const schema = {
+  type: 'object',
+  properties: {
+    presets: {
+      type: 'array',
+      description: '预设'
+    },
+    plugins: {
+      type: 'array',
+      description: '插件'
     }
   }
-  
-  module.exports = function(content) {
-    // 启动异步loader
-    const callback = this.async();
-    // 获取loader的options
-    const options = this.getOptions();
-    // 校验options
-    validate(schema, options);
-    // 转换代码
-    transform(content, options, (err, result) => {
-      if (err) {
-        callback(err);
-      } else {
-        callback(null, result.code);
-      }
-    });
-  }
-  ```
+}
 
-- 实现一个markdown文件loader
-
-  - 实现自定义loader `markdown-loader`
-  
-    ```js
-    const { marked } = require('marked');
-    const hl = require('highlight.js');
-    
-    module.exports = function(content) {
-      const htmlContent = marked.parse(content, {
-        highlight: (code, lang) => {
-          return hl.highlight(lang, code).value
-        }
-      });
-    
-      const codeString = "`" + htmlContent + "`";
-      const moduleCode = `var code = ${codeString}; export default code;`;
-      
-      return moduleCode;
+module.exports = function(content) {
+  // 启动异步loader
+  const callback = this.async();
+  // 获取loader的options
+  const options = this.getOptions();
+  // 校验options
+  validate(schema, options);
+  // 转换代码
+  transform(content, options, (err, result) => {
+    if (err) {
+      callback(err);
+    } else {
+      callback(null, result.code);
     }
-    ```
-  
-  - 使用
-  
-    - 配置Rule
-  
-      ```js
-      {
-        test: /\.md$/,
-        use: 'markdown-loader'
-      }
-      ```
-  
-    - 源代码中`import`资源
-  
-      ```js
-      import content from './demo.md';
-      
-      const div = document.createElement('div');
-      div.innerHTML = content;
-      document.body.appendChild(div);
-      ```
-  
+  });
+}
+```
+
+
+
 ## 自定义 Plugin
 
-### Webpack 和 Tapable
+### 插件注册流程
 
-- webpack有两个非常重要的类：`Compiler` 和 `Compilation`
-  - 他们通过注入插件的方式，来监听webpack的所有生命周期
-  - 插件的注入离不开各种各样的Hook，Compiler 和 Compilation 类中创建了Tapable库中的各种Hook的实例
-
-- Tapable是官方编写和维护的一个库
-
-  - Tapable的Hook分类
-
-    - 同步和异步Hook
-      - 以 **sync** 开头的，是同步的Hook
-      - 以 **async** 开头的，是异步的Hook，两个事件处理回调，不会等待上一次处理回调结束后再执行下一次回调
-    - 其他的类别
-      - `bail`：当有返回值时，就不会执行后续监听的事件了
-      - `Loop`：当返回值为true，就会反复执行该事件，当返回值为 *undefined* 或不返回内容，就退出事件
-      - `Waterfall`：当返回值不为 *undefined* 时，会将这次返回的结果作为下次事件的第一个参数
-      - `Parallel`：并行，会等待执行事件处理回调结束，才执行下一次事件处理回调
-      - `Series`：串行，会等待上一个异步的Hook
-
-    <img src="./images/image-20220821233142704.png" alt="image-20220821233142704" style="zoom:80%;" />
-
-  - Hook的使用
-
-    - 创建Hook对象
-    - 注册Hook中的事件
-    - 触发事件
-
-    ```js
-    const { AsyncSeriesHook } = require('tapable');
-    
-    class TestTapAble {
-      constructor() {
-        this.hooks = {
-          asyncHook: new AsyncSeriesHook(['name', 'version'])
-        };
-    
-        this.hooks.asyncHook.tapAsync('event1', (name, version, cb) => {
-          console.log(name, version);
-          cb();
-        });
-    
-        this.hooks.asyncHook.tapAsync('event1', (name, version, cb) => {
-          console.log(name, version);
-          cb();
-        });
-      }
-    
-      emit() {
-        this.hooks.asyncHook.callAsync('koa', '2.13.4', () => {
-          console.log('执行事件监听');
-        })
-      }
-    }
-    
-    const tt = new TestTapAble();
-    tt.emit();
-    ```
-
-### 自定义 Plugin
-
-- Webpack插件的注册流程
-  - 在webpack函数的`createCompiler`方法中，注册了所有的插件
-  - 在注册插件时，会调用插件函数或者插件对象的`apply`方法
-  - 插件方法会接收`compiler`对象，我们可以通过compiler对象来注册Hook的事件
-  - 某些插件也会传入一个`compilation的对象`，我们也可以监听compilation的Hook事件
-  - 当webpack走到指定的阶段时，会调用Hook的监听事件
+- webpack 有两个非常重要的类：`Compiler` 和 `Compilation`
+  - 通过注入插件的方式，来监听 webpack 的所有==生命周期==
+  - 插件的注入离不开各种各样的 **Hook**
+  - Compiler 和 Compilation 类中创建了 Tapable 库中的各种 Hook 的实例
   
-- 通过查阅官方文档提供的==Compiler Hooks== 和 ==Compilation Hooks==（\<https://webpack.js.org/api/>）
+- webpack 插件的注册流程
+  - 在 webpack 函数的 `createCompiler` 方法中，注册了所有的插件
+  - 在注册插件时，会调用插件函数或者插件对象的 `apply` 方法
+  - 插件方法会接收 `compiler` 对象，通过它来注册 Hook 的事件
+  - 某些插件也会传入一个 `compilation` 的对象，可以监听它的 Hook 事件
+  - 执行到特定的生命周期时，会触发 Hook 的监听事件，插件内部再对资源进行处理
+  
+- [Tapable](https://www.npmjs.com/package/tapable) 是官方编写和维护的一个库，用于注册 Hook
 
-  - 我们只需要给某个阶段的Hook添加事件监听函数，Webpack编译时会自动去调用我们的监听函数
-  - `compilation`本身也是`compiler`注册的一个==SyncHook==
 
-- 自定义插件示例：生成一个markdown格式的新文件，文件内容是所有构建生成的文件的列表
 
-  - 编写自定义插件
+### 创建自定义插件
+
+- 通过查阅官方文档提供的 [Compiler Hooks](https://webpack.js.org/api/compiler-hooks) 和 [Compilation Hooks](https://webpack.js.org/api/compilation-hooks)
+
+  - 给某个阶段的 Hook 添加事件监听函数，webpack 编译时会自动去调用监听函数
+  - `compilation` 本身是 `compiler` 注册的一个 **SyncHook**
+
+- 自定义插件示例：生成一个 markdown 格式的新文件，文件内容是所有构建生成的文件的列表
+
+  <Tabs>
+    <TabItem value="./plugins/FileList" label="./plugins/FileList">
 
     ```js
     class FileListPlugin {
       static defaultOptions = {
         outputFile: 'assets-list.md',
       };
-    
+  
       // 需要传入自定义插件构造函数的任意选项
-      //（这是自定义插件的公开API）
       constructor(options = {}) {
         // 在应用默认选项前，先应用用户指定选项
         // 合并后的选项暴露给插件方法
@@ -2797,10 +2698,10 @@ module.exports = webpackConfig;
               // 遍历所有资源，
               // 生成 Markdown 文件的内容
               const content =
-                '# In this build:\n\n' +
-                Object.keys(assets)
-                  .map((filename) => `- ${filename}`)
-                  .join('\n');
+                    '# In this build:\n\n' +
+                    Object.keys(assets)
+              .map((filename) => `- ${filename}`)
+              .join('\n');
     
               // 向 compilation 添加新的资源，
               // 这样 webpack 就会自动生成并输出到 output 目录
@@ -2810,182 +2711,122 @@ module.exports = webpackConfig;
         });
       }
     }
-    
-    module.exports = { FileListPlugin };
+  
+    module.exports = FileListPlugin;
     ```
-
-  - 使用插件
-
+  
+    </TabItem>
+  
+    <TabItem value="webpack.config.js" label="webpack.config.js">
+  
     ```js
-    const { FileListPlugin } = require('./plugins/plugin');
+    const FileListPlugin = require('./plugins/fileList');
     
     module.exports = {
-      ...
       plugins: [
         new FileListPlugin({
           outputFile: 'assets.md'
         })
       ]
-      ...
     }
     ```
-
-    <img src="./images/image-20220822004835993.png" alt="image-20220822004835993" style="zoom:80%;" />
+  
+    </TabItem>
+  </Tabs>
 
 
 
 ## 扩展知识
 
-### browerlist
+### browserslist
 
-- 作用：在不同前端工具之间，==共享==目标浏览器的Node.js版本的配置，比如babel、postcss、webpack工具都会使用该规则
+- 作用：在不同前端工具之间，==共享==目标浏览器或 Node.js 的配置
 
-- 根据编写的条件，去 [Can I use](https://caniuse.com/usage-table) 网站上查询匹配需要处理的浏览器
+  - babel、postcss、webpack 等工具都会读取该配置
 
-- 编写规则一
+  - 根据编写的条件，去 [Can I use](https://caniuse.com/usage-table) 上查询匹配需要适配的浏览器版本
 
-  - `defaults`（默认值）：`>0.5%, last 2 versions, Firefox ESR, not dead`
-  - `5%`：该==百分比==表示浏览器的==市场占有率==。`>=`、`<`、`<=`
+- 常见编写规则
+
+  - `defaults`（默认规则）：`>0.5%, last 2 versions, Firefox ESR, not dead`
+  - `>1%`：该==百分比==表示浏览器的==市场占有率==
   - `dead`：24 月内没有官方支持或更新的浏览器
   - `last 2 versions`：每个浏览器的==最新==两个大版本
 
-- 编写规则二
+- 规则逻辑运算符
 
-  - `node 10`和`node 10.4`：选择最新的Node.js 10.x.x 或 10.4.x
-  - `current node`：Browerlist现有的版本
-  - 直接指定浏览器版本
-    - `Firefox > 20`：Firefox的版本高于20
-    - `ie 6-8`：选择一个包含范围的版本
-  - 支持特定功能的浏览器：`supports es6-module`——支持ES6 Module的浏览器
-  - 排除先前查询选择的浏览器：`not ie <= 8`——排除IE8以下的版本
+  - `,` 表示并集，`&` 表示交集
+  - `not` 表示取反，从前面的查询结果中排除的部分
+  
+- **编写规则方式**
 
-- ==当编写了多个条件后，各个条件之间是**并集**关系，只需满足其中一个条件即可==
+  - 方式一：在 **package.json** 文件中增加 `browserslist` 配置
 
-  - 逗号`,`表示并集
-  - `&`表示交集
-  - `not`表示取反
+    ```json
+    {
+      "browserslist": [
+        ">1%",
+        "last 2 versions",
+        "not dead"
+      ]
+    }
+    ```
 
-- ==写条件方式==：
+  - 方式二：在项目根目录创建 `.browserslistrc` 文件（推荐），换行符相当于并集
 
-  - 方式一：在`package.json`文件中增加`browserslist`数组，数组中每个字符串为一个条件
+    ```
+    >1%
+    last 2 version and not dead
+    ```
 
-  ```json
-  {
-    "browserslist": [
-      ">5%",
-      "last 2 versions",
-      "not dead"
-    ]
-  }
-  ```
 
-  - 方式二：在项目根目录创建`.browserslistrc`文件，直接写配置（推荐）
-
-  ```txt
-  >1%   // 市占有率大于1%的浏览器
-  last 2 version and not dead // 换行写相当于并集
-  ```
 
 ### PostCSS
 
->作用
+- **PostCSS** 是一个通过==JavaScript==来转换==样式==的工具，可以独立使用
 
-- 一个通过==JavaScript==来转换==样式==的工具
-- 可以进行一些==CSS的转换和适配==，比如==自动添加浏览器前缀、CSS样式的重置==
-- 实现这些功能，需要借助PostCSS对应的插件
+  - 可以进行一些==CSS 的转换和适配==，比如自动添加浏览器前缀
+  - 实现这些功能，需要借助 PostCSS 对应的插件
 
->使用方式
+- 默认会读取根目录下的 `postcss.config.js` 配置文件
 
-1. 查找PostCSS在构建工具中的扩展，比如webpack中的==postcss-loader==
-2. 选择可以添加你需要的PostCSS相关的插件
-
->在webpack中的使用
-
-- 比如我们需要给css加一些浏览器前缀（通过一些前缀属性与一些浏览器旧属性进行==映射==）
-
-  - 可以使用一个`autoprefixer`的插件自动处理样式前缀
-
-  - 配置方式
+  <Tabs>
+    <TabItem value="webpack.config.js" label="webpack.config.js">
 
     ```js
-    {
-      test: /\.css$/,
-      loader: 'postcss-loader',
-      options: {
-      postcssOptions: {
-          plugins: [
-            require('autoprefixer')
-          ]
-        }
+    module.exports = {
+      module: {
+        rules: [
+          {
+            test: /\.css/,
+            use: [
+              "style-loader",
+              {
+                loader: "css-loader",
+                options: {
+                  importLoaders: 1 // 需要的前置Loader个数
+                }
+              },
+              "postcss-loader"
+            ]
+          }
+        ]
       }
     }
     ```
 
-  - 处理示例（浏览器兼容配置`>0.1%, last 4 versions`）
+    </TabItem>
 
-    ```css
-    // 原始css
-    :fullscreen {
-      background-color: #ec414165;
-    }
-    .content {
-      font-size: 50px;
-      color: #ec4141;
-      transition: all 2s;
-    }
-    
-    // 处理后的css
-    :-webkit-full-screen {
-      background-color: rgba(236,65,65,0.39608);
-    }
-    :-ms-fullscreen {
-      background-color: rgba(236,65,65,0.39608);
-    }
-    :fullscreen {
-      background-color: rgba(236,65,65,0.39608);
-    }
-    .content {
-      font-size: 50px;
-      color: #ec4141;
-      -webkit-transition: all 2s;
-      -o-transition: all 2s;
-      transition: all 2s;
+    <TabItem value="postcss.config.js" label="postcss.config.js">
+
+    ```js
+    module.exports = {
+      plugins: ['postcss-preset-env']
     }
     ```
 
-- 通常我们会使用`postcss-preset-env`这个插件进行css的处理，该插件内部集成了一系列插件，其中就包含autoprefixer。同时postcss的配置也可以提取一个单独的文件进行配置，类似于babel，可以在根目录下创建一个`postcss.config.js`的文件进行配置
-
-- ==css-loader==的`importLoaders`属性
-
-  - 当我们在css文件中通过`@import`语法导入另一个css文件时，此时被引入的css会直接被==css-loader==进行处理，不会再反转loader链使用==postcss-loader==处理
-
-  - 这个时候可以通过css-loader提供的`importLoaders`属性，该属性是一个==数值==类型，指定处理css的时候需要的==前置Loader==
-
-    - **webpack.config.js**
-
-      ```js
-      {
-         test: /\.css/,
-         use: [
-           "style-loader"
-           {
-             loader: 'css-loader',
-             options: {
-               importLoaders: 1 // 需要的前置Loader个数
-             }
-           },
-           "postcss-loader"
-         ]
-      }
-      ```
-
-    - **postcss.config.js**
-
-      ```js
-      module.exports = {
-        plugins: ['postcss-preset-env']
-      }
-      ```
+    </TabItem>
+  </Tabs>
 
 
 
@@ -3031,153 +2872,174 @@ module.exports = webpackConfig;
 
 ### 打包库文件
 
-- 配置
+使用 webpack 可以打包自己的 JavaScript 库，发布到 npm 上供开源社区一起使用
 
-  ```js
-  const { resolve } = require('path')
-  
-  module.exports = {
-    mode: 'production',
-    entry: './index.js',
-    output: {
-      path: resolve(__dirname, './lib'),
-      filename: 'index.js',
-      // umd可以支持 AMD/CommonJs/浏览器
-      libraryTarget: 'umd',
-      library: 'custom-utils', // 打包库的名字
-      globalObject: 'this' // 将我们打包的库挂载到哪个对象上
-    }
+```js
+const { resolve } = require('path')
+
+module.exports = {
+  mode: 'production',
+  entry: './index.js',
+  output: {
+    path: resolve(__dirname, './lib'),
+    filename: 'index.js',
+    
+    // umd 可以支持 AMD/CommonJs/浏览器
+    libraryTarget: 'umd',
+    
+    // 打包库的名字
+    library: 'custom-utils',
+    
+    // 使用哪个全局对象来挂载 library，打包后可以使用 globalThis['custom-utils'] 来使用
+    globalObject: 'globalThis'
   }
-  ```
-
-- 输出结果
-
-  <img src="./images/image-20220815235402186.png" alt="image-20220815235402186" style="zoom: 67%;" />
+}
+```
 
 
 
 ### 模块化实现原理
 
-- webpack 打包的代码，可以实现各种各样的模块化
+- webpack 打包输出的代码，可以实现各种各样的模块化，甚至可以在不同模块类型之间进行调用
 
-  - `webpack.config.js`
+  <Tabs>
+    <TabItem value="webpack.config.js" label="webpack.config.js">
 
     ```js
     module.exports  = {
       mode: 'development',
       entry: './src/index.js',
-      devtool: 'source-map',
       output: {
         path: resolve(__dirname, 'dist'),
-        filename: '[name].js',
-        clean: true
+        filename: '[name].js'
       }
     };
     ```
+  
+    </TabItem>
 
-  - `./src/js/math.js`
+    <TabItem value="./src/js/math.js" label="./src/js/math.js">
 
     ```js
     export const sum = (n1, n2) => n1 + n2;
     ```
 
-  - `./src/js/format.js`
+    </TabItem>
+
+    <TabItem value="./src/js/format.js" label="./src/js/format.js">
 
     ```js
-    function dateFormat(date) {
-      return date.toLocaleString();
-    }
+    const dateFormat = date => date.toLocaleString();
+    
     module.exports = { dateFormat };
     ```
 
-- CommonJS模块化实现原理
+    </TabItem>
+  </Tabs>
 
-  - `./src/index.js`
+- CommonJS 模块化实现原理
+
+  <Tabs>
+    <TabItem value="./src/index.js" label="./src/index.js">
 
     ```js
     const { dateFormat } = require('./js/format');
     console.log(dateFormat(new Date()));
     ```
-
-  - 打包后的代码
-
-  ```js
-  // 定义一个对象，存储模块
-  // key: 模块路径; value: 一个函数
-  var __webpack_modules__ = {
-   './src/js/format.js': function (module) {
-    function dateFormat(date) {
-     return date.toLocaleString();
-    }
-      // 将module对象的exports属性赋值一个对象，包含dateFormat函数
-    module.exports = {
-     dateFormat
+  
+    </TabItem>
+  
+    <TabItem value="result" label="编译结果">
+  
+    ```js
+    // 定义一个对象，存储模块
+    // key: 模块路径; value: 一个函数
+    var __webpack_modules__ = {
+      './src/js/format.js': function (module) {
+        function dateFormat(date) {
+          return date.toLocaleString();
+        }
+        // 将 module 对象的 exports 属性赋值一个对象，包含 dateFormat 函数
+        module.exports = {
+          dateFormat
+        };
+      }
     };
-   }
-  };
-  
-  // 缓存加载过的模块
-  var __webpack_module_cache__ = {};
-  
-  // 该函数用于加载模块
-  function __webpack_require__(moduleId) {
-    // moduleId = './src/js/format.js'
-    // 首先在缓存中查找是否存在该模块，有则直接返回
-   var cachedModule = __webpack_module_cache__[moduleId];
-   if (cachedModule !== undefined) {
-    return cachedModule.exports;
-   }
-    // 声明一个新的module对象，同时将该需要加载的模块(__webpack_module_cache__[moduleId])放入缓存中
-    // 这两个变量都指向一个新创建出来的对象 { exports: {} }
-   var module = (__webpack_module_cache__[moduleId] = {
-    exports: {}
-   });
-    // 加载执行模块，通过__webpack_modules__[moduleId]取到存储在__webpack_modules__中的对应模块
-   __webpack_modules__[moduleId](module, module.exports, __webpack_require__);
-   return module.exports; // 获取format.js中导出的变量
-  }
-  
-  var __webpack_exports__ = {};
-  
-  // 立即执行函数，代码执行的入口
-  !(function () {
-    // 获取format.js模块中导出的dateFormat函数
-   const { dateFormat } = __webpack_require__('./src/js/format.js');
-   console.log(dateFormat(new Date()));
-  })();
-  ```
-  
-- ES Module模块化实现原理
+    
+    // 缓存加载过的模块
+    var __webpack_module_cache__ = {};
+    
+    // 该函数用于加载模块
+    function __webpack_require__(moduleId) {
+      // moduleId = './src/js/format.js'
+      // 首先在缓存中查找是否存在该模块，有则直接返回
+      var cachedModule = __webpack_module_cache__[moduleId];
+      if (cachedModule !== undefined) {
+        return cachedModule.exports;
+      }
+      
+      // 声明一个新的 module 对象，同时将该需要加载的模块(__webpack_module_cache__[moduleId])放入缓存中
+      // 这两个变量都指向一个新创建出来的对象 { exports: {} }
+      var module = (__webpack_module_cache__[moduleId] = {
+        exports: {}
+      });
+      
+      // 加载执行模块，通过 __webpack_modules__[moduleId] 取到存储在 __webpack_modules__ 中的对应模块
+      __webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+      
+      // 获取 format.js 中导出的变量
+      return module.exports;
+    }
+    
+    var __webpack_exports__ = {};
+    
+    // 立即执行函数，代码执行的入口
+    !(function () {
+      // 获取 format.js 模块中导出的 dateFormat 函数
+      const { dateFormat } = __webpack_require__('./src/js/format.js');
+      console.log(dateFormat(new Date()));
+    })();
+    ```
 
-  - `./src/index.js`
+    </TabItem>
+  </Tabs>
+  
+- ES Module 模块化实现原理
+
+  <Tabs>
+    <TabItem value="./src/index.js" label="./src/index.js">
 
     ```js
     import { sum } from './js/math';
     console.log(sum(1, 2));
     ```
-
-  - 打包后的代码
-
+  
+    </TabItem>
+  
+    <TabItem value="result" label="编译结果">
+  
     ```js
     'use strict';
     // 定义一个对象，存储模块
     // key: 模块路径; value: 一个函数
     var __webpack_modules__ = {
-     './src/js/math.js': function (
+      './src/js/math.js': function (
       __unused_webpack_module,
       __webpack_exports__,
       __webpack_require__
-     ) {
-        // 为对象{ exports: {} }添加__esModule属性为true，标识该模块为esModule模块
-      __webpack_require__.r(__webpack_exports__);
-        // 将'./src/js/math.js'模块中导出的变量做一个代理，代理到__webpack_exports__中
-      __webpack_require__.d(__webpack_exports__, {
-       sum: function () {
-        return sum;
-       }
-      });
-      const sum = (n1, n2) => n1 + n2;
-     }
+      ) {
+        // 为对象 { exports: {} } 添加 __esModule 属性为 true，标识该模块为 esModule 模块
+        __webpack_require__.r(__webpack_exports__);
+        
+        // 将 './src/js/math.js' 模块中导出的变量做一个代理，代理到 __webpack_exports__ 中
+        __webpack_require__.d(__webpack_exports__, {
+          sum: function () {
+            return sum;
+          }
+        });
+        
+        const sum = (n1, n2) => n1 + n2;
+      }
     };
     
     // 缓存加载过的模块
@@ -3187,68 +3049,78 @@ module.exports = webpackConfig;
     function __webpack_require__(moduleId) {
       // moduleId = './src/js/math.js'
       // 首先在缓存中查找是否存在该模块，有则直接返回
-     var cachedModule = __webpack_module_cache__[moduleId];
-     if (cachedModule !== undefined) {
-      return cachedModule.exports;
-     }
-      // 声明一个新的module对象，同时将该需要加载的模块(__webpack_module_cache__[moduleId])放入缓存中
+      var cachedModule = __webpack_module_cache__[moduleId];
+      if (cachedModule !== undefined) {
+        return cachedModule.exports;
+      }
+      
+      // 声明一个新的 module 对象，同时将该需要加载的模块(__webpack_module_cache__[moduleId])放入缓存中
       // 这两个变量都指向一个新创建出来的对象 { exports: {} }
-     var module = (__webpack_module_cache__[moduleId] = {
-      exports: {}
-     });
-      // 加载执行模块，通过__webpack_modules__[moduleId]取到存储在__webpack_modules__中的对应模块
-     __webpack_modules__[moduleId](module, module.exports, __webpack_require__);
-     // 返回导入的模块对象
-     return module.exports;
+      var module = (__webpack_module_cache__[moduleId] = {
+        exports: {}
+      });
+      
+      // 加载执行模块，通过 __webpack_modules__[moduleId] 取到存储在 __webpack_modules__ 中的对应模块
+      __webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+      
+      // 返回导入的模块对象
+      return module.exports;
     }
     
     !(function () {
-     __webpack_require__.d = function (exports, definition) {
+      __webpack_require__.d = function (exports, definition) {
         // exports: 新创建出来的模块对象
         // definition：导入的模块内容
-      for (var key in definition) {
-          // 通过for..in，对definition做一个代理，从exports对象上取属性时，会触发getter操作，去definition上查找
-       if (__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-        Object.defineProperty(exports, key, {
-         enumerable: true,
-         get: definition[key]
-        });
-       }
-      }
-     };
+        for (var key in definition) {
+          // 通过 for..in, 对 definition 做一个代理
+          // 从 exports 对象上取属性时，会触发 getter 操作，去 definition 上查找
+          if (__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+            Object.defineProperty(exports, key, {
+              enumerable: true,
+              get: definition[key]
+            });
+          }
+        }
+      };
     })();
     
-    // 定义__webpack_require__.o函数，用于判断对象上是否有某个属性
+    // 定义 __webpack_require__.o 函数，用于判断对象上是否有某个属性
     !(function () {
-     __webpack_require__.o = function (obj, prop) {
-      return Object.prototype.hasOwnProperty.call(obj, prop);
-     };
+      __webpack_require__.o = function (obj, prop) {
+        return Object.prototype.hasOwnProperty.call(obj, prop);
+      };
     })();
     
     !(function () {
-     __webpack_require__.r = function (exports) {
-      if (typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-       Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-      }
-      Object.defineProperty(exports, '__esModule', { value: true });
-     };
+      __webpack_require__.r = function (exports) {
+        if (typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+          Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+        }
+        Object.defineProperty(exports, '__esModule', { value: true });
+      };
     })();
     
     var __webpack_exports__ = {};
     
     // 代码执行的入口
     !(function () {
-      // 执行__webpack_require__.r函数，为__webpack_exports__对象添加一个__esModule属性为true
-     __webpack_require__.r(__webpack_exports__);
-      // 执行__webpack_require__函数，获取模块'./src/js/math.js'导出的变量
-     var _js_math__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__('./src/js/math.js');
-     console.log((0, _js_math__WEBPACK_IMPORTED_MODULE_0__.sum)(1, 2));
+      // 执行 __webpack_require__.r 函数，为 __webpack_exports__ 对象添加 __esModule: true
+      __webpack_require__.r(__webpack_exports__);
+      
+      // 执行 __webpack_require__ 函数，获取模块 './src/js/math.js' 导出的变量
+      var _js_math__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__('./src/js/math.js');
+      
+      console.log((0, _js_math__WEBPACK_IMPORTED_MODULE_0__.sum)(1, 2));
     })();
     ```
+  
+  </TabItem>
+  </Tabs>
+  
+- CommonJS 和 ES Module 相互加载实现原理
 
-- CommonJS 和ES Module 相互加载实现原理
-
-  - `./src/index.js`
+  <Tabs>
+    <TabItem value="./src/index.js" label="./src/index.js">
 
     ```js
     import { dateFormat } from './js/format';
@@ -3256,113 +3128,119 @@ module.exports = webpackConfig;
     console.log(sum(1, 2));
     console.log(dateFormat(new Date()));
     ```
-
-  - 打包后的代码
-
+  
+    </TabItem>
+  
+    <TabItem value="result" label="编译结果">
+  
     ```js
     // 定义一个对象，存储模块
     // key: 模块路径; value: 一个函数
     var __webpack_modules__ = {
-     './src/js/format.js': function (module) {
-      function dateFormat(date) {
-       return date.toLocaleString();
-      }
-        // 将dateFormat函数添加到创建的module对象中
-      module.exports = {
-       dateFormat
-      };
-     },
-     './src/js/math.js': function (
+      './src/js/format.js': function (module) {
+        function dateFormat(date) {
+          return date.toLocaleString();
+        }
+        // 将 dateFormat 函数添加到创建的 module 对象中
+        module.exports = {
+          dateFormat
+        };
+      },
+      './src/js/math.js': function (
       __unused_webpack_module,
-      __webpack_exports__,
-      __webpack_require__
-     ) {
-      'use strict';
-        // 为当前模块添加属性__esModule=true
-      __webpack_require__.r(__webpack_exports__);
-        // 将'./src/js/math.js'模块中导出的变量做一个代理，代理到__webpack_exports__中（即创建出来的exports对象）
-      __webpack_require__.d(__webpack_exports__, {
-       sum: function () {
-        return sum;
-       }
-      });
-      const sum = (n1, n2) => n1 + n2;
-     }
+       __webpack_exports__,
+       __webpack_require__
+      ) {
+        'use strict';
+        // 为当前模块添加属性 __esModule=true
+        __webpack_require__.r(__webpack_exports__);
+        // 将 './src/js/math.js' 模块中导出的变量做一个代理
+        // 代理到 __webpack_exports__ 中（即创建出来的 exports 对象）
+        __webpack_require__.d(__webpack_exports__, {
+          sum: function () {
+            return sum;
+          }
+        });
+        const sum = (n1, n2) => n1 + n2;
+      }
     };
     
     var __webpack_module_cache__ = {};
     
     function __webpack_require__(moduleId) {
-     var cachedModule = __webpack_module_cache__[moduleId];
-     if (cachedModule !== undefined) {
-      return cachedModule.exports;
-     }
-     var module = (__webpack_module_cache__[moduleId] = {
-      exports: {}
-     });
-     __webpack_modules__[moduleId](module, module.exports, __webpack_require__);
-     return module.exports;
+      var cachedModule = __webpack_module_cache__[moduleId];
+      if (cachedModule !== undefined) {
+        return cachedModule.exports;
+      }
+      var module = (__webpack_module_cache__[moduleId] = {
+        exports: {}
+      });
+      __webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+      return module.exports;
     }
     
     !(function () {
-      // 获取ES Module中默认导出（export default）的变量
-     __webpack_require__.n = function (module) {
-      var getter =
-       module && module.__esModule ?
+      // 获取 ES Module 中默认导出(export default)的变量
+      __webpack_require__.n = function (module) {
+        var getter =
+            module && module.__esModule ?
             function () {
-         return module['default'];
-        } : 
-            function () {
-         return module;
+              return module['default'];
+            } : 
+        function () {
+          return module;
         };
-      __webpack_require__.d(getter, { a: getter });
-      return getter;
-     };
+        __webpack_require__.d(getter, { a: getter });
+        return getter;
+      };
     })();
     
     // 对象代理
     !(function () {
-     __webpack_require__.d = function (exports, definition) {
-      for (var key in definition) {
-       if (__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-        Object.defineProperty(exports, key, {
-         enumerable: true,
-         get: definition[key]
-        });
-       }
-      }
-     };
+      __webpack_require__.d = function (exports, definition) {
+        for (var key in definition) {
+          if (__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+            Object.defineProperty(exports, key, {
+              enumerable: true,
+              get: definition[key]
+            });
+          }
+        }
+      };
     })();
     
     !(function () {
-     __webpack_require__.o = function (obj, prop) {
-      return Object.prototype.hasOwnProperty.call(obj, prop);
-     };
+      __webpack_require__.o = function (obj, prop) {
+        return Object.prototype.hasOwnProperty.call(obj, prop);
+      };
     })();
     
-    // 为exports对象添加__esModule属性，标识当前模块为ES Module
+    // 为 exports 对象添加 __esModule 属性，标识当前模块为 ES Module
     !(function () {
-     __webpack_require__.r = function (exports) {
-      if (typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-       Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-      }
-      Object.defineProperty(exports, '__esModule', { value: true });
-     };
+      __webpack_require__.r = function (exports) {
+        if (typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+          Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+        }
+        Object.defineProperty(exports, '__esModule', { value: true });
+      };
     })();
     
     var __webpack_exports__ = {};
     !(function () {
-     'use strict';
-     __webpack_require__.r(__webpack_exports__);
-     var _js_format__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__('./src/js/format.js');
-     var _js_format__WEBPACK_IMPORTED_MODULE_0___default = __webpack_require__.n(
-      _js_format__WEBPACK_IMPORTED_MODULE_0__
-     );
+      'use strict';
+      __webpack_require__.r(__webpack_exports__);
+      var _js_format__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__('./src/js/format.js');
+      var _js_format__WEBPACK_IMPORTED_MODULE_0___default = __webpack_require__.n(
+        _js_format__WEBPACK_IMPORTED_MODULE_0__
+      );
     
-     const { sum } = __webpack_require__('./src/js/math.js');
-     console.log(sum(1, 2));
-     console.log(
-      (0, _js_format__WEBPACK_IMPORTED_MODULE_0__.dateFormat)(new Date())
-     );
+      const { sum } = __webpack_require__('./src/js/math.js');
+      console.log(sum(1, 2));
+      console.log(
+        (0, _js_format__WEBPACK_IMPORTED_MODULE_0__.dateFormat)(new Date())
+      );
     })();
     ```
+  
+    </TabItem>
+  </Tabs>
