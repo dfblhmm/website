@@ -161,6 +161,21 @@ const sidebars: SidebarsConfig = {
       type: "doc",
       id: "structure-algorithm/index",
       label: "前言"
+    },
+    {
+      type: "category",
+      label: "数据结构",
+      link: {
+        type: "doc",
+        id: "structure-algorithm/data-structure/index"
+      },
+      items: [
+        // 数组
+        "structure-algorithm/data-structure/array",
+
+        // 栈
+        "structure-algorithm/data-structure/stack"
+      ]
     }
   ],
 

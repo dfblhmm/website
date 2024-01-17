@@ -36,6 +36,7 @@ const themeConfig: Preset.ThemeConfig = {
 
   navbar: {
     title: "不系之舟",
+    hideOnScroll: true,
     logo: {
       alt: "不系之舟",
       src: "/images/logo.png"
