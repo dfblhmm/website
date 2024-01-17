@@ -1,5 +1,5 @@
 ---
-id: node-basic
+id: basic
 title: 基础
 ---
 # Node.js

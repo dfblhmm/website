@@ -1,6 +1,6 @@
 ---
-id: HTML
 title: HTML
+slug: ../HTML
 ---
 # HTML
 

@@ -1,5 +1,5 @@
 ---
-id: ts-core
+id: core
 title: 核心
 ---
 

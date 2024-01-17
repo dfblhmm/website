@@ -1,5 +1,5 @@
 ---
-id: js-basic
+id: basic
 title: 基础
 ---
 # JavaScript 基础

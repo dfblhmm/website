@@ -11,7 +11,7 @@ const sidebars: SidebarsConfig = {
     {
       type: "doc",
       label: "HTML",
-      id: "front/HTML/HTML"
+      id: "front/HTML/index"
     },
 
     // CSS
@@ -24,7 +24,7 @@ const sidebars: SidebarsConfig = {
       },
       items: [
         // CSS 语法
-        "front/CSS/css-core"
+        "front/CSS/core"
       ]
     },
 
@@ -38,9 +38,9 @@ const sidebars: SidebarsConfig = {
       },
       items: [
         // JavaScript 基础
-        "front/JavaScript/js-basic",
+        "front/JavaScript/basic",
         // JavaScript 进阶
-        "front/JavaScript/js-advance"
+        "front/JavaScript/advance"
       ]
     },
 
@@ -56,7 +56,7 @@ const sidebars: SidebarsConfig = {
         // 包管理工具
         "front/Font-Engineering/package-management-tool",
         // Git
-        "front/Font-Engineering/Git",
+        "front/Font-Engineering/git",
 
         // 构建工具
         {
@@ -93,9 +93,9 @@ const sidebars: SidebarsConfig = {
           },
           items: [
             // Vue 核心
-            "front/Font-Framework/Vue/vue-core",
+            "front/Font-Framework/Vue/core",
             // Vue 路由
-            "front/Font-Framework/Vue/vue-router"
+            "front/Font-Framework/Vue/router"
           ]
         },
         // React
@@ -108,7 +108,7 @@ const sidebars: SidebarsConfig = {
           },
           items: [
             // React 核心
-            "front/Font-Framework/React/react-core"
+            "front/Font-Framework/React/core"
           ]
         }
       ]
@@ -124,7 +124,7 @@ const sidebars: SidebarsConfig = {
       },
       items: [
         // TypeScript 核心
-        "front/TypeScript/ts-core"
+        "front/TypeScript/core"
       ]
     },
 
@@ -138,7 +138,7 @@ const sidebars: SidebarsConfig = {
       },
       items: [
         // NodeJs 基础
-        "front/NodeJs/node-basic",
+        "front/NodeJs/basic",
         // 框架
         {
           type: "category",
@@ -153,6 +153,14 @@ const sidebars: SidebarsConfig = {
           ]
         }
       ]
+    }
+  ],
+
+  "structure-algorithm": [
+    {
+      type: "doc",
+      id: "structure-algorithm/index",
+      label: "前言"
     }
   ],
 

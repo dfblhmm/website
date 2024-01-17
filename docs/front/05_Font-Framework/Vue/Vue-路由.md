@@ -1,5 +1,5 @@
 ---
-id: vue-router
+id: router
 title: 路由
 ---
 # Vue 路由

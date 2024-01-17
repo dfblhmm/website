@@ -1,5 +1,5 @@
 ---
-id: Git
+id: git
 title: Git
 ---
 # Git

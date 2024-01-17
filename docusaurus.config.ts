@@ -49,6 +49,12 @@ const themeConfig: Preset.ThemeConfig = {
       },
       {
         type: "docSidebar",
+        sidebarId: "structure-algorithm",
+        position: "left",
+        label: "数据结构与算法"
+      },
+      {
+        type: "docSidebar",
         sidebarId: "rust",
         position: "left",
         label: "Rust"

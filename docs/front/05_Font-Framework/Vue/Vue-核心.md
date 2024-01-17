@@ -1,5 +1,5 @@
 ---
-id: vue-core
+id: core
 title: 核心
 ---
 # Vue 核心

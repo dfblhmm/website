@@ -1,5 +1,5 @@
 ---
-id: css-core
+id: core
 title: 核心
 ---
 # CSS

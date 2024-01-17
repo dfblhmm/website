@@ -1,5 +1,5 @@
 ---
-id: js-advance
+id: advance
 title: 进阶
 ---
 # JavaScript 进阶
