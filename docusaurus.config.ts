@@ -4,7 +4,7 @@ import { themes } from "prism-react-renderer";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 
-import { transformImg, transformMark, getSidebarData, getStaticDirectories } from "./config";
+import { transformImg, transformMark, getSidebarData, getStaticDirectories, createLastUpdate } from "./config";
 
 const { ALGOLIA_APP_ID, ALGOLIA_API_KEY, ALGOLIA_APP_INDEX_NAME } = process.env;
 
@@ -114,6 +114,22 @@ const config: Config = {
   },
 
   presets: [["classic", classicPresetConfig]],
+
+  markdown: {
+    parseFrontMatter: async (params) => {
+      const { filePath, defaultParseFrontMatter } = params;
+
+      const { frontMatter, ...rest } = await defaultParseFrontMatter(params);
+
+      return {
+        ...rest,
+        frontMatter: {
+          ...frontMatter,
+          ...createLastUpdate(filePath)
+        }
+      };
+    }
+  },
 
   plugins: [
     "docusaurus-plugin-sass"
