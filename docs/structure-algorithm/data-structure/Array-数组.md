@@ -35,3 +35,17 @@ title: 数组
 - 因为简单数组强烈依赖电脑硬件之内存，所以不适用于现代的程序设计
   - 许多编程语言均提供了更高级的数据结构：如 `ArrayList` 、`Vector` 等==动态数组==
 
+- JavaScript 中默认内置了 `Array` — 数组
+
+  ```typescript
+  // 创建数组
+  const arr = new Array();
+  
+  // 插入元素
+  arr.push(2);
+  arr.shift(1);
+  
+  // 删除元素
+  arr.pop();
+  arr.splice(0, 1);
+  ```
