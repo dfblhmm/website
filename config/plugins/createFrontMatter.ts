@@ -1,14 +1,14 @@
 /**
  * 生成文档 Front Matter
  */
-import { statSync } from "fs";
+import { execSync } from "child_process";
 
 /**
  * 获取文件最后的修改信息
  */
 export const createLastUpdate = (filePath: string) => {
   // 获取文件最后修改时间
-  const { mtime } = statSync(filePath);
+  const mtime = execSync(`git log -1 --pretty=format:"%cd" ${filePath}`, { encoding: "utf-8" });
   const lastUpdateTime = new Date(mtime).toLocaleString();
 
   return {
