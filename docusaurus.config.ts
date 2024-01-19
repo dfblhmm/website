@@ -135,7 +135,7 @@ const config: Config = {
    */
   customFields: {
     sidebarOptions: {
-      front: getSidebarData("docs").front
+      front: getSidebarData("docs", "/").front
     }
   }
 };

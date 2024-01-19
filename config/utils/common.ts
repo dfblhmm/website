@@ -5,7 +5,7 @@ import { resolve } from "path";
  * 去除路径 index 后缀
  * @param path 路径
  */
-export const removeIndexSuffix = (path: string) => path.replace(/index$/, "");
+export const removeIndexSuffix = (path: string) => path.replace(/\/index$/, "");
 
 /**
  * @description 获取静态资源路径
