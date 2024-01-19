@@ -174,7 +174,10 @@ const sidebars: SidebarsConfig = {
         "structure-algorithm/data-structure/array",
 
         // 栈
-        "structure-algorithm/data-structure/stack"
+        "structure-algorithm/data-structure/stack",
+
+        // 队列
+        "structure-algorithm/data-structure/queue"
       ]
     }
   ],
