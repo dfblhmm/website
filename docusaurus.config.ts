@@ -10,6 +10,7 @@ const { ALGOLIA_APP_ID, ALGOLIA_API_KEY, ALGOLIA_APP_INDEX_NAME } = process.env;
 
 const classicPresetConfig: Preset.Options = {
   docs: {
+    routeBasePath: "/",
     showLastUpdateTime: true,
     sidebarPath: resolve(__dirname, "./config/sidebar/docs.ts"),
     remarkPlugins: [transformImg, transformMark]
