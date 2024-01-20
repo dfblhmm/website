@@ -46,40 +46,94 @@ title: 队列
 ### 基于数组实现
 
 ```typescript
-class ArrayQueue<T> {
+export default class ArrayQueue<T> {
   /**
-   * @description 用于存放队列元素
+   * @description 创建一个数组，用于存放队列元素
    */
-  private data: T[] = [];
+  private store: T[] = [];
 
   /**
    * @description 入队
    * @param element 入队元素
    */
   enqueue(element: T) {
-    this.data.push(element);
+    this.store.push(element);
   }
 
   /**
    * @description 出队
    * @returns 出队元素
    */
-  dequeue(): T | undefined {
-    return this.data.shift();
+  dequeue(): T | null {
+    return this.store.shift() ?? null;
   }
 
   /**
    * @description 获取队头元素
    */
-  peek(): T | undefined {
-    return this.data[0];
+  peek(): T | null {
+    return this.store[0] ?? null;
   }
 
   /**
    * @description 获取队列元素个数
    */
   get size(): number {
-    return this.data.length;
+    return this.store.length;
+  }
+
+  /**
+   * @description 队列是否为空
+   */
+  get isEmpty(): boolean {
+    return this.size === 0;
+  }
+}
+```
+
+
+
+### 基于链表实现
+
+[链表（LinkedList）实现参考](./linkedList#单向链表完整实现)
+
+```typescript
+import LinkedList from "./LinkedList";
+
+class LinkedQueue<T> {
+  /**
+   * @description 创建一个数组，用于存放队列元素
+   */
+  private store = new LinkedList<T>();
+
+  /**
+   * @description 入队
+   * @param element 入队元素
+   */
+  enqueue(element: T) {
+    this.store.append(element);
+  }
+
+  /**
+   * @description 出队
+   * @returns 出队元素
+   */
+  dequeue(): T | null {
+    return this.store.removeAt(0) ?? null;
+  }
+
+  /**
+   * @description 获取队头元素
+   */
+  peek(): T | null {
+    return this.store.get(0) ?? null;
+  }
+
+  /**
+   * @description 获取队列元素个数
+   */
+  get size(): number {
+    return this.store.size;
   }
 
   /**

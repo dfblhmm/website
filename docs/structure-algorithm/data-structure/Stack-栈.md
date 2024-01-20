@@ -48,38 +48,92 @@ title: 栈
 ```typescript
 class ArrayStack<T> {
   /**
-   * @description 用于存放栈内元素
+   * @description 创建一个数组，用于存放栈内元素
    */
-  private data: T[] = [];
+  private store: T[] = [];
 
   /**
    * @description 入栈
    * @param element 入栈元素
    */
   push(element: T) {
-    this.data.push(element);
+    this.store.push(element);
   }
 
   /**
    * @description 出栈
    * @returns 出栈元素
    */
-  pop(): T | undefined {
-    return this.data.pop();
+  pop(): T | null {
+    return this.store.pop() ?? null;
   }
 
   /**
    * @description 获取栈顶元素
    */
-  peek(): T | undefined {
-    return this.data.at(-1);
+  peek(): T | null {
+    return this.store.at(-1) ?? null;
   }
 
   /**
    * @description 获取栈的元素个数
    */
   get size(): number {
-    return this.data.length;
+    return this.store.length;
+  }
+
+  /**
+   * @description 栈是否为空
+   */
+  get isEmpty(): boolean {
+    return this.size === 0;
+  }
+}
+```
+
+
+
+### 基于链表实现
+
+[链表（LinkedList）实现参考](./linkedList#单向链表完整实现)
+
+```typescript
+import LinkedList from "./LinkedList";
+
+class LinkedStack<T> {
+  /**
+   * @description 创建一个链表，存放栈内元素
+   */
+  private store = new LinkedList<T>();
+
+  /**
+   * @description 入栈
+   * @param element 入栈元素
+   */
+  push(element: T) {
+    this.store.append(element);
+  }
+
+  /**
+   * @description 出栈
+   * @returns 出栈元素
+   */
+  pop(): T | null {
+    return this.store.removeAt(this.size - 1);
+  }
+
+  /**
+   * @description 获取栈顶元素
+   */
+  peek(): T | null {
+    return this.store.get(this.size - 1);
+  }
+
+  /**
+   * @description 获取栈的元素个数
+   */
+  get size(): number {
+    return this.store.size;
   }
 
   /**

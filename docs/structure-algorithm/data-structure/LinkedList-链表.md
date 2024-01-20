@@ -268,7 +268,7 @@ class LinkedList<T> {
 
 #### 删除方法 — removeAt
 
-- `removeAt` 方法用于==删除指定位置节点==，返回删除的节点，查找不到返回 `null`
+- `removeAt` 方法用于==删除指定位置节点==，返回删除的节点值，查找不到返回 `null`
 
   - 情况一：删除位置是 `0`，即删除链表头部节点
 
@@ -290,9 +290,9 @@ class LinkedList<T> {
   /**
    * @description 删除指定位置的节点
    * @param position 指定位置
-   * @returns 删除的节点，删除失败则返回 null
+   * @returns 删除的节点值，删除失败则返回 null
    */
-  removeAt(position: number): Node<T> | null {
+  removeAt(position: number): T | null {
     // 位置越界，删除失败
     if (position < 0 || position >= this.length) return null;
 
@@ -314,14 +314,14 @@ class LinkedList<T> {
     // 删除完成，更新长度
     this.length--;
 
-    return deletedNode;
+    return deletedNode?.val ?? null;
   }
 }
 ```
 
 
 
-#### 完整实现
+#### 单向链表完整实现
 
 ```typescript
 /**
@@ -452,9 +452,9 @@ class LinkedList<T> {
   /**
    * @description 删除指定位置的节点
    * @param position 指定位置
-   * @returns 删除的节点，删除失败则返回 null
+   * @returns 删除的节点值，删除失败则返回 null
    */
-  removeAt(position: number): Node<T> | null {
+  removeAt(position: number): T | null {
     // 位置越界，删除失败
     if (position < 0 || position >= this.length) return null;
 
@@ -476,7 +476,7 @@ class LinkedList<T> {
     // 删除完成，更新长度
     this.length--;
 
-    return deletedNode;
+    return deletedNode?.val ?? null;
   }
 
   /**
