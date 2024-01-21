@@ -17,6 +17,8 @@ const classicPresetConfig: Preset.Options = {
     // editUrl: '',
   },
   blog: {
+    blogSidebarCount: "ALL",
+    blogSidebarTitle: "所有帖子",
     showReadingTime: true
     // editUrl: '',
   },
@@ -61,7 +63,7 @@ const themeConfig: Preset.ThemeConfig = {
         position: "left",
         label: "Rust"
       }
-      // { to: '/blog', label: 'Blog', position: 'left' },
+      // { to: "/blog", label: "博客", position: "right" }
       // {
       //   href: 'https://github.com/facebook/docusaurus',
       //   label: 'GitHub',

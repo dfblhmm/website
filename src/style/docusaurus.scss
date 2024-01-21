@@ -1,12 +1,12 @@
 // 定义css变量
 :root {
-  // `code` 单行代码块
-  --ifm-code-background: #2cc51e;
-  --ifm-hover-overlay: #f5f5f5;
-
-  --ifm-toc-padding-vertical: 0.6rem;
-
   .markdown {
+    // `code` 单行代码块
+    --ifm-code-background: #2cc51e;
+    --ifm-hover-overlay: #f5f5f5;
+
+    --ifm-toc-padding-vertical: 0.6rem;
+
     --ifm-h1-vertical-rhythm-bottom: 0;
     --ifm-h2-vertical-rhythm-top: 1;
     --ifm-h3-vertical-rhythm-top: 2;
@@ -23,9 +23,26 @@
   }
 }
 
+// light 模式
+[data-theme="light"] {
+  --ifm-color-primary: #646cff;
+  --ifm-color-primary-light: #878eff;
+  --ifm-color-primary-lighter: #999fff;
+  --ifm-color-primary-lightest: #cfd1ff;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+// dark 模式
+[data-theme="dark"] {
+  --ifm-color-primary: #feaa00;
+  --ifm-color-primary-light: #ffb318;
+  --ifm-color-primary-lighter: #ffb725;
+  --ifm-color-primary-lightest: #ffc44b;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
 // 左侧导航栏
 .theme-doc-sidebar-container {
-
   // 菜单折叠箭头
   button.menu__caret {
     &:hover {
@@ -39,9 +56,9 @@
 }
 
 // 右侧 markdown 文档导航菜单
-[class *=tableOfContents] {
+[class*="tableOfContents"] {
   .table-of-contents {
-    &>li {
+    & > li {
       margin-bottom: 20px;
     }
   }
@@ -49,6 +66,19 @@
   .table-of-contents__link {
     &:hover {
       text-decoration: underline;
+    }
+  }
+}
+
+// 博客列表页的根组件
+.blog-list-page {
+  article[itemscope] {
+    padding: 1.5rem;
+    border: 1px solid var(--ifm-color-primary);
+    border-radius: 1rem;
+
+    h2 {
+      font-size: 2rem;
     }
   }
 }
