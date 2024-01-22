@@ -180,7 +180,10 @@ const sidebars: SidebarsConfig = {
         "structure-algorithm/data-structure/queue",
 
         // 链表
-        "structure-algorithm/data-structure/linkedList"
+        "structure-algorithm/data-structure/linkedList",
+
+        // 哈希表
+        "structure-algorithm/data-structure/hashTable"
       ]
     }
   ],
