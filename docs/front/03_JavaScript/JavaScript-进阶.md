@@ -6056,7 +6056,8 @@ import { render } from './display.js'
 
   ```js
   const obj = {};
-  Object.defineProperty(obj, 'num', { writable: false }); // 定义obj的num属性，且不可写入
+  // 定义 obj 的 num 属性，且不可写入
+  Object.defineProperty(obj, 'num', { writable: false });
   obj.num = 10; // 静默处理，非严格模式下不报错
   console.log(obj.num); // undefined
   ```
@@ -6170,12 +6171,12 @@ import { render } from './display.js'
 /**
  * 防抖函数
  * @param {*} fn 要进行防抖的处理函数
- * @param {*} delay 间隔时间
- * @param {*} immediate 初次是否立即触发
+ * @param {number} delay 间隔时间
+ * @param {boolean} immediate 初次是否立即触发
  * @param {*} cb 回调
  */
 function debounce(fn, delay, immediate = false, cb) {
-  // 定义一个自由变量，保存定时器timer
+  // 定义一个自由变量，保存定时器 timer
   let timer = null;
   // 定义一个自由变量，标识处理函数是否立即执行过
   let isInvoke = false;
@@ -6227,7 +6228,7 @@ function debounce(fn, delay, immediate = false, cb) {
 /**
  * 节流函数
  * @param {*} fn 要进行防抖的处理函数
- * @param {*} interval 触发事件的间隔时间
+ * @param {number} interval 触发事件的间隔时间
  * @param {*} options -lending: 首次是否触发; -trailing: 当前在时间段内触发了后不再触发，是否需要在当前时间段末尾触发		一次事件函数调用
  * @param {*} cb 回调
  */
@@ -6261,7 +6262,7 @@ function throttle(fn, interval, options = { lending: true, trailing: false }, cb
         const result = fn.apply(this, args);
         // 将函数执行的结果回调出去
         if (typeof cb === 'function') cb(result);
-        // lending为true，需要将startTime置为当前时间，防止再次触发事件
+        // lending 为 true，需要将 startTime 置为当前时间，防止再次触发事件
         startTime = lending ? Date.now() : 0;
         timer = null;
       }, restTime);
@@ -6304,7 +6305,7 @@ function throttle(fn, interval, options = { lending: true, trailing: false }, cb
    * @param {*} map 存储自身引用
    */
   function deepCopy(origin, map = new WeakMap()) {
-    // 1.如果是symbol类型
+    // 1.如果是 symbol 类型
     if (typeof origin === 'symbol') {
       return Symbol(origin.description);
     }
@@ -6314,7 +6315,7 @@ function throttle(fn, interval, options = { lending: true, trailing: false }, cb
       return origin;
     }
   
-    // 3.如果是Set类型
+    // 3.如果是 Set 类型
     if (origin instanceof Set) {
       const newSet = new Set();
       for (const item of origin) {
@@ -6323,7 +6324,7 @@ function throttle(fn, interval, options = { lending: true, trailing: false }, cb
       return newSet;
     }
   
-    // 4.如果是Map类型
+    // 4.如果是 Map 类型
     if (origin instanceof Map) {
       const newMap = new Map();
       for (const [key, value] of origin) {
@@ -6346,13 +6347,13 @@ function throttle(fn, interval, options = { lending: true, trailing: false }, cb
     // 存储自身引用
     map.set(origin, newObj);
   
-    // 6.1 遍历字符串key
+    // 6.1 遍历字符串 key
     for (const key in origin) {
       if (!Object.hasOwn(origin, key)) continue;
       newObj[key] = deepCopy(origin[key], map);
     }
   
-    // 6.2 遍历Symbol类型key
+    // 6.2 遍历 Symbol 类型 key
     for (const key of Object.getOwnPropertySymbols(origin)) {
       newObj[Symbol(key.description)] = deepCopy(origin[key], map);
     }
