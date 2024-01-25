@@ -171,19 +171,22 @@ const sidebars: SidebarsConfig = {
       },
       items: [
         // 数组
-        "structure-algorithm/data-structure/array",
+        "structure-algorithm/data-structure/array/index",
 
         // 栈
-        "structure-algorithm/data-structure/stack",
+        "structure-algorithm/data-structure/stack/index",
 
         // 队列
-        "structure-algorithm/data-structure/queue",
+        "structure-algorithm/data-structure/queue/index",
 
         // 链表
-        "structure-algorithm/data-structure/linkedList",
+        "structure-algorithm/data-structure/linkedList/index",
 
         // 哈希表
-        "structure-algorithm/data-structure/hashTable"
+        "structure-algorithm/data-structure/hashTable/index",
+
+        // 树
+        "structure-algorithm/data-structure/tree/index"
       ]
     }
   ],

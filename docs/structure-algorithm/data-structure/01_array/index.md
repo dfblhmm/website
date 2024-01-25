@@ -1,6 +1,6 @@
 ---
-id: array
 title: 数组
+slug: ../array
 ---
 # 数组
 

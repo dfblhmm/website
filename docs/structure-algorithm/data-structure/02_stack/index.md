@@ -1,6 +1,6 @@
 ---
-id: stack
 title: 栈
+slug: ../stack
 ---
 # 栈
 

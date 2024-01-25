@@ -1,6 +1,6 @@
 ---
-id: linkedList
 title: 链表
+slug: ../linkedList
 ---
 # 链表
 

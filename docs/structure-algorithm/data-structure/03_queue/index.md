@@ -1,6 +1,6 @@
 ---
-id: queue
 title: 队列
+slug: ../queue
 ---
 # 队列
 

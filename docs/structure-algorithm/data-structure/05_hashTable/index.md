@@ -1,6 +1,6 @@
 ---
-id: hashTable
 title: 哈希表
+slug: ../hashTable
 ---
 # 哈希表
 
@@ -701,4 +701,3 @@ class HashTable<T> {
   }
 }
 ```
-
