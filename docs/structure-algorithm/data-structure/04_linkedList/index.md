@@ -57,7 +57,7 @@ slug: ../linkedList
 
 #### 初始化链表结构
 
-- 准备一个 `Node` 类，用于创建每个节点的信息
+- 准备一个 `Node` 类，用于保存每个节点的信息
 
   ```typescript
   /**
@@ -79,7 +79,7 @@ slug: ../linkedList
   }
   ```
 
-- 初始化链表类 `LinkedList`，包含一个头指针（指向第一个节点）和长度属性
+- 定义链表类 `LinkedList`，包含一个头指针（指向第一个节点）和长度属性
 
   ```typescript
   class LinkedList<T> {
