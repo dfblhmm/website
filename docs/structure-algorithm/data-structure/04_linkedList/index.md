@@ -37,7 +37,7 @@ slug: ../linkedList
   - 指针域存储下一个节点的地址，在最后一个节点保存一个==特殊的结束标记==，比如 `null`
   - 同时还包含一个==头指针== `head`，指向链表的==第一个节点==
 
-  <img src="./images/Single-linked-list.png" alt="单向链表"  />
+  <img src="./images/Single-linked-list.png" alt="单向链表" style="zoom:80%;" />
 
 - 单向链表只可向一个方向遍历
 

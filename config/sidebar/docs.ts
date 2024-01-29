@@ -186,7 +186,18 @@ const sidebars: SidebarsConfig = {
         "structure-algorithm/data-structure/hashTable/index",
 
         // 树
-        "structure-algorithm/data-structure/tree/index"
+        {
+          type: "category",
+          label: "树",
+          link: {
+            type: "doc",
+            id: "structure-algorithm/data-structure/tree/index"
+          },
+          items: [
+            // 二叉树
+            "structure-algorithm/data-structure/tree/binaryTree"
+          ]
+        }
       ]
     }
   ],
