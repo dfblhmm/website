@@ -197,7 +197,10 @@ const sidebars: SidebarsConfig = {
             // 二叉树
             "structure-algorithm/data-structure/tree/binaryTree"
           ]
-        }
+        },
+
+        // 图
+        "structure-algorithm/data-structure/graph/index"
       ]
     }
   ],
