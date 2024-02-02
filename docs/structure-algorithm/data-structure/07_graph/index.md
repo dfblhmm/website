@@ -239,9 +239,7 @@ class Graph<T> {
         visited.add(vertex);
   
         // 获取此节点的邻边
-        const adjacencyList = this.adjacencyMap.get(vertex);
-        // 不存在邻边，跳过遍历
-        if (!adjacencyList) continue;
+        const adjacencyList = this.adjacencyMap.get(vertex)!;
   
         // 递归遍历邻边列表
         this.dfs_Recursion([...adjacencyList], visited, traverseResult);
@@ -289,9 +287,7 @@ class Graph<T> {
         visited.add(vertex);
   
         // 获取此节点的邻边
-        const adjacencyList = this.adjacencyMap.get(vertex);
-        // 不存在邻边，跳过遍历
-        if (!adjacencyList) continue;
+        const adjacencyList = this.adjacencyMap.get(vertex)!;
   
         // 将邻边节点依次入栈，跳过已经访问过的节点
         for (const adjacent of adjacencyList) {
@@ -350,9 +346,7 @@ class Graph<T> {
       visited.add(vertex);
 
       // 获取此节点的邻边
-      const adjacencyList = this.adjacencyMap.get(vertex);
-      // 不存在邻边，跳过遍历
-      if (!adjacencyList) continue;
+      const adjacencyList = this.adjacencyMap.get(vertex)!;
 
       // 将邻边节点依次入队，跳过已经访问过的节点
       for (const adjacent of adjacencyList) {
@@ -441,9 +435,7 @@ export default class Graph<T> {
       visited.add(vertex);
 
       // 获取此节点的邻边
-      const adjacencyList = this.adjacencyMap.get(vertex);
-      // 不存在邻边，跳过遍历
-      if (!adjacencyList) continue;
+      const adjacencyList = this.adjacencyMap.get(vertex)!;
 
       // 将邻边节点依次入栈，跳过已经访问过的节点
       for (const adjacent of adjacencyList) {
@@ -487,9 +479,7 @@ export default class Graph<T> {
       visited.add(vertex);
 
       // 获取此节点的邻边
-      const adjacencyList = this.adjacencyMap.get(vertex);
-      // 不存在邻边，跳过遍历
-      if (!adjacencyList) continue;
+      const adjacencyList = this.adjacencyMap.get(vertex)!;
 
       // 将邻边节点依次入队，跳过已经访问过的节点
       for (const adjacent of adjacencyList) {
