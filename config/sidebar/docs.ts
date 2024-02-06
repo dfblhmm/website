@@ -180,7 +180,24 @@ const sidebars: SidebarsConfig = {
         "structure-algorithm/data-structure/queue/index",
 
         // 链表
-        "structure-algorithm/data-structure/linkedList/index",
+        {
+          type: "category",
+          label: "链表",
+          link: {
+            type: "doc",
+            id: "structure-algorithm/data-structure/linkedList/index"
+          },
+          items: [
+            // 单向链表
+            "structure-algorithm/data-structure/linkedList/single-linkedList/index",
+
+            // 循环链表
+            "structure-algorithm/data-structure/linkedList/circular-linkedList/index",
+
+            // 双向链表
+            "structure-algorithm/data-structure/linkedList/doubly-linkedList/index"
+          ]
+        },
 
         // 哈希表
         "structure-algorithm/data-structure/hashTable/index",

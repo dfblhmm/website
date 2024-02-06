@@ -16,7 +16,7 @@ slug: ../stack
   - 先进后出，后进先出
   - 除头尾节点之外，每个元素有一个前驱，一个后继
 
-  <img src="./images/image-20240118000618319.png" alt="image-20240118000618319" style="zoom:67%;" />
+  <img src="./images/栈结构特点.png" alt="栈结构特点" style="zoom:67%;" />
 
 - 栈的两种操作
 
