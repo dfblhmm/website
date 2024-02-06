@@ -272,9 +272,9 @@ class CircularLinkedList<T> {
  */
 class CircularLinkedList<T> {
   /**
-   * @description 是否为最后一个节点
+   * @description 是否为尾部节点
    */
-  private isLastNode(node: LinkedNode<T> | null) {
+  private isTailNode(node: LinkedNode<T> | null) {
     return node === this.tail;
   }
 
@@ -293,7 +293,7 @@ class CircularLinkedList<T> {
       result.push(current.value);
 
       // 如果已经遍历完最后一个节点，则终止遍历
-      if (this.isLastNode(current)) break;
+      if (this.isTailNode(current)) break;
 
       current = current.next;
     }
@@ -366,9 +366,9 @@ class CircularLinkedList<T> {
   }
 
   /**
-   * @description 是否为最后一个节点
+   * @description 是否为尾部节点
    */
-  private isLastNode(node: LinkedNode<T> | null) {
+  private isTailNode(node: LinkedNode<T> | null) {
     return node === this.tail;
   }
 
@@ -387,7 +387,7 @@ class CircularLinkedList<T> {
       result.push(current.value);
 
       // 如果已经遍历完最后一个节点，则终止遍历
-      if (this.isLastNode(current)) break;
+      if (this.isTailNode(current)) break;
 
       current = current.next;
     }

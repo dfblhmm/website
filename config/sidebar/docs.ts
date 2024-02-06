@@ -195,7 +195,10 @@ const sidebars: SidebarsConfig = {
             "structure-algorithm/data-structure/linkedList/circular-linkedList/index",
 
             // 双向链表
-            "structure-algorithm/data-structure/linkedList/doubly-linkedList/index"
+            "structure-algorithm/data-structure/linkedList/doubly-linkedList/index",
+
+            // 双向循环链表
+            "structure-algorithm/data-structure/linkedList/doubly-circular-linkedList/index"
           ]
         },
 
