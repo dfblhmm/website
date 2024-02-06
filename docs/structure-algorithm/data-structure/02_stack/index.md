@@ -48,7 +48,7 @@ slug: ../stack
 ```typescript
 class ArrayStack<T> {
   /**
-   * @description 创建一个数组，用于存放栈内元素
+   * @description 创建一个数组，用于存放堆栈元素
    */
   private store: T[] = [];
 
@@ -95,16 +95,16 @@ class ArrayStack<T> {
 
 ### 基于链表实现
 
-[链表（LinkedList）实现参考](./linkedList#单向链表完整实现)
+采用 [双向链表](./linkedList/doubly-linkedList#双向链表完整实现) 来存储堆栈元素
 
 ```typescript
-import LinkedList from "./LinkedList";
+import DoublyLinkedList from "./DoublyLinkedList";
 
 class LinkedStack<T> {
   /**
-   * @description 创建一个链表，存放栈内元素
+   * @description 创建一个双向链表，用于存放堆栈元素
    */
-  private store = new LinkedList<T>();
+  private store = new DoublyLinkedList<T>();
 
   /**
    * @description 入栈

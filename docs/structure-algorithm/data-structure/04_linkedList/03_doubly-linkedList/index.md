@@ -115,6 +115,78 @@ slug: ../doubly-linkedList
   - 再让插入位置【前一个节点】和【当前插入的节点】互为相邻节点
   - 最后让【插入节点】和【当前插入位置节点】互为相邻节点
 
+```typescript
+/**
+ * @description 双向链表
+ */
+class DoublyLinkedList<T> {
+  /**
+   * 向指定位置插入一个节点
+   * @param position 指定位置
+   * @param value 插入节点值
+   * @returns 是否插入成功
+   */
+  insert(position: number, value: T): boolean {
+    // 位置越界，插入失败
+    if (position < 0 || position > this.length) return false;
+
+    // 创建新节点
+    const insertNode = new DoublyLinkedNode<T>(value);
+
+    if (this.length === 0) {
+      /**
+       * 情况一：链表为空，直接让头尾指针都指向【新增的节点】
+       */
+      this.head = insertNode;
+      this.tail = insertNode;
+    } else {
+      if (position === 0) {
+        /**
+         * 情况二：在头部插入节点
+         */
+        // 1.【插入节点】的 next 指向【头部节点】
+        insertNode.next = this.head;
+        // 2.【头部节点】的 prev 指向【插入节点】
+        this.head!.prev = insertNode;
+        // 3. 让头指针指向这个【插入节点】，使其称为新的【头部节点】
+        this.head = insertNode;
+      } else if (position === this.length) {
+        /**
+         * 情况三：在尾部插入节点
+         */
+        // 1.根据尾指针找到【尾部节点】，让其 next 指向【插入节点】
+        this.tail!.next = insertNode;
+        // 2.【插入节点】的 prev 指向【尾部节点】
+        insertNode.prev = this.tail;
+        // 3.尾指针重新指向这个【插入节点】
+        this.tail = insertNode;
+      } else {
+        /**
+         * 情况四：在中间位置插入
+         */
+        // 查询插入位置的节点
+        const target = this.findNodeByPosition(position)!;
+        // 获取插入位置的前一个节点
+        const prev = target.prev!;
+
+        // 1.让插入位置【前一个节点】和【当前插入的节点】互为相邻节点
+        prev!.next = insertNode;
+        insertNode.prev = prev;
+
+        // 2.让【插入节点】和【当前插入位置节点】互为相邻节点
+        insertNode.next = target;
+        target.prev = insertNode;
+      }
+    }
+
+    // 插入完成，更新链表长度
+    this.length++;
+
+    return true;
+  }
+}
+```
+
 
 
 ### 删除方法 — removeAt
@@ -147,6 +219,74 @@ slug: ../doubly-linkedList
   - 先根据删除位置查询节点
   - 再让【删除节点前一个节点】的 next 指向【删除节点的下一个节点】
   - 再让【删除节点的下一个节点】的 prev 指向【删除节点前一个节点】
+
+```typescript
+/**
+ * @description 双向链表
+ */
+class DoublyLinkedList<T> {
+  /**
+   * @description 删除指定位置的节点
+   * @param position 指定位置
+   * @returns 删除的节点值，删除失败则返回 null
+   */
+  removeAt(position: number): T | null {
+    // 位置越界，删除失败
+    if (position < 0 || position >= this.length) return null;
+
+    // 记录删除的节点，初始值为头节点
+    let deletedNode: DoublyLinkedNode<T> | null = this.head;
+
+    if (this.length === 1) {
+      /**
+       * 情况一：链表中只有一个节点，直接让头尾指针都指向 null 即可
+       */
+      this.head = null;
+      this.tail = null;
+    } else {
+      if (position === 0) {
+        /**
+         * 情况二：在头部删除节点
+         */
+        // 1.头指针指向【头节点的下一个节点】
+        this.head = this.head!.next;
+        // 2.头节点的 prev 指向 null
+        this.head!.prev = null;
+      } else if (position === this.length - 1) {
+        /**
+         * 情况三：在尾部删除节点
+         */
+        // 存储删除节点
+        deletedNode = this.tail;
+        // 1.获取尾节点的前一个节点
+        const prev = this.tail!.prev!;
+        // 2.【前一个节点】的 next 指向 null
+        prev.next = null;
+        // 3.尾指针指向【前一个节点】
+        this.tail = prev;
+      } else {
+        /**
+         * 情况四：在中间位置删除节点
+         */
+        // 1.查询删除位置的节点
+        const target = this.findNodeByPosition(position)!;
+        // 2.【删除节点前一个节点】的 next 指向【删除节点的下一个节点】
+        target.prev!.next = target.next;
+        // 3.【删除节点的下一个节点】的 prev 指向【删除节点前一个节点】
+        target.next!.prev = target.prev;
+        // 记录删除节点
+        deletedNode = target;
+      }
+    }
+
+    // 删除完成，更新长度
+    this.length--;
+
+    // 返回删除的节点值
+    return deletedNode?.value ?? null;
+  }
+}
+```
 
 
 
