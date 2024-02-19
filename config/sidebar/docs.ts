@@ -177,7 +177,18 @@ const sidebars: SidebarsConfig = {
         "structure-algorithm/data-structure/stack/index",
 
         // 队列
-        "structure-algorithm/data-structure/queue/index",
+        {
+          type: "category",
+          label: "队列",
+          link: {
+            type: "doc",
+            id: "structure-algorithm/data-structure/queue/index"
+          },
+          items: [
+            // 双端队列
+            "structure-algorithm/data-structure/queue/deque/index"
+          ]
+        },
 
         // 链表
         {

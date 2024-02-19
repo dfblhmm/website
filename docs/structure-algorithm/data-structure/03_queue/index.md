@@ -33,8 +33,6 @@ slug: ../queue
 
 ## 封装队列
 
-队列常见的操作
-
 | 属性/方法        | 描述                           |
 | ---------------- | ------------------------------ |
 | enqueue(element) | 向队列添加一个元素（element）  |
@@ -46,7 +44,10 @@ slug: ../queue
 ### 基于数组实现
 
 ```typescript
-export default class ArrayQueue<T> {
+/**
+ * @description 单向队列-基于数组
+ */
+class ArrayQueue<T> {
   /**
    * @description 创建一个数组，用于存放队列元素
    */
@@ -100,7 +101,10 @@ export default class ArrayQueue<T> {
 ```typescript
 import DoublyLinkedList from "./DoublyLinkedList";
 
-class LinkedQueue<T> {
+/**
+ * @description 单向队列-基于链表
+ */
+export default class LinkedQueue<T> {
   /**
    * @description 创建一个双向链表，用于存放队列元素
    */
@@ -119,14 +123,14 @@ class LinkedQueue<T> {
    * @returns 出队元素
    */
   dequeue(): T | null {
-    return this.store.removeAt(0) ?? null;
+    return this.store.removeAt(0);
   }
 
   /**
    * @description 获取队头元素
    */
   peek(): T | null {
-    return this.store.get(0) ?? null;
+    return this.store.get(0);
   }
 
   /**

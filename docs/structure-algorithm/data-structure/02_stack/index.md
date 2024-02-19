@@ -33,8 +33,6 @@ slug: ../stack
 
 ## 封装栈
 
-栈常见的操作
-
 | 属性/方法     | 描述                           |
 | ------------- | ------------------------------ |
 | push(element) | 向栈顶添加一个元素（element）  |
@@ -46,6 +44,9 @@ slug: ../stack
 ### 基于数组实现
 
 ```typescript
+/**
+ * @description 栈-基于数组
+ */
 class ArrayStack<T> {
   /**
    * @description 创建一个数组，用于存放堆栈元素
@@ -100,6 +101,9 @@ class ArrayStack<T> {
 ```typescript
 import DoublyLinkedList from "./DoublyLinkedList";
 
+/**
+ * @description 栈-基于链表
+ */
 class LinkedStack<T> {
   /**
    * @description 创建一个双向链表，用于存放堆栈元素
