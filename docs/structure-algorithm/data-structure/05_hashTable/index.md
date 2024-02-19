@@ -220,7 +220,7 @@ function hash(key: string, len: number): number {
 
 ### 实现哈希表
 
-| 方法            | 描述                   |
+| 属性/方法       | 描述                   |
 | --------------- | ---------------------- |
 | put(key, value) | 插入/修改键值对        |
 | get(key)        | 根据键获取值           |

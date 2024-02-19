@@ -220,7 +220,10 @@ const sidebars: SidebarsConfig = {
         },
 
         // 图
-        "structure-algorithm/data-structure/graph/index"
+        "structure-algorithm/data-structure/graph/index",
+
+        // 堆
+        "structure-algorithm/data-structure/heap/index"
       ]
     }
   ],
