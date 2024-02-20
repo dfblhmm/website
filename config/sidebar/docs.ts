@@ -186,7 +186,10 @@ const sidebars: SidebarsConfig = {
           },
           items: [
             // 双端队列
-            "structure-algorithm/data-structure/queue/deque/index"
+            "structure-algorithm/data-structure/queue/deque/index",
+
+            // 优先队列
+            "structure-algorithm/data-structure/queue/priority-queue/index"
           ]
         },
 
