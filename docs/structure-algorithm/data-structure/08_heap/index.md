@@ -314,7 +314,7 @@ class Heap<T> {
 
     for (let i = position; i >= 0; i--) {
       // 对每一个元素进行下滤
-      this.heapifyUp(i);
+      this.heapifyDown(i);
     }
   }
 }
@@ -507,7 +507,7 @@ export default class Heap<T> {
 
     for (let i = position; i >= 0; i--) {
       // 对每一个元素进行下滤
-      this.heapifyUp(i);
+      this.heapifyDown(i);
     }
   }
 
